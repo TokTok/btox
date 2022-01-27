@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -19,6 +21,39 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class Contact {
+  final String publicKey;
+  final String name;
+
+  Contact({
+    required this.publicKey,
+    this.name = "",
+  });
+
+  factory Contact.fake(int id) {
+    var random = Random(id);
+    var bytes = List<int>.generate(32, (index) => random.nextInt(255));
+    return Contact(
+      publicKey: (bytes.map((e) => e.toRadixString(16).toUpperCase())).join(),
+      name: "Contact $id",
+    );
+  }
+}
+
+class ContactListItem extends StatelessWidget {
+  const ContactListItem({Key? key, required this.contact}) : super(key: key);
+
+  final Contact contact;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(contact.name.isNotEmpty ? contact.name : "Unknown"),
+      subtitle: Text(contact.publicKey, overflow: TextOverflow.ellipsis),
+    );
+  }
+}
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
@@ -29,11 +64,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  int _contacts = 1;
 
-  void _incrementCounter() {
+  void _addContact() {
     setState(() {
-      _counter++;
+      _contacts++;
     });
   }
 
@@ -43,23 +78,15 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
+      body: ListView.builder(
+        itemCount: _contacts,
+        itemBuilder: (context, index) {
+          return ContactListItem(contact: Contact.fake(index));
+        },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
+        onPressed: _addContact,
+        tooltip: 'Add contact',
         child: const Icon(Icons.add),
       ),
     );

@@ -6,7 +6,7 @@ import 'package:btox/main.dart';
 void main() {
   testWidgets('Add contact adds a contact smoke test',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const App());
 
     // Verify that we start with 1 dummy contact.
     expect(find.text('Contact 0'), findsOneWidget);

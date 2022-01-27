@@ -3,20 +3,22 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const App());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+const String title = "bTox (working title)";
+
+class App extends StatelessWidget {
+  const App({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: title,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const ContactListPage(title: title),
     );
   }
 }
@@ -54,16 +56,16 @@ class ContactListItem extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class ContactListPage extends StatefulWidget {
+  const ContactListPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ContactListPage> createState() => _ContactListPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _ContactListPageState extends State<ContactListPage> {
   int _contacts = 1;
 
   void _addContact() {

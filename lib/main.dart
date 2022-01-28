@@ -43,15 +43,18 @@ class Contact {
 }
 
 class ContactListItem extends StatelessWidget {
-  const ContactListItem({Key? key, required this.contact}) : super(key: key);
+  const ContactListItem({Key? key, required this.contact, required this.onTap})
+      : super(key: key);
 
   final Contact contact;
+  final Function(Contact) onTap;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(contact.name.isNotEmpty ? contact.name : "Unknown"),
       subtitle: Text(contact.publicKey, overflow: TextOverflow.ellipsis),
+      onTap: () => onTap(contact),
     );
   }
 }
@@ -83,13 +86,92 @@ class _ContactListPageState extends State<ContactListPage> {
       body: ListView.builder(
         itemCount: _contacts,
         itemBuilder: (context, index) {
-          return ContactListItem(contact: Contact.fake(index));
+          return ContactListItem(
+            contact: Contact.fake(index),
+            onTap: (Contact contact) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatPage(contact: contact),
+                ),
+              );
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addContact,
         tooltip: 'Add contact',
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class ChatPage extends StatefulWidget {
+  const ChatPage({Key? key, required this.contact}) : super(key: key);
+
+  final Contact contact;
+
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  final _messages = <String>[];
+  final _messageInputFocus = FocusNode();
+  final _messageInputController = TextEditingController();
+
+  void _onSendMessage() {
+    setState(() {
+      _messages.add(_messageInputController.text);
+    });
+    _messageInputController.clear();
+    _messageInputFocus.requestFocus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+            widget.contact.name.isNotEmpty ? widget.contact.name : "Unknown"),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              reverse: true,
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                final reversedIndex = _messages.length - index - 1;
+                return ListTile(
+                  title: Text("$reversedIndex"),
+                  subtitle: Text(_messages[reversedIndex]),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: TextField(
+              decoration: InputDecoration(
+                border: const UnderlineInputBorder(),
+                labelText: 'message',
+                suffixIcon: IconButton(
+                  onPressed: () => _onSendMessage(),
+                  icon: const Icon(Icons.send),
+                ),
+              ),
+              // onSubmitted: _onSendMessage,
+              onEditingComplete: () => _onSendMessage(),
+              controller: _messageInputController,
+              focusNode: _messageInputFocus,
+              textInputAction: TextInputAction.send,
+              autofocus: true,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,8 +1,25 @@
 import 'package:flutter/material.dart';
 
+import 'dart:io';
+import 'dart:ffi';
+
 import 'chat_page.dart';
 import 'contact.dart';
 import 'strings.dart';
+
+final DynamicLibrary toxLib = Platform.isAndroid
+    ? DynamicLibrary.open('libtoxcore.so')
+    : DynamicLibrary.process();
+
+final int Function() toxVersionMajor = toxLib
+    .lookup<NativeFunction<Int32 Function()>>('tox_version_major')
+    .asFunction();
+final int Function() toxVersionMinor = toxLib
+    .lookup<NativeFunction<Int32 Function()>>('tox_version_minor')
+    .asFunction();
+final int Function() toxVersionPatch = toxLib
+    .lookup<NativeFunction<Int32 Function()>>('tox_version_patch')
+    .asFunction();
 
 class ContactListItem extends StatelessWidget {
   const ContactListItem({Key? key, required this.contact, required this.onTap})
@@ -46,21 +63,29 @@ class _ContactListPageState extends State<ContactListPage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: ListView.builder(
-        itemCount: _contacts,
-        itemBuilder: (context, index) {
-          return ContactListItem(
-            contact: Contact.fake(index),
-            onTap: (Contact contact) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ChatPage(contact: contact),
-                ),
-              );
-            },
-          );
-        },
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: _contacts,
+              itemBuilder: (context, index) {
+                return ContactListItem(
+                  contact: Contact.fake(index),
+                  onTap: (Contact contact) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatPage(contact: contact),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+          Text(
+              '${toxVersionMajor()}.${toxVersionMinor()}.${toxVersionPatch()}'),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addContact,

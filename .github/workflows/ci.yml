@@ -49,6 +49,18 @@ jobs:
         cache: true
     - run: flutter build apk
 
+  linux-build:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+    - run: sudo apt-get install -y --no-install-recommends ninja-build libgtk-3-dev
+    - run: flutter config --enable-linux-desktop && flutter build linux
+
   ios-build:
     runs-on: macos-11
     steps:
@@ -60,6 +72,17 @@ jobs:
         cache: true
     - run: flutter build ios --no-codesign
 
+  macos-build:
+    runs-on: macos-11
+    steps:
+    - uses: actions/checkout@v2
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+    - run: flutter config --enable-macos-desktop && flutter build macos
+
   web-build:
     runs-on: windows-2022
     steps:
@@ -70,3 +93,16 @@ jobs:
         flutter-version: ${{ env.FLUTTER_VERSION }}
         cache: true
     - run: flutter build web
+
+  windows-build:
+    # Flutter stable does not yet support VS 2022, so we use the windows-2019
+    # which comes with VS2019 pre-installed instead.
+    runs-on: windows-2019
+    steps:
+    - uses: actions/checkout@v2
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+    - run: flutter config --enable-windows-desktop && flutter build windows

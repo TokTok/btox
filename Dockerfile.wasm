@@ -51,5 +51,7 @@ RUN . "/work/emsdk/emsdk_env.sh" \
 
 # Build wasm bindings.
 RUN . "/work/emsdk/emsdk_env.sh" \
-  mkdir -p /work/wasm
-  emcc -O3 -s MAIN_MODULE=1 -s EXPORT_NAME=libtoxcore -s MODULARIZE=1 /usr/local/lib/libsodium.a /usr/local/lib/libtoxcore.a -o /work/wasm/libtoxcore.js
+ && mkdir -p /work/wasm \
+ && emcc -O3 -s MAIN_MODULE=1 -s EXPORT_NAME=libtoxcore -s ASSERTIONS=1 -s MODULARIZE=1 /usr/local/lib/libsodium.a /usr/local/lib/libtoxcore.a -o /work/wasm/libtoxcore.js
+
+# vim:ft=dockerfile

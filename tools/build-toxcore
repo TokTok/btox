@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -eux
+
+docker build -t toxchat/tox.js -f Dockerfile.wasm .
+docker create --name tox.js toxchat/tox.js
+docker cp tox.js:/work/wasm/libtoxcore.js - | tar x -C asset
+docker cp tox.js:/work/wasm/libtoxcore.wasm - | tar x -C asset
+docker rm tox.js

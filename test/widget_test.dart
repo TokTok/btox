@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:btox/main.dart';
+import 'package:btox/app.dart';
 
 void main() {
   testWidgets('Add contact adds a contact smoke test',

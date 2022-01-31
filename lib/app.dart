@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'contact_list_page.dart';
-
-const String title = "bTox (working title)";
+import 'strings.dart';
 
 class App extends StatelessWidget {
   const App({Key? key}) : super(key: key);
@@ -10,11 +9,11 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: title,
+      title: Strings.title,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const ContactListPage(title: title),
+      home: const ContactListPage(title: Strings.title),
     );
   }
 }

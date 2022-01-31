@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'chat_page.dart';
 import 'contact.dart';
+import 'strings.dart';
 
 class ContactListItem extends StatelessWidget {
   const ContactListItem({Key? key, required this.contact, required this.onTap})
@@ -13,7 +14,8 @@ class ContactListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(contact.name.isNotEmpty ? contact.name : "Unknown"),
+      title: Text(
+          contact.name.isNotEmpty ? contact.name : Strings.defaultContactName),
       subtitle: Text(contact.publicKey, overflow: TextOverflow.ellipsis),
       onTap: () => onTap(contact),
     );
@@ -62,7 +64,7 @@ class _ContactListPageState extends State<ContactListPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addContact,
-        tooltip: 'Add contact',
+        tooltip: Strings.addContact,
         child: const Icon(Icons.add),
       ),
     );

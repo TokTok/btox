@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'contact.dart';
+import 'strings.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({Key? key, required this.contact}) : super(key: key);
@@ -28,8 +29,9 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            widget.contact.name.isNotEmpty ? widget.contact.name : "Unknown"),
+        title: Text(widget.contact.name.isNotEmpty
+            ? widget.contact.name
+            : Strings.defaultContactName),
       ),
       body: Column(
         children: [
@@ -51,13 +53,12 @@ class _ChatPageState extends State<ChatPage> {
             child: TextField(
               decoration: InputDecoration(
                 border: const UnderlineInputBorder(),
-                labelText: 'message',
+                labelText: Strings.message.toLowerCase(),
                 suffixIcon: IconButton(
                   onPressed: () => _onSendMessage(),
                   icon: const Icon(Icons.send),
                 ),
               ),
-              // onSubmitted: _onSendMessage,
               onEditingComplete: () => _onSendMessage(),
               controller: _messageInputController,
               focusNode: _messageInputFocus,

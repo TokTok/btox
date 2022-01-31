@@ -42,7 +42,7 @@ class _ChatPageState extends State<ChatPage> {
               itemBuilder: (context, index) {
                 final reversedIndex = _messages.length - index - 1;
                 return ListTile(
-                  title: Text("$reversedIndex"),
+                  title: Text('$reversedIndex'),
                   subtitle: Text(_messages[reversedIndex]),
                 );
               },

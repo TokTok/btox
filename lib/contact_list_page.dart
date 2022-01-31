@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'dart:io';
-import 'dart:ffi';
-
 import 'chat_page.dart';
 import 'contact.dart';
 import 'strings.dart';
+import 'ffi/proxy.dart';
 
-final DynamicLibrary toxLib = Platform.isAndroid
-    ? DynamicLibrary.open('libtoxcore.so')
-    : DynamicLibrary.process();
+final DynamicLibrary toxLib = loadToxcore();
 
 final int Function() toxVersionMajor = toxLib
     .lookup<NativeFunction<Int32 Function()>>('tox_version_major')

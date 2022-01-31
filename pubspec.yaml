@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   web_ffi: ^0.7.2
   inject_js: ^2.0.0
+  hex: ^0.2.0
 
 dev_dependencies:
   flutter_test:

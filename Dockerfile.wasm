@@ -43,13 +43,31 @@ RUN . "/work/emsdk/emsdk_env.sh" \
  && emmake make install -j8
 
 # Build c-toxcore.
+COPY . /work/c-toxcore
 RUN . "/work/emsdk/emsdk_env.sh" \
- && git clone --depth=1 --branch=v0.2.13 https://github.com/TokTok/c-toxcore /work/c-toxcore \
  && cd /work/c-toxcore \
- && emcmake cmake -B_build -H. -GNinja -DCMAKE_C_FLAGS=-fPIC -DBUILD_TOXAV=OFF -DENABLE_SHARED=OFF -DBOOTSTRAP_DAEMON=OFF -DCMAKE_INSTALL_PREFIX:PATH="/usr/local" \
+ && emcmake cmake -B_build -H. -GNinja \
+ -DCMAKE_C_FLAGS=-fPIC \
+ -DBUILD_TOXAV=OFF \
+ -DENABLE_SHARED=OFF \
+ -DBOOTSTRAP_DAEMON=OFF \
+ -DCMAKE_INSTALL_PREFIX:PATH="/usr/local" \
+ -DMIN_LOGGER_LEVEL=DEBUG \
  && emmake cmake --build _build --parallel 8 --target install
 
 # Build wasm bindings.
 RUN . "/work/emsdk/emsdk_env.sh" \
-  mkdir -p /work/wasm
-  emcc -O3 -s MAIN_MODULE=1 -s EXPORT_NAME=libtoxcore -s MODULARIZE=1 /usr/local/lib/libsodium.a /usr/local/lib/libtoxcore.a -o /work/wasm/libtoxcore.js
+ && mkdir -p /work/wasm \
+ && emcc -O3 \
+ -s EXPORT_NAME=libtoxcore \
+ -s MAIN_MODULE=1 \
+ -s MODULARIZE=1 \
+ -s MALLOC=emmalloc \
+ -s SOCKET_DEBUG=0 \
+ -s WEBSOCKET_DEBUG=2 \
+ -s WEBSOCKET_URL=wss:// \
+ /usr/local/lib/libsodium.a \
+ /usr/local/lib/libtoxcore.a \
+ -o /work/wasm/libtoxcore.js
+
+# vim:ft=dockerfile

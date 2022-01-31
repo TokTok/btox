@@ -47,6 +47,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
+  ffigen: ^4.1.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -88,3 +89,23 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+# If regenerating the bindings, you must remove the line
+# `import 'dart:ffi' as ffi;`
+# after doing so. We use 'proxy.dart' instead in order to support wasm.
+ffigen:
+  output: lib/ffi/toxcore_generated_bindings.dart
+  headers:
+    entry-points:
+      - ../c-toxcore/toxcore/tox.h
+    include-directives:
+      - '**tox.h' # Prevent system headers from being included.
+  name: ToxFfi
+  description: Bindings to toktok/c-toxcore
+  structs:
+    exclude:
+      - Tox_Options # Trickery to turn this into an opaque struct.
+    dependency-only: opaque
+  preamble: |
+    // ignore_for_file: camel_case_types, non_constant_identifier_names, constant_identifier_names
+    import 'proxy.dart' as ffi;

@@ -4,18 +4,13 @@ import 'chat_page.dart';
 import 'contact.dart';
 import 'strings.dart';
 import 'ffi/proxy.dart';
+import 'ffi/toxcore_generated_bindings.dart';
 
-final DynamicLibrary toxLib = loadToxcore();
+final ToxFfi toxLib = ToxFfi(loadToxcore());
 
-final int Function() toxVersionMajor = toxLib
-    .lookup<NativeFunction<Int32 Function()>>('tox_version_major')
-    .asFunction();
-final int Function() toxVersionMinor = toxLib
-    .lookup<NativeFunction<Int32 Function()>>('tox_version_minor')
-    .asFunction();
-final int Function() toxVersionPatch = toxLib
-    .lookup<NativeFunction<Int32 Function()>>('tox_version_patch')
-    .asFunction();
+final int Function() toxVersionMajor = toxLib.tox_version_major;
+final int Function() toxVersionMinor = toxLib.tox_version_minor;
+final int Function() toxVersionPatch = toxLib.tox_version_patch;
 
 class ContactListItem extends StatelessWidget {
   const ContactListItem({Key? key, required this.contact, required this.onTap})

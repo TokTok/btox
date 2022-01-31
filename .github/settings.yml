@@ -1,0 +1,23 @@
+---
+_extends: .github
+
+repository:
+  name: bTox
+  description: Official TokTok mobile Tox client
+  homepage: https://tox.chat/
+  topics: toxcore, network, p2p, security, encryption, cryptography, android, ios, web
+
+branches:
+  - name: "master"
+    protection:
+      required_status_checks:
+        contexts:
+          - "analyze"
+          - "android-build"
+          - "format"
+          - "ios-build"
+          - "linux-build"
+          - "macos-build"
+          - "test"
+          - "web-build"
+          - "windows-build"

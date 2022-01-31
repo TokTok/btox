@@ -2,7 +2,7 @@
 _extends: .github
 
 repository:
-  name: bTox
+  name: btox
   description: Official TokTok mobile Tox client
   homepage: https://tox.chat/
   topics: toxcore, network, p2p, security, encryption, cryptography, android, ios, web

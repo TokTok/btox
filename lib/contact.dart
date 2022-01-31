@@ -6,7 +6,7 @@ class Contact {
 
   Contact({
     required this.publicKey,
-    this.name = "",
+    this.name = '',
   });
 
   factory Contact.fake(int id) {
@@ -14,7 +14,7 @@ class Contact {
     var bytes = List<int>.generate(32, (index) => random.nextInt(255));
     return Contact(
       publicKey: (bytes.map((e) => e.toRadixString(16).toUpperCase())).join(),
-      name: "Contact $id",
+      name: 'Contact $id',
     );
   }
 }

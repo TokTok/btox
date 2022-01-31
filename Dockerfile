@@ -40,3 +40,5 @@ RUN flutter build web
 # Stage 2 - Create the run-time image
 FROM nginx:1.21.1-alpine
 COPY --from=build /app/build/web /usr/share/nginx/html
+COPY .heroku/default.conf /etc/nginx/conf.d/default.conf
+CMD sed -i -e 's/$PORT/'"$PORT"'/g' /etc/nginx/conf.d/default.conf && nginx -g "daemon off;"

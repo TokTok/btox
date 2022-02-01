@@ -71,10 +71,13 @@ RUN . "/work/emsdk/emsdk_env.sh" \
 RUN . "/work/emsdk/emsdk_env.sh" \
  && mkdir -p /work/wasm \
  && emcc -O3 \
+ -s ALLOW_UNIMPLEMENTED_SYSCALLS=1 \
  -s EXPORT_NAME=libtoxcore \
+ -s IGNORE_MISSING_MAIN=1 \
  -s MAIN_MODULE=1 \
  -s MALLOC=emmalloc \
  -s MODULARIZE=1 \
+ -s STRICT=1 \
  -s WEBSOCKET_URL=wss:// \
  /usr/local/lib/libsodium.a \
  /usr/local/lib/libtoxcore.a \

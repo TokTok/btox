@@ -16,7 +16,6 @@
 package main
 
 import (
-	"encoding/base64"
 	"encoding/hex"
 	"flag"
 	"log"
@@ -35,6 +34,7 @@ var upgrader = websocket.Upgrader{
 	// Should be enough to fit any Tox TCP packets.
 	ReadBufferSize:  2048,
 	WriteBufferSize: 2048,
+	Subprotocols: []string{"binary"},
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
@@ -50,8 +50,9 @@ func forwardTcp(wsconn *websocket.Conn, conn net.Conn) {
 			log.Println("TCP READ :", err)
 			break
 		}
-		encoded := base64.StdEncoding.EncodeToString(tcpbuffer[0:n])
-		if err := wsconn.WriteMessage(websocket.BinaryMessage, []byte(encoded)); err != nil {
+		log.Println("TCP READ :", n, hex.EncodeToString(tcpbuffer[0:n]))
+
+		if err := wsconn.WriteMessage(websocket.BinaryMessage, tcpbuffer[0:n]); err != nil {
 			log.Println("WS WRITE :", err)
 			break
 		}
@@ -68,14 +69,9 @@ func forwardWeb(wsconn *websocket.Conn, conn net.Conn) {
 			log.Println("WS READ  :", err)
 			break
 		}
-		decoded, err := base64.StdEncoding.DecodeString(string(buffer))
-		if err != nil {
-			log.Println("WS READ  :", err)
-			break
-		}
-		log.Println("WS READ  :", len(decoded), hex.EncodeToString(decoded))
+		log.Println("WS READ  :", len(buffer), hex.EncodeToString(buffer))
 
-		m, err := conn.Write(decoded)
+		m, err := conn.Write(buffer)
 		if err != nil {
 			log.Println("TCP WRITE:", err)
 			break

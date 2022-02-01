@@ -101,8 +101,11 @@ func main() {
 	log.Println("Starting up websockify endpoint")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, r.URL.Path[1:])
+		if r.Header.Get("Upgrade") == "websocket" {
+			serveWs(w, r)
+		} else {
+			http.ServeFile(w, r, r.URL.Path[1:])
+		}
 	})
-	http.HandleFunc("/websockify", serveWs)
 	log.Fatal(http.ListenAndServe(*sourceAddr, nil))
 }

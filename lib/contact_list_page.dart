@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'add_contact_page.dart';
 import 'chat_page.dart';
 import 'contact.dart';
-import 'strings.dart';
 import 'ffi/proxy.dart';
+import 'strings.dart';
 import 'ffi/toxcore_generated_bindings.dart';
+import 'tox.dart';
 
 final ToxFfi toxLib = ToxFfi(loadToxcore());
 
@@ -31,20 +33,23 @@ class ContactListItem extends StatelessWidget {
 }
 
 class ContactListPage extends StatefulWidget {
-  const ContactListPage({Key? key, required this.title}) : super(key: key);
+  const ContactListPage({Key? key, required this.title, required this.tox})
+      : super(key: key);
 
   final String title;
+  final ToxWrapper tox;
 
   @override
   State<ContactListPage> createState() => _ContactListPageState();
 }
 
 class _ContactListPageState extends State<ContactListPage> {
-  int _contacts = 1;
+  final _contacts = <Contact>[];
 
-  void _addContact() {
+  void _onAddContact(String toxID) {
+    widget.tox.addContact(toxID);
     setState(() {
-      _contacts++;
+      _contacts.add(Contact(publicKey: toxID.substring(0, toxID.length - 12)));
     });
   }
 
@@ -58,10 +63,10 @@ class _ContactListPageState extends State<ContactListPage> {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: _contacts,
+              itemCount: _contacts.length,
               itemBuilder: (context, index) {
                 return ContactListItem(
-                  contact: Contact.fake(index),
+                  contact: _contacts[index],
                   onTap: (Contact contact) {
                     Navigator.push(
                       context,
@@ -79,7 +84,14 @@ class _ContactListPageState extends State<ContactListPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addContact,
+        onPressed: () =>
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    AddContactPage(onAddContact: _onAddContact),
+              ),
+            ),
         tooltip: Strings.addContact,
         child: const Icon(Icons.add),
       ),

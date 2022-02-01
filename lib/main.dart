@@ -17,8 +17,9 @@ void main() async {
   await initFfi();
 
   var tox = ToxWrapper.create(udpEnabled: false, localDiscoveryEnabled: false);
-  tox.bootstrap(nodeHost, 33445, nodePublicKey);
-  tox.addTcpRelay(nodeHost, 33445, nodePublicKey);
+  print(tox.selfAddress());
+  tox.bootstrap("127.0.0.1", 33445, nodePublicKey);
+  tox.addTcpRelay(nodeHost, nodePort, nodePublicKey);
   Timer.periodic(const Duration(milliseconds: 50), (Timer timer) {
     var before = tox.selfConnectionStatus;
     tox.iterate();

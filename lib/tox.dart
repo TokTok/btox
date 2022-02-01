@@ -39,6 +39,15 @@ class ToxWrapper {
     return ToxWrapper._fromFfi(tox);
   }
 
+  String selfAddress() {
+    var length = _toxFfi.tox_address_size();
+    var address = _toxLib.boundMemory.allocate<Uint8>(length);
+    _toxFfi.tox_self_get_address(_tox, address);
+    var str = HEX.encode(address.asTypedList(length));
+    _toxLib.boundMemory.free(address);
+    return str;
+  }
+
   void bootstrap(String host, int port, String publicKey) {
     var hostPtr = _toCString(host, _toxLib.boundMemory);
     var pkPtr = _toCBytes(publicKey, _toxLib.boundMemory);

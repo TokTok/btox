@@ -7,7 +7,7 @@ final _toxLib = loadToxcore();
 final _toxFfi = ToxFfi(_toxLib);
 
 Pointer<Int8> _toCString(String str, Allocator alloc) {
-  var bytes = ascii.encode(str);
+  var bytes = ascii.encode(str) + [0];
   var cstr = alloc.allocate<Int8>(bytes.length);
   cstr.asTypedList(bytes.length).setAll(0, bytes);
   return cstr;

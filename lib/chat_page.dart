@@ -4,9 +4,11 @@ import 'contact.dart';
 import 'strings.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({Key? key, required this.contact}) : super(key: key);
+  const ChatPage({Key? key, required this.contact, required this.onSendMessage})
+      : super(key: key);
 
   final Contact contact;
+  final Function(String, String) onSendMessage;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -18,8 +20,10 @@ class _ChatPageState extends State<ChatPage> {
   final _messageInputController = TextEditingController();
 
   void _onSendMessage() {
+    var message = _messageInputController.text;
+    widget.onSendMessage(widget.contact.publicKey, message);
     setState(() {
-      _messages.add(_messageInputController.text);
+      _messages.add(message);
     });
     _messageInputController.clear();
     _messageInputFocus.requestFocus();

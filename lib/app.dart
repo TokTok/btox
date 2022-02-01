@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'contact_list_page.dart';
 import 'strings.dart';
+import 'tox.dart';
 
 class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
+  const App({Key? key, required this.tox}) : super(key: key);
+
+  final ToxWrapper tox;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +16,7 @@ class App extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const ContactListPage(title: Strings.title),
+      home: ContactListPage(title: Strings.title, tox: tox),
     );
   }
 }

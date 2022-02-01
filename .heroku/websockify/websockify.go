@@ -5,9 +5,9 @@
 //
 // Changes include:
 // - Fix infinite loop on error.
-// - Use base64 encoding for all communications.
 // - Proper logging.
 // - Proper error handling in general.
+// - Support both websocket and regular GET requests on /.
 //
 // Copyright 2022 The TokTok team.
 // Copyright 2021 Michael.liu.
@@ -16,7 +16,6 @@
 package main
 
 import (
-	"encoding/base64"
 	"encoding/hex"
 	"flag"
 	"log"
@@ -35,6 +34,7 @@ var upgrader = websocket.Upgrader{
 	// Should be enough to fit any Tox TCP packets.
 	ReadBufferSize:  2048,
 	WriteBufferSize: 2048,
+	Subprotocols: []string{"binary"},
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
@@ -50,8 +50,9 @@ func forwardTcp(wsconn *websocket.Conn, conn net.Conn) {
 			log.Println("TCP READ :", err)
 			break
 		}
-		encoded := base64.StdEncoding.EncodeToString(tcpbuffer[0:n])
-		if err := wsconn.WriteMessage(websocket.BinaryMessage, []byte(encoded)); err != nil {
+		log.Println("TCP READ :", n, hex.EncodeToString(tcpbuffer[0:n]))
+
+		if err := wsconn.WriteMessage(websocket.BinaryMessage, tcpbuffer[0:n]); err != nil {
 			log.Println("WS WRITE :", err)
 			break
 		}
@@ -68,14 +69,9 @@ func forwardWeb(wsconn *websocket.Conn, conn net.Conn) {
 			log.Println("WS READ  :", err)
 			break
 		}
-		decoded, err := base64.StdEncoding.DecodeString(string(buffer))
-		if err != nil {
-			log.Println("WS READ  :", err)
-			break
-		}
-		log.Println("WS READ  :", len(decoded), hex.EncodeToString(decoded))
+		log.Println("WS READ  :", len(buffer), hex.EncodeToString(buffer))
 
-		m, err := conn.Write(decoded)
+		m, err := conn.Write(buffer)
 		if err != nil {
 			log.Println("TCP WRITE:", err)
 			break
@@ -105,8 +101,11 @@ func main() {
 	log.Println("Starting up websockify endpoint")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, r.URL.Path[1:])
+		if r.Header.Get("Upgrade") == "websocket" {
+			serveWs(w, r)
+		} else {
+			http.ServeFile(w, r, r.URL.Path[1:])
+		}
 	})
-	http.HandleFunc("/websockify", serveWs)
 	log.Fatal(http.ListenAndServe(*sourceAddr, nil))
 }

@@ -71,7 +71,10 @@ class _ContactListPageState extends State<ContactListPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ChatPage(contact: contact),
+                        builder: (context) => ChatPage(
+                          contact: contact,
+                          onSendMessage: widget.tox.sendMessage,
+                        ),
                       ),
                     );
                   },
@@ -84,14 +87,12 @@ class _ContactListPageState extends State<ContactListPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    AddContactPage(onAddContact: _onAddContact),
-              ),
-            ),
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddContactPage(onAddContact: _onAddContact),
+          ),
+        ),
         tooltip: Strings.addContact,
         child: const Icon(Icons.add),
       ),

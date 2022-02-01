@@ -68,4 +68,17 @@ class ToxWrapper {
     _toxLib.boundMemory.free(addressPtr);
     _toxLib.boundMemory.free(messagePtr);
   }
+
+  void sendMessage(String publicKey, String message) {
+    var publicKeyPtr = _toCBytes(publicKey, _toxLib.boundMemory);
+    var contactNumber =
+        _toxFfi.tox_friend_by_public_key(_tox, publicKeyPtr, nullptr);
+    _toxLib.boundMemory.free(publicKeyPtr);
+
+    var messagePtr = _toCString('bTox!', _toxLib.boundMemory);
+    // TODO(robinlinden): length is only correct for ascii.
+    _toxFfi.tox_friend_send_message(_tox, contactNumber, 0, messagePtr.cast(),
+        message.runes.length, nullptr);
+    _toxLib.boundMemory.free(messagePtr);
+  }
 }

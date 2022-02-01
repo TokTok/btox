@@ -5,9 +5,9 @@
 //
 // Changes include:
 // - Fix infinite loop on error.
-// - Use base64 encoding for all communications.
 // - Proper logging.
 // - Proper error handling in general.
+// - Support both websocket and regular GET requests on /.
 //
 // Copyright 2022 The TokTok team.
 // Copyright 2021 Michael.liu.

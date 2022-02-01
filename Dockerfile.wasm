@@ -42,12 +42,24 @@ RUN . "/work/emsdk/emsdk_env.sh" \
   --disable-ssp --disable-asm --disable-pie \
  && emmake make install -j8
 
+# Build an unused libsodium binding first so emcc caches all the system
+# libraries. This makes rebuilds of toxcore below much faster.
+RUN . "/work/emsdk/emsdk_env.sh" \
+ && mkdir -p /work/wasm \
+ && emcc -O3 \
+ -s EXPORT_NAME=libsodium \
+ -s MAIN_MODULE=1 \
+ -s MALLOC=emmalloc \
+ -s MODULARIZE=1 \
+ /usr/local/lib/libsodium.a \
+ -o /work/wasm/libsodium.js
+
 # Build c-toxcore.
 COPY . /work/c-toxcore
 RUN . "/work/emsdk/emsdk_env.sh" \
  && cd /work/c-toxcore \
  && emcmake cmake -B_build -H. -GNinja \
- -DCMAKE_C_FLAGS=-fPIC \
+ -DCMAKE_C_FLAGS="-O2 -fPIC" \
  -DBUILD_TOXAV=OFF \
  -DENABLE_SHARED=OFF \
  -DBOOTSTRAP_DAEMON=OFF \
@@ -61,10 +73,8 @@ RUN . "/work/emsdk/emsdk_env.sh" \
  && emcc -O3 \
  -s EXPORT_NAME=libtoxcore \
  -s MAIN_MODULE=1 \
- -s MODULARIZE=1 \
  -s MALLOC=emmalloc \
- -s SOCKET_DEBUG=0 \
- -s WEBSOCKET_DEBUG=2 \
+ -s MODULARIZE=1 \
  -s WEBSOCKET_URL=wss:// \
  /usr/local/lib/libsodium.a \
  /usr/local/lib/libtoxcore.a \

@@ -60,4 +60,12 @@ class ToxWrapper {
   }
 
   int get selfConnectionStatus => _toxFfi.tox_self_get_connection_status(_tox);
+
+  void addContact(String address) {
+    var messagePtr = _toCString('bTox!', _toxLib.boundMemory);
+    var addressPtr = _toCBytes(address, _toxLib.boundMemory);
+    _toxFfi.tox_friend_add(_tox, addressPtr, messagePtr.cast(), 5, nullptr);
+    _toxLib.boundMemory.free(addressPtr);
+    _toxLib.boundMemory.free(messagePtr);
+  }
 }

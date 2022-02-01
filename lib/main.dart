@@ -29,5 +29,5 @@ void main() async {
     }
   });
 
-  runApp(const App());
+  runApp(App(tox: tox));
 }

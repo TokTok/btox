@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -eux
+
+docker build -t registry.heroku.com/tox/web -f Dockerfile .
+docker create --name bootstrap-keys registry.heroku.com/tox/web
+docker cp bootstrap-keys:/var/lib/tox-bootstrapd/keys-new - | tar x -C .heroku
+docker rm bootstrap-keys
+
+mv .heroku/keys-new .heroku/keys

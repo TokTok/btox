@@ -1,4 +1,4 @@
-FROM toxchat/tox.js AS js
+FROM toxchat/toxcore-js AS js
 FROM toxchat/flutter-web AS build
 
 # Copy files to container and build
@@ -10,22 +10,13 @@ COPY pubspec.* /app/
 WORKDIR /app/
 RUN flutter build web
 
-FROM toxchat/bootstrap-node:latest AS tox
-FROM golang:1.16-alpine AS websockify
-
-COPY .heroku/websockify /work/websockify
-RUN cd /work/websockify && go mod download github.com/gorilla/websocket && go install
-
 # Stage 2 - Create the run-time image
-FROM alpine:latest
+FROM toxchat/bootstrap-node:latest-websocket
 
-COPY --from=websockify /go/bin/websockify /usr/local/bin/
-COPY --from=tox /usr/local /usr/local/
-COPY --from=tox /etc/tox-bootstrapd.conf /etc/
+RUN /usr/local/bin/tox-bootstrapd --config /etc/tox-bootstrapd.conf --log-backend stdout \
+ && sleep 1 \
+ && cp /var/lib/tox-bootstrapd/keys /var/lib/tox-bootstrapd/keys-new
+
 COPY --from=build /app/build/web /web/
 COPY --from=js /work/wasm /web/asset/
 COPY .heroku/keys /var/lib/tox-bootstrapd/
-COPY .heroku/entrypoint.sh /
-
-WORKDIR /web
-CMD ["/entrypoint.sh"]

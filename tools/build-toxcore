@@ -2,8 +2,9 @@
 
 set -eux
 
-docker build -t toxchat/tox.js -f Dockerfile.wasm ../c-toxcore
-docker create --name tox.js toxchat/tox.js
-docker cp tox.js:/work/wasm/libtoxcore.js - | tar x -C asset
-docker cp tox.js:/work/wasm/libtoxcore.wasm - | tar x -C asset
-docker rm tox.js
+mkdir -p asset
+docker build -t toxchat/toxcore-js -f ../c-toxcore/other/emscripten/Dockerfile ../c-toxcore
+docker create --name toxcore-js toxchat/toxcore-js
+docker cp toxcore-js:/work/wasm/libtoxcore.js - | tar x -C asset
+docker cp toxcore-js:/work/wasm/libtoxcore.wasm - | tar x -C asset
+docker rm toxcore-js

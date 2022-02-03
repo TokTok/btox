@@ -13,4 +13,6 @@ class Strings {
   static const String toxId = 'Tox ID';
   static const String defaultAddContactMessage = 'bTox!';
   static const String add = 'Add';
+  static const String toxIdLengthError = 'The Tox ID must be 76 characters';
+  static const String messageEmptyError = "The message can't be empty";
 }

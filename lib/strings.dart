@@ -4,10 +4,13 @@ class Strings {
   // Shared.
   static const String defaultContactName = 'Unknown';
   static const String title = 'bTox (working title)';
-
-  // Contact list page.
   static const String addContact = 'Add contact';
 
   // Chat page.
   static const String message = 'Message';
+
+  // Add contact page.
+  static const String toxId = 'Tox ID';
+  static const String defaultAddContactMessage = 'bTox!';
+  static const String add = 'Add';
 }

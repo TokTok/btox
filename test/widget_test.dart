@@ -4,20 +4,25 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:btox/app.dart';
 
 void main() {
-  testWidgets('Add contact adds a contact smoke test',
-      (WidgetTester tester) async {
+  final String allZeroToxId =
+      String.fromCharCodes(Iterable.generate(76, (_) => '0'.codeUnits.first));
+  testWidgets('Add contact adds a contact', (WidgetTester tester) async {
     await tester.pumpWidget(const App());
 
-    // Verify that we start with 1 dummy contact.
-    expect(find.text('Contact 0'), findsOneWidget);
-    expect(find.text('Contact 1'), findsNothing);
+    // Check that no contact with all 0s for the public key exists.
+    expect(find.textContaining('00000000'), findsNothing);
 
-    // Tap the '+' icon and trigger a frame.
+    // Navigate to the 'add contact' screen.
     await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    // Verify that another contact appeared.
-    expect(find.text('Contact 1'), findsOneWidget);
-    expect(find.text('Contact 2'), findsNothing);
+    // Fill in the contact data.
+    await tester.enterText(find.byKey(const Key('toxId')), allZeroToxId);
+    await tester.pump();
+    await tester.tap(find.text('Add'));
+    await tester.pumpAndSettle();
+
+    // Verify that the contact appeared.
+    expect(find.textContaining('00000000'), findsOneWidget);
   });
 }

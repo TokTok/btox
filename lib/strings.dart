@@ -15,4 +15,9 @@ class Strings {
   static const String add = 'Add';
   static const String toxIdLengthError = 'The Tox ID must be 76 characters';
   static const String messageEmptyError = "The message can't be empty";
+
+  // Drawer menu.
+  static const String menuProfile = 'Profile';
+  static const String menuQuit = 'Quit';
+  static const String menuSettings = 'Settings';
 }

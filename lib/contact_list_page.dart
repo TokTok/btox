@@ -1,8 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'add_contact_page.dart';
 import 'chat_page.dart';
 import 'contact.dart';
+import 'profile.dart';
+import 'settings.dart';
 import 'strings.dart';
 
 class ContactListItem extends StatelessWidget {
@@ -47,8 +51,8 @@ class _ContactListPageState extends State<ContactListPage> {
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
-          children: const [
-            DrawerHeader(
+          children: <Widget>[
+            const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
@@ -72,17 +76,41 @@ class _ContactListPageState extends State<ContactListPage> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Profile'),
+              leading: const Icon(Icons.person),
+              title: const Text(Strings.menuProfile),
+              onTap: () {
+                Navigator.pop(context); // close drawer before navigating away
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const UserProfilePage(),
+                  ),
+                );
+              },
             ),
             ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
+              leading: const Icon(Icons.settings),
+              title: const Text(Strings.menuSettings),
+              onTap: () {
+                Navigator.pop(context); // close drawer before navigating away
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SettingsPage(),
+                  ),
+                );
+              },
             ),
-            ListTile(
-              leading: Icon(Icons.close),
-              title: Text('Quit'),
-            ),
+            defaultTargetPlatform == TargetPlatform.android
+                ? ListTile(
+                    leading: const Icon(Icons.close),
+                    title: const Text(Strings.menuQuit),
+                    onTap: () {
+                      SystemChannels.platform
+                          .invokeMethod('SystemNavigator.pop');
+                    },
+                  )
+                : const SizedBox.shrink(),
           ],
         ),
       ),

@@ -46,6 +46,7 @@ class _AddContactPageState extends State<AddContactPage> {
                   if (value.length != 76) {
                     return Strings.toxIdLengthError + ' (${value.length}/76)';
                   }
+                  return null;
                 },
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
@@ -64,6 +65,7 @@ class _AddContactPageState extends State<AddContactPage> {
                   if (value == null || value.isEmpty) {
                     return Strings.messageEmptyError;
                   }
+                  return null;
                 },
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),

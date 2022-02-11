@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -eux
+
+./tools/prepare
+
+# Database wasm/js.
+SQLJS_VERSION=1.6.2
+curl -L "https://github.com/sql-js/sql.js/releases/download/v$SQLJS_VERSION/sqljs-wasm.zip" >sqljs-tmp.zip
+unzip sqljs-tmp.zip -d web/
+rm sqljs-tmp.zip

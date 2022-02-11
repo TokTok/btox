@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'contact_list_page.dart';
 import 'strings.dart';
+import 'db/database.dart';
 
 class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
+  const App({Key? key, required this.database}) : super(key: key);
+
+  final Database database;
 
   @override
   Widget build(BuildContext context) {

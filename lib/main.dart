@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'app.dart';
+import 'db/database.dart';
+import 'db/shared.dart';
 
 void main() {
-  runApp(const App());
+  final Database db = constructDb();
+  runApp(App(database: db));
 }

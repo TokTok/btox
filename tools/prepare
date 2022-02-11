@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -eux
+
+# Make sure we have all packages downloaded.
+flutter pub get
+
+# Generate the database (drift) code.
+flutter packages pub run build_runner build --delete-conflicting-outputs

@@ -28,4 +28,6 @@ class Strings {
       'Status message may not exceed 256 characters';
   static const String profileTextFieldNick = 'Nickname';
   static const String profileTextFieldUserStatusMessage = 'Status message';
+  static const String applyChanges = 'Apply changes';
+  static const String applied = 'Applied';
 }

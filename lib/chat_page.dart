@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'contact.dart';
+import 'db/database.dart';
 import 'strings.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({Key? key, required this.contact}) : super(key: key);
 
-  final Contact contact;
+  final Stream<Contact> contact;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -27,46 +27,46 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.contact.name.isNotEmpty
-            ? widget.contact.name
-            : Strings.defaultContactName),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              reverse: true,
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final reversedIndex = _messages.length - index - 1;
-                return ListTile(
-                  title: Text('$reversedIndex'),
-                  subtitle: Text(_messages[reversedIndex]),
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
-              decoration: InputDecoration(
-                border: const UnderlineInputBorder(),
-                labelText: Strings.message.toLowerCase(),
-                suffixIcon: IconButton(
-                  onPressed: () => _onSendMessage(),
-                  icon: const Icon(Icons.send),
-                ),
+    return StreamBuilder<Contact>(
+      builder: (context, snapshot) => Scaffold(
+        appBar: AppBar(
+          title: Text(snapshot.data?.name ?? Strings.defaultContactName),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                reverse: true,
+                itemCount: _messages.length,
+                itemBuilder: (context, index) {
+                  final reversedIndex = _messages.length - index - 1;
+                  return ListTile(
+                    title: Text('$reversedIndex'),
+                    subtitle: Text(_messages[reversedIndex]),
+                  );
+                },
               ),
-              onEditingComplete: () => _onSendMessage(),
-              controller: _messageInputController,
-              focusNode: _messageInputFocus,
-              textInputAction: TextInputAction.send,
-              autofocus: true,
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: const UnderlineInputBorder(),
+                  labelText: Strings.message.toLowerCase(),
+                  suffixIcon: IconButton(
+                    onPressed: () => _onSendMessage(),
+                    icon: const Icon(Icons.send),
+                  ),
+                ),
+                onEditingComplete: () => _onSendMessage(),
+                controller: _messageInputController,
+                focusNode: _messageInputFocus,
+                textInputAction: TextInputAction.send,
+                autofocus: true,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

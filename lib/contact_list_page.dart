@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 
 import 'add_contact_page.dart';
 import 'chat_page.dart';
-import 'contact.dart';
+import 'db/database.dart';
 import 'profile.dart';
 import 'settings.dart';
 import 'strings.dart';
@@ -19,8 +19,7 @@ class ContactListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(
-          contact.name.isNotEmpty ? contact.name : Strings.defaultContactName),
+      title: Text(contact.name ?? Strings.defaultContactName),
       subtitle: Text(contact.publicKey, overflow: TextOverflow.ellipsis),
       onTap: () => onTap(contact),
     );
@@ -28,21 +27,23 @@ class ContactListItem extends StatelessWidget {
 }
 
 class ContactListPage extends StatefulWidget {
-  const ContactListPage({Key? key, required this.title}) : super(key: key);
+  const ContactListPage({Key? key, required this.title, required this.database})
+      : super(key: key);
 
   final String title;
+  final Database database;
 
   @override
   State<ContactListPage> createState() => _ContactListPageState();
 }
 
 class _ContactListPageState extends State<ContactListPage> {
-  final _contacts = <Contact>[];
-
   void _onAddContact(String toxID, String message) {
-    setState(() {
-      _contacts.add(Contact(publicKey: toxID.substring(0, toxID.length - 12)));
-    });
+    widget.database.addContact(
+      ContactsCompanion.insert(
+        publicKey: toxID.substring(0, toxID.length - 12),
+      ),
+    );
   }
 
   @override
@@ -128,21 +129,31 @@ class _ContactListPageState extends State<ContactListPage> {
         ),
         title: Text(widget.title),
       ),
-      body: ListView.builder(
-        itemCount: _contacts.length,
-        itemBuilder: (context, index) {
-          return ContactListItem(
-            contact: _contacts[index],
-            onTap: (Contact contact) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ChatPage(contact: contact),
-                ),
+      body: StreamBuilder<List<Contact>>(
+        stream: widget.database.watchContacts(),
+        builder: ((context, snapshot) {
+          final contacts = snapshot.data ?? [];
+
+          return ListView.builder(
+            itemCount: contacts.length,
+            itemBuilder: (context, index) {
+              return ContactListItem(
+                contact: contacts[index],
+                onTap: (Contact contact) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatPage(
+                        contact:
+                            widget.database.watchContact(contact.publicKey),
+                      ),
+                    ),
+                  );
+                },
               );
             },
           );
-        },
+        }),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.push(

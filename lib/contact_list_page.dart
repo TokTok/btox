@@ -61,29 +61,31 @@ class _ContactListPageState extends State<ContactListPage> {
               ),
               child: ListTile(
                 title: ValueListenableBuilder(
-                    valueListenable: widget.appState.nickName,
-                    builder: (context, String nickName, _) {
-                      return Text(
-                        nickName,
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      );
-                    }),
+                  valueListenable: widget.appState.nickName,
+                  builder: (context, String nickName, _) {
+                    return Text(
+                      nickName,
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    );
+                  },
+                ),
                 subtitle: ValueListenableBuilder(
-                    valueListenable: widget.appState.userStatus,
-                    builder: (context, String userStatus, _) {
-                      return Text(
-                        userStatus,
-                        style: const TextStyle(
-                          fontSize: 12.0,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w100,
-                        ),
-                      );
-                    }),
+                  valueListenable: widget.appState.userStatus,
+                  builder: (context, String userStatus, _) {
+                    return Text(
+                      userStatus,
+                      style: const TextStyle(
+                        fontSize: 12.0,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w100,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
             ListTile(

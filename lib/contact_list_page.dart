@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'add_contact_page.dart';
+import 'appstate.dart';
 import 'chat_page.dart';
 import 'contact.dart';
 import 'profile.dart';
@@ -27,10 +28,12 @@ class ContactListItem extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class ContactListPage extends StatefulWidget {
-  const ContactListPage({Key? key, required this.title}) : super(key: key);
+  ContactListPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
+  final appState = AppState();
 
   @override
   State<ContactListPage> createState() => _ContactListPageState();
@@ -52,27 +55,35 @@ class _ContactListPageState extends State<ContactListPage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(
+            DrawerHeader(
+              decoration: const BoxDecoration(
                 color: Colors.blue,
               ),
               child: ListTile(
-                title: Text(
-                  'YanciMan',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                subtitle: Text(
-                  'Producing works of art in Kannywood',
-                  style: TextStyle(
-                    fontSize: 12.0,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w100,
-                  ),
-                ),
+                title: ValueListenableBuilder(
+                    valueListenable: widget.appState.nickNameValNotifier,
+                    builder: (context, nickName, _) {
+                      return Text(
+                        widget.appState.nickName,
+                        style: const TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      );
+                    }),
+                subtitle: ValueListenableBuilder(
+                    valueListenable: widget.appState.userStatusValNotifier,
+                    builder: (context, userStatus, _) {
+                      return Text(
+                        widget.appState.userStatus,
+                        style: const TextStyle(
+                          fontSize: 12.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w100,
+                        ),
+                      );
+                    }),
               ),
             ),
             ListTile(
@@ -83,7 +94,8 @@ class _ContactListPageState extends State<ContactListPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const UserProfilePage(),
+                    builder: (context) =>
+                        UserProfilePage(appState: widget.appState),
                   ),
                 );
               },

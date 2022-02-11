@@ -1,23 +1,149 @@
 import 'package:flutter/material.dart';
 
-class UserProfilePage extends StatefulWidget {
-  final String title = 'Profile';
+import 'appstate.dart';
+import 'strings.dart';
 
-  const UserProfilePage({Key? key}) : super(key: key);
+class UserProfilePage extends StatefulWidget {
+  final AppState appState;
+
+  const UserProfilePage({Key? key, required this.appState}) : super(key: key);
 
   @override
   State<UserProfilePage> createState() => _UserProfilePageState();
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
+  final _formKey = GlobalKey<FormState>();
+  final _statusMessageInputController = TextEditingController();
+  final _nickInputController = TextEditingController();
+  bool _applyButtonPressed = false;
+
+  @override
+  initState() {
+    super.initState();
+    _nickInputController.text = widget.appState.nickName;
+    _statusMessageInputController.text = widget.appState.userStatus;
+  }
+
+  void _onUpdateNick() {
+    if (_formKey.currentState!.validate()) {
+      widget.appState.nickName = _nickInputController.text;
+    }
+  }
+
+  void _onUpdateStatusMessage() {
+    if (_formKey.currentState!.validate()) {
+      widget.appState.userStatus = _statusMessageInputController.text;
+    }
+  }
+
+  bool _nickIsValid(String nick) {
+    return _nickInputController.text.isNotEmpty &&
+        _nickInputController.text.length <= 32;
+  }
+
+  bool _statusMessageIsValid(String nick) {
+    return _statusMessageInputController.text.length <= 256;
+  }
+
+  _onValidate() {
+    if (!_nickIsValid(_nickInputController.text) ||
+        !_statusMessageIsValid(_statusMessageInputController.text)) {
+      return;
+    }
+
+    if (widget.appState.nickName != _nickInputController.text ||
+        widget.appState.userStatus != _statusMessageInputController.text) {
+      _setApplyButtonPressed(true);
+      _onUpdateNick();
+      _onUpdateStatusMessage();
+    }
+  }
+
+  void _setApplyButtonPressed(bool pressed) {
+    setState(() {
+      _applyButtonPressed = pressed;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: const Text(Strings.menuProfile),
       ),
-      body: const Center(
-        child: Text('Username'),
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(8),
+            ),
+            const Text(
+              Strings.profileTextFieldNick,
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) {
+                    value ??= '';
+                    if (!_nickIsValid(value)) {
+                      return Strings.nickLengthError;
+                    }
+
+                    return null;
+                  },
+                  controller: _nickInputController,
+                  textInputAction: TextInputAction.next,
+                  onChanged: (value) {
+                    _setApplyButtonPressed(false);
+                  }),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(8),
+            ),
+            const Text(
+              Strings.profileTextFieldUserStatusMessage,
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) {
+                    value ??= '';
+                    if (!_statusMessageIsValid(value)) {
+                      return Strings.statusMessageLengthError;
+                    }
+
+                    return null;
+                  },
+                  controller: _statusMessageInputController,
+                  textInputAction: TextInputAction.next,
+                  onChanged: (value) {
+                    _setApplyButtonPressed(false);
+                  }),
+            ),
+            ElevatedButton(
+              child: _applyButtonPressed
+                  ? const Text('Applied')
+                  : const Text('Apply changes'),
+              style: ElevatedButton.styleFrom(
+                primary: _applyButtonPressed ? Colors.green : Colors.blue,
+                onPrimary: Colors.white,
+              ),
+              onPressed: () => _onValidate(),
+            ),
+          ],
+        ),
       ),
     );
   }

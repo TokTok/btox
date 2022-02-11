@@ -61,7 +61,7 @@ jobs:
         channel: 'stable'
         flutter-version: ${{ env.FLUTTER_VERSION }}
         cache: true
-    - run: sudo apt-get install -y --no-install-recommends ninja-build libgtk-3-dev
+    - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ninja-build libgtk-3-dev
     - run: flutter config --enable-linux-desktop && flutter build linux
 
   ios-build:

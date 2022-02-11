@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'appstate.dart';
+import 'app_state.dart';
 import 'strings.dart';
 
 class UserProfilePage extends StatefulWidget {
@@ -21,8 +21,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
   @override
   initState() {
     super.initState();
-    _nickInputController.text = widget.appState.nickName.value;
-    _statusMessageInputController.text = widget.appState.userStatus.value;
+    _nickInputController.text = widget.appState.nickname.value;
+    _statusMessageInputController.text = widget.appState.statusMessage.value;
   }
 
   _onValidate() {
@@ -30,12 +30,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
       return;
     }
 
-    if (widget.appState.nickName.value != _nickInputController.text ||
-        widget.appState.userStatus.value !=
+    if (widget.appState.nickname.value != _nickInputController.text ||
+        widget.appState.statusMessage.value !=
             _statusMessageInputController.text) {
       _setApplyButtonPressed(true);
-      widget.appState.nickName.value = _nickInputController.text;
-      widget.appState.userStatus.value = _statusMessageInputController.text;
+      widget.appState.nickname.value = _nickInputController.text;
+      widget.appState.statusMessage.value = _statusMessageInputController.text;
     }
   }
 

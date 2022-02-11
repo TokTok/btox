@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'add_contact_page.dart';
-import 'appstate.dart';
+import 'app_state.dart';
 import 'chat_page.dart';
 import 'contact.dart';
 import 'profile.dart';
@@ -60,10 +60,10 @@ class _ContactListPageState extends State<ContactListPage> {
               ),
               child: ListTile(
                 title: ValueListenableBuilder(
-                  valueListenable: widget.appState.nickName,
-                  builder: (context, String nickName, _) {
+                  valueListenable: widget.appState.nickname,
+                  builder: (context, String nickname, _) {
                     return Text(
-                      nickName,
+                      nickname,
                       style: const TextStyle(
                         fontSize: 16.0,
                         color: Colors.white,
@@ -73,10 +73,10 @@ class _ContactListPageState extends State<ContactListPage> {
                   },
                 ),
                 subtitle: ValueListenableBuilder(
-                  valueListenable: widget.appState.userStatus,
-                  builder: (context, String userStatus, _) {
+                  valueListenable: widget.appState.statusMessage,
+                  builder: (context, String statusMessage, _) {
                     return Text(
-                      userStatus,
+                      statusMessage,
                       style: const TextStyle(
                         fontSize: 12.0,
                         color: Colors.white,

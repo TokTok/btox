@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppState {
-  final nickName = ValueNotifier<String>('Yanciman');
-  final userStatus =
+  final nickname = ValueNotifier<String>('Yanciman');
+  final statusMessage =
       ValueNotifier<String>('Producing works of art in Kannywood');
 }

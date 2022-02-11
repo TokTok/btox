@@ -21,8 +21,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
   @override
   initState() {
     super.initState();
-    _nickInputController.text = widget.appState.nickName;
-    _statusMessageInputController.text = widget.appState.userStatus;
+    _nickInputController.text = widget.appState.nickName.value;
+    _statusMessageInputController.text = widget.appState.userStatus.value;
   }
 
   _onValidate() {
@@ -30,11 +30,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
       return;
     }
 
-    if (widget.appState.nickName != _nickInputController.text ||
-        widget.appState.userStatus != _statusMessageInputController.text) {
+    if (widget.appState.nickName.value != _nickInputController.text ||
+        widget.appState.userStatus.value !=
+            _statusMessageInputController.text) {
       _setApplyButtonPressed(true);
-      widget.appState.nickName = _nickInputController.text;
-      widget.appState.userStatus = _statusMessageInputController.text;
+      widget.appState.nickName.value = _nickInputController.text;
+      widget.appState.userStatus.value = _statusMessageInputController.text;
     }
   }
 

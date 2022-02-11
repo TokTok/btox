@@ -61,10 +61,10 @@ class _ContactListPageState extends State<ContactListPage> {
               ),
               child: ListTile(
                 title: ValueListenableBuilder(
-                    valueListenable: widget.appState.nickNameValNotifier,
-                    builder: (context, nickName, _) {
+                    valueListenable: widget.appState.nickName,
+                    builder: (context, String nickName, _) {
                       return Text(
-                        widget.appState.nickName,
+                        nickName,
                         style: const TextStyle(
                           fontSize: 16.0,
                           color: Colors.white,
@@ -73,10 +73,10 @@ class _ContactListPageState extends State<ContactListPage> {
                       );
                     }),
                 subtitle: ValueListenableBuilder(
-                    valueListenable: widget.appState.userStatusValNotifier,
-                    builder: (context, userStatus, _) {
+                    valueListenable: widget.appState.userStatus,
+                    builder: (context, String userStatus, _) {
                       return Text(
-                        widget.appState.userStatus,
+                        userStatus,
                         style: const TextStyle(
                           fontSize: 12.0,
                           color: Colors.white,

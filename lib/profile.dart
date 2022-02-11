@@ -25,38 +25,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
     _statusMessageInputController.text = widget.appState.userStatus;
   }
 
-  void _onUpdateNick() {
-    if (_formKey.currentState!.validate()) {
-      widget.appState.nickName = _nickInputController.text;
-    }
-  }
-
-  void _onUpdateStatusMessage() {
-    if (_formKey.currentState!.validate()) {
-      widget.appState.userStatus = _statusMessageInputController.text;
-    }
-  }
-
-  bool _nickIsValid(String nick) {
-    return _nickInputController.text.isNotEmpty &&
-        _nickInputController.text.length <= 32;
-  }
-
-  bool _statusMessageIsValid(String nick) {
-    return _statusMessageInputController.text.length <= 256;
-  }
-
   _onValidate() {
-    if (!_nickIsValid(_nickInputController.text) ||
-        !_statusMessageIsValid(_statusMessageInputController.text)) {
+    if (!_formKey.currentState!.validate()) {
       return;
     }
 
     if (widget.appState.nickName != _nickInputController.text ||
         widget.appState.userStatus != _statusMessageInputController.text) {
       _setApplyButtonPressed(true);
-      _onUpdateNick();
-      _onUpdateStatusMessage();
+      widget.appState.nickName = _nickInputController.text;
+      widget.appState.userStatus = _statusMessageInputController.text;
     }
   }
 
@@ -92,7 +70,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) {
                     value ??= '';
-                    if (!_nickIsValid(value)) {
+                    if (value.isEmpty || value.length > 32) {
                       return Strings.nickLengthError;
                     }
 
@@ -120,7 +98,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) {
                     value ??= '';
-                    if (!_statusMessageIsValid(value)) {
+                    if (value.length > 256) {
                       return Strings.statusMessageLengthError;
                     }
 

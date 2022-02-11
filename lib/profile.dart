@@ -67,20 +67,21 @@ class _UserProfilePageState extends State<UserProfilePage> {
             Padding(
               padding: const EdgeInsets.all(8),
               child: TextFormField(
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (value) {
-                    value ??= '';
-                    if (value.isEmpty || value.length > 32) {
-                      return Strings.nickLengthError;
-                    }
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (value) {
+                  value ??= '';
+                  if (value.isEmpty || value.length > 32) {
+                    return Strings.nickLengthError;
+                  }
 
-                    return null;
-                  },
-                  controller: _nickInputController,
-                  textInputAction: TextInputAction.next,
-                  onChanged: (value) {
-                    _setApplyButtonPressed(false);
-                  }),
+                  return null;
+                },
+                controller: _nickInputController,
+                textInputAction: TextInputAction.next,
+                onChanged: (value) {
+                  _setApplyButtonPressed(false);
+                },
+              ),
             ),
             const Padding(
               padding: EdgeInsets.all(8),
@@ -95,20 +96,21 @@ class _UserProfilePageState extends State<UserProfilePage> {
             Padding(
               padding: const EdgeInsets.all(8),
               child: TextFormField(
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (value) {
-                    value ??= '';
-                    if (value.length > 256) {
-                      return Strings.statusMessageLengthError;
-                    }
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (value) {
+                  value ??= '';
+                  if (value.length > 256) {
+                    return Strings.statusMessageLengthError;
+                  }
 
-                    return null;
-                  },
-                  controller: _statusMessageInputController,
-                  textInputAction: TextInputAction.next,
-                  onChanged: (value) {
-                    _setApplyButtonPressed(false);
-                  }),
+                  return null;
+                },
+                controller: _statusMessageInputController,
+                textInputAction: TextInputAction.next,
+                onChanged: (value) {
+                  _setApplyButtonPressed(false);
+                },
+              ),
             ),
             ElevatedButton(
               child: _applyButtonPressed

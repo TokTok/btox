@@ -28,7 +28,6 @@ class ContactListItem extends StatelessWidget {
   }
 }
 
-// ignore: must_be_immutable
 class ContactListPage extends StatefulWidget {
   ContactListPage({Key? key, required this.title}) : super(key: key);
 

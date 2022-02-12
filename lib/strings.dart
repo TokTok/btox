@@ -20,4 +20,14 @@ class Strings {
   static const String menuProfile = 'Profile';
   static const String menuQuit = 'Quit';
   static const String menuSettings = 'Settings';
+
+  // Profile page.
+  static const String nickLengthError =
+      'Nickname must be between 1 and 32 characters';
+  static const String statusMessageLengthError =
+      'Status message may not exceed 256 characters';
+  static const String profileTextFieldNick = 'Nickname';
+  static const String profileTextFieldUserStatusMessage = 'Status message';
+  static const String applyChanges = 'Apply changes';
+  static const String applied = 'Applied';
 }

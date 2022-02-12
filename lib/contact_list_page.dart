@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'add_contact_page.dart';
+import 'app_state.dart';
 import 'chat_page.dart';
 import 'db/database.dart';
 import 'profile.dart';
@@ -27,11 +28,12 @@ class ContactListItem extends StatelessWidget {
 }
 
 class ContactListPage extends StatefulWidget {
-  const ContactListPage({Key? key, required this.title, required this.database})
+  ContactListPage({Key? key, required this.title, required this.database})
       : super(key: key);
 
   final String title;
   final Database database;
+  final appState = AppState();
 
   @override
   State<ContactListPage> createState() => _ContactListPageState();
@@ -53,26 +55,36 @@ class _ContactListPageState extends State<ContactListPage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(
+            DrawerHeader(
+              decoration: const BoxDecoration(
                 color: Colors.blue,
               ),
               child: ListTile(
-                title: Text(
-                  'YanciMan',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w400,
-                  ),
+                title: ValueListenableBuilder(
+                  valueListenable: widget.appState.nickname,
+                  builder: (context, String nickname, _) {
+                    return Text(
+                      nickname,
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    );
+                  },
                 ),
-                subtitle: Text(
-                  'Producing works of art in Kannywood',
-                  style: TextStyle(
-                    fontSize: 12.0,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w100,
-                  ),
+                subtitle: ValueListenableBuilder(
+                  valueListenable: widget.appState.statusMessage,
+                  builder: (context, String statusMessage, _) {
+                    return Text(
+                      statusMessage,
+                      style: const TextStyle(
+                        fontSize: 12.0,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w100,
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -84,7 +96,8 @@ class _ContactListPageState extends State<ContactListPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const UserProfilePage(),
+                    builder: (context) =>
+                        UserProfilePage(appState: widget.appState),
                   ),
                 );
               },

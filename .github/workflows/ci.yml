@@ -108,9 +108,7 @@ jobs:
     - run: flutter build web
 
   windows-build:
-    # Flutter stable does not yet support VS 2022, so we use the windows-2019
-    # which comes with VS2019 pre-installed instead.
-    runs-on: windows-2019
+    runs-on: windows-2022
     defaults:
       run:
         shell: bash

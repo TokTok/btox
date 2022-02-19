@@ -157,8 +157,15 @@ class _ContactListPageState extends State<ContactListPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ChatPage(
-                        contact:
-                            widget.database.watchContact(contact.publicKey),
+                        contact: widget.database.watchContact(contact.id),
+                        messages: widget.database.watchMessagesFor(contact.id),
+                        onSendMessage: (String message) {
+                          widget.database.addMessage(MessagesCompanion.insert(
+                            contactId: contact.id,
+                            content: message,
+                            timestamp: DateTime.now().toUtc(),
+                          ));
+                        },
                       ),
                     ),
                   );

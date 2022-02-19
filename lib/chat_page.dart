@@ -3,37 +3,28 @@ import 'package:flutter/material.dart';
 import 'db/database.dart';
 import 'strings.dart';
 
-class _Message {
-  final String content;
-  final DateTime timestamp;
-
-  _Message({
-    required this.content,
-    required this.timestamp,
-  });
-}
-
 class ChatPage extends StatefulWidget {
-  const ChatPage({Key? key, required this.contact}) : super(key: key);
+  const ChatPage({
+    Key? key,
+    required this.contact,
+    required this.messages,
+    required this.onSendMessage,
+  }) : super(key: key);
 
   final Stream<Contact> contact;
+  final Stream<List<Message>> messages;
+  final void Function(String message) onSendMessage;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final _messages = <_Message>[];
   final _messageInputFocus = FocusNode();
   final _messageInputController = TextEditingController();
 
   void _onSendMessage() {
-    setState(() {
-      _messages.add(_Message(
-        content: _messageInputController.text,
-        timestamp: DateTime.now().toUtc(),
-      ));
-    });
+    widget.onSendMessage(_messageInputController.text);
     _messageInputController.clear();
     _messageInputFocus.requestFocus();
   }
@@ -48,17 +39,23 @@ class _ChatPageState extends State<ChatPage> {
         body: Column(
           children: [
             Expanded(
-              child: ListView.builder(
-                reverse: true,
-                itemCount: _messages.length,
-                itemBuilder: (context, index) {
-                  final reversedIndex = _messages.length - index - 1;
-                  final message = _messages[reversedIndex];
-                  return ListTile(
-                    title: Text(message.content),
-                    subtitle: Text(message.timestamp.toLocal().toString()),
+              child: StreamBuilder<List<Message>>(
+                stream: widget.messages,
+                builder: ((context, snapshot) {
+                  final messages = snapshot.data ?? <Message>[];
+                  return ListView.builder(
+                    reverse: true,
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      final reversedIndex = messages.length - index - 1;
+                      final message = messages[reversedIndex];
+                      return ListTile(
+                        title: Text(message.content),
+                        subtitle: Text(message.timestamp.toLocal().toString()),
+                      );
+                    },
                   );
-                },
+                }),
               ),
             ),
             Padding(

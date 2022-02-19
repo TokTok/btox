@@ -14,6 +14,10 @@ class Database extends _$Database {
   @override
   int get schemaVersion => 1;
 
+  // TODO(robinlinden): Remove before first real release.
+  @override
+  MigrationStrategy get migration => destructiveFallback;
+
   void addContact(ContactsCompanion entry) => into(contacts).insert(entry);
 
   Stream<List<Contact>> watchContacts() => select(contacts).watch();

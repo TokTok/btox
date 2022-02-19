@@ -3,6 +3,16 @@ import 'package:flutter/material.dart';
 import 'db/database.dart';
 import 'strings.dart';
 
+class _Message {
+  final String content;
+  final DateTime timestamp;
+
+  _Message({
+    required this.content,
+    required this.timestamp,
+  });
+}
+
 class ChatPage extends StatefulWidget {
   const ChatPage({Key? key, required this.contact}) : super(key: key);
 
@@ -13,13 +23,16 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final _messages = <String>[];
+  final _messages = <_Message>[];
   final _messageInputFocus = FocusNode();
   final _messageInputController = TextEditingController();
 
   void _onSendMessage() {
     setState(() {
-      _messages.add(_messageInputController.text);
+      _messages.add(_Message(
+        content: _messageInputController.text,
+        timestamp: DateTime.now().toUtc(),
+      ));
     });
     _messageInputController.clear();
     _messageInputFocus.requestFocus();
@@ -40,9 +53,10 @@ class _ChatPageState extends State<ChatPage> {
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
                   final reversedIndex = _messages.length - index - 1;
+                  final message = _messages[reversedIndex];
                   return ListTile(
-                    title: Text('$reversedIndex'),
-                    subtitle: Text(_messages[reversedIndex]),
+                    title: Text(message.content),
+                    subtitle: Text(message.timestamp.toLocal().toString()),
                   );
                 },
               ),

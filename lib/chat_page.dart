@@ -32,6 +32,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<Contact>(
+      stream: widget.contact,
       builder: (context, snapshot) => Scaffold(
         appBar: AppBar(
           title: Text(snapshot.data?.name ?? Strings.defaultContactName),

@@ -41,7 +41,8 @@ jobs:
         flutter-version: ${{ env.FLUTTER_VERSION }}
         cache: true
     - run: ./tools/prepare
-    - run: flutter test
+    - run: flutter test --coverage
+    - run: bash <(curl -s https://codecov.io/bash)
 
   android-build:
     runs-on: ubuntu-20.04

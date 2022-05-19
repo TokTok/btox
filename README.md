@@ -1,16 +1,21 @@
-# btox
+# bTox
 
-A new Flutter project.
+A work-in-progress cross-platform Tox client.
 
-## Getting Started
+## Setting up Flutter
 
-This project is a starting point for a Flutter application.
+Follow the instructions on https://docs.flutter.dev/get-started/
 
-A few resources to get you started if this is your first Flutter project:
+## Building
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Run the `tools/prepare-web` setup script to generate the database bindings that need to be generated
+and download the 3rd-party libraries used in the web build.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```sh
+./tools/prepare-web # or ./tools/prepare if you don't want to download the web-build 3rd-party libraries.
+```
+
+After the above is done, just build as you normally would for whatever platform you want to target.
+
+If you run into issues, consulting [our CI](.github/workflows/ci.yml) might be helpful as it
+contains working build instructions for all platforms.

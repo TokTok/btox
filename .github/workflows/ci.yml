@@ -11,7 +11,7 @@ jobs:
   format:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
@@ -22,7 +22,7 @@ jobs:
   analyze:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
@@ -34,7 +34,7 @@ jobs:
   test:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
@@ -47,7 +47,7 @@ jobs:
   android-build:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
@@ -59,7 +59,7 @@ jobs:
   linux-build:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
@@ -72,7 +72,7 @@ jobs:
   ios-build:
     runs-on: macos-11
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
@@ -84,7 +84,7 @@ jobs:
   macos-build:
     runs-on: macos-11
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
@@ -99,7 +99,7 @@ jobs:
       run:
         shell: bash
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
@@ -114,7 +114,7 @@ jobs:
       run:
         shell: bash
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
@@ -127,6 +127,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
       - name: Build webtox image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4

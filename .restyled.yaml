@@ -1,3 +1,6 @@
 ---
 exclude:
   - "LICENSE"
+  # Generated files.
+  - "linux/flutter/generated_plugin_registrant.cc"
+  - "windows/flutter/generated_plugin_registrant.cc"

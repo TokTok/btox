@@ -118,8 +118,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ? const Text(Strings.applied)
                   : const Text(Strings.applyChanges),
               style: ElevatedButton.styleFrom(
-                primary: _applyButtonPressed ? Colors.green : Colors.blue,
-                onPrimary: Colors.white,
+                backgroundColor:
+                    _applyButtonPressed ? Colors.green : Colors.blue,
+                foregroundColor: Colors.white,
               ),
               onPressed: () => _onValidate(),
             ),

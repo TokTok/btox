@@ -1,2 +1,2 @@
 [build]
-  command = "if cd flutter; then git pull && cd ..; else git clone https://github.com/flutter/flutter.git; fi && export PATH=flutter/bin:$PATH && flutter config --enable-web && ./tools/prepare-web && flutter build web --release"
+  command = "if cd flutter; then git fetch && git reset --hard 3.10.6 && cd ..; else git clone https://github.com/flutter/flutter.git --branch 3.10.6; fi && export PATH=flutter/bin:$PATH && flutter config --enable-web && ./tools/prepare-web && flutter build web --release"

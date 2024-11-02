@@ -8,7 +8,7 @@
 PRODUCT_NAME = btox
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.btox
+PRODUCT_BUNDLE_IDENTIFIER = chat.tox.btox
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2023 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2023 chat.tox. All rights reserved.

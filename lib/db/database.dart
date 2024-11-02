@@ -16,7 +16,7 @@ class Messages extends Table {
 
 @DriftDatabase(tables: [Contacts, Messages])
 class Database extends _$Database {
-  Database(QueryExecutor e) : super(e);
+  Database(super.e);
 
   @override
   int get schemaVersion => 2;

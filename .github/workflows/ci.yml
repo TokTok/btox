@@ -6,93 +6,94 @@ on:
     branches: [master]
 
 env:
-  FLUTTER_VERSION: "3.10.6"
+  FLUTTER_VERSION: "3.24.0"
 
 jobs:
   format:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
-    - uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
-        flutter-version: ${{ env.FLUTTER_VERSION }}
-        cache: true
-    - run: dart format . && git diff --exit-code
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: dart format . && git diff --exit-code
 
   analyze:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
-    - uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
-        flutter-version: ${{ env.FLUTTER_VERSION }}
-        cache: true
-    - run: ./tools/prepare
-    - run: flutter analyze .
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: ./tools/prepare
+      - run: flutter analyze .
 
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
-    - uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
-        flutter-version: ${{ env.FLUTTER_VERSION }}
-        cache: true
-    - run: ./tools/prepare
-    - run: flutter test --coverage
-    - run: bash <(curl -s https://codecov.io/bash)
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: sudo apt-get install -y libsqlite3-dev
+      - run: ./tools/prepare
+      - run: flutter test --coverage
+      - run: bash <(curl -s https://codecov.io/bash)
 
   android-build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
-    - uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
-        flutter-version: ${{ env.FLUTTER_VERSION }}
-        cache: true
-    - run: ./tools/prepare
-    - run: flutter build apk
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: ./tools/prepare
+      - run: flutter build apk
 
   linux-build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
-    - uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
-        flutter-version: ${{ env.FLUTTER_VERSION }}
-        cache: true
-    - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ninja-build libgtk-3-dev
-    - run: ./tools/prepare
-    - run: flutter build linux
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ninja-build libgtk-3-dev
+      - run: ./tools/prepare
+      - run: flutter build linux
 
   ios-build:
-    runs-on: macos-11
+    runs-on: macos-13
     steps:
-    - uses: actions/checkout@v4
-    - uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
-        flutter-version: ${{ env.FLUTTER_VERSION }}
-        cache: true
-    - run: ./tools/prepare
-    - run: flutter build ios --no-codesign
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: ./tools/prepare
+      - run: flutter build ios --no-codesign
 
   macos-build:
-    runs-on: macos-11
+    runs-on: macos-13
     steps:
-    - uses: actions/checkout@v4
-    - uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
-        flutter-version: ${{ env.FLUTTER_VERSION }}
-        cache: true
-    - run: ./tools/prepare
-    - run: flutter build macos
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: ./tools/prepare
+      - run: flutter build macos
 
   web-build:
     runs-on: windows-2022
@@ -100,14 +101,14 @@ jobs:
       run:
         shell: bash
     steps:
-    - uses: actions/checkout@v4
-    - uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
-        flutter-version: ${{ env.FLUTTER_VERSION }}
-        cache: true
-    - run: ./tools/prepare-web
-    - run: flutter build web
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: ./tools/prepare-web
+      - run: flutter build web
 
   windows-build:
     runs-on: windows-2022
@@ -115,19 +116,11 @@ jobs:
       run:
         shell: bash
     steps:
-    - uses: actions/checkout@v4
-    - uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
-        flutter-version: ${{ env.FLUTTER_VERSION }}
-        cache: true
-    - run: ./tools/prepare
-    - run: flutter build windows
-
-  webtox:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build webtox image
-        uses: docker/build-push-action@v5
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: ./tools/prepare
+      - run: flutter build windows

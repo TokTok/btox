@@ -11,8 +11,8 @@ import 'settings.dart';
 import 'strings.dart';
 
 class ContactListItem extends StatelessWidget {
-  const ContactListItem({Key? key, required this.contact, required this.onTap})
-      : super(key: key);
+  const ContactListItem(
+      {super.key, required this.contact, required this.onTap});
 
   final Contact contact;
   final Function(Contact) onTap;
@@ -28,8 +28,7 @@ class ContactListItem extends StatelessWidget {
 }
 
 class ContactListPage extends StatefulWidget {
-  ContactListPage({Key? key, required this.title, required this.database})
-      : super(key: key);
+  ContactListPage({super.key, required this.title, required this.database});
 
   final String title;
   final Database database;
@@ -115,16 +114,14 @@ class _ContactListPageState extends State<ContactListPage> {
                 );
               },
             ),
-            defaultTargetPlatform == TargetPlatform.android
-                ? ListTile(
-                    leading: const Icon(Icons.close),
-                    title: const Text(Strings.menuQuit),
-                    onTap: () {
-                      SystemChannels.platform
-                          .invokeMethod('SystemNavigator.pop');
-                    },
-                  )
-                : const SizedBox.shrink(),
+            if (defaultTargetPlatform == TargetPlatform.android)
+              ListTile(
+                leading: const Icon(Icons.close),
+                title: const Text(Strings.menuQuit),
+                onTap: () {
+                  SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                },
+              )
           ],
         ),
       ),

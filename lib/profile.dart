@@ -6,7 +6,7 @@ import 'strings.dart';
 class UserProfilePage extends StatefulWidget {
   final AppState appState;
 
-  const UserProfilePage({Key? key, required this.appState}) : super(key: key);
+  const UserProfilePage({super.key, required this.appState});
 
   @override
   State<UserProfilePage> createState() => _UserProfilePageState();
@@ -114,15 +114,15 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ),
             ),
             ElevatedButton(
-              child: _applyButtonPressed
-                  ? const Text(Strings.applied)
-                  : const Text(Strings.applyChanges),
               style: ElevatedButton.styleFrom(
                 backgroundColor:
                     _applyButtonPressed ? Colors.green : Colors.blue,
                 foregroundColor: Colors.white,
               ),
               onPressed: () => _onValidate(),
+              child: _applyButtonPressed
+                  ? const Text(Strings.applied)
+                  : const Text(Strings.applyChanges),
             ),
           ],
         ),

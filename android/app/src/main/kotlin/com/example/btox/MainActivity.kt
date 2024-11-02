@@ -1,4 +1,4 @@
-package com.example.btox
+package chat.tox.btox
 
 import io.flutter.embedding.android.FlutterActivity
 

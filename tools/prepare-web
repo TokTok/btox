@@ -4,8 +4,10 @@ set -eux
 
 ./tools/prepare
 
-# Database wasm/js.
-SQLJS_VERSION=1.6.2
-curl -L "https://github.com/sql-js/sql.js/releases/download/v$SQLJS_VERSION/sqljs-wasm.zip" >sqljs-tmp.zip
-unzip sqljs-tmp.zip -d web/
-rm sqljs-tmp.zip
+# SQLite wasm/js.
+SQLITE_VERSION=0.5.26
+curl -L "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3_flutter_libs-$SQLITE_VERSION/sqlite3.wasm" >web/sqlite3.wasm
+
+# Drift worker.
+DRIFT_VERSION=2.21.0
+curl -L "https://github.com/simolus3/drift/releases/download/drift-$DRIFT_VERSION/drift_worker.js" >web/drift_worker.js

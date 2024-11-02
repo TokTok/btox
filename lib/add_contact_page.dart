@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'strings.dart';
 
 class AddContactPage extends StatefulWidget {
-  const AddContactPage({Key? key, required this.onAddContact})
-      : super(key: key);
+  const AddContactPage({super.key, required this.onAddContact});
 
   final Function(String, String) onAddContact;
 
@@ -45,7 +44,7 @@ class _AddContactPageState extends State<AddContactPage> {
                   validator: (value) {
                     value ??= '';
                     if (value.length != 76) {
-                      return Strings.toxIdLengthError + ' (${value.length}/76)';
+                      return '${Strings.toxIdLengthError} (${value.length}/76)';
                     }
                     return null;
                   },

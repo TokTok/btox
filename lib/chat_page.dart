@@ -5,11 +5,11 @@ import 'strings.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({
-    Key? key,
+    super.key,
     required this.contact,
     required this.messages,
     required this.onSendMessage,
-  }) : super(key: key);
+  });
 
   final Stream<Contact> contact;
   final Stream<List<Message>> messages;

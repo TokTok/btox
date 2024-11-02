@@ -5,9 +5,9 @@ import 'db/database.dart';
 import 'strings.dart';
 
 class App extends StatelessWidget {
-  const App({Key? key, required this.database}) : super(key: key);
-
   final Database database;
+
+  const App({super.key, required this.database});
 
   @override
   Widget build(BuildContext context) {

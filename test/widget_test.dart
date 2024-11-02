@@ -1,8 +1,9 @@
+import 'package:btox/main.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:btox/app.dart';
+import 'package:btox/btox_app.dart';
 import 'package:btox/db/database.dart';
 
 // The database can't be constructed/torn down in the Flutter test framework
@@ -14,7 +15,7 @@ void main() {
       String.fromCharCodes(Iterable.generate(76, (_) => '0'.codeUnits.first));
   testWidgets('Add contact adds a contact', (WidgetTester tester) async {
     Database db = Database(NativeDatabase.memory());
-    await tester.pumpWidget(App(database: db));
+    await tester.pumpWidget(BtoxApp(database: db, store: createStore()));
 
     // Check that no contact with all 0s for the public key exists.
     expect(find.textContaining('00000000'), findsNothing);

@@ -1,49 +1,24 @@
+import 'package:btox/btox_actions.dart';
+import 'package:btox/btox_state.dart';
+import 'package:btox/strings.dart';
 import 'package:flutter/material.dart';
+import 'package:redux/redux.dart';
 
-import 'app_state.dart';
-import 'strings.dart';
+final class UserProfilePage extends StatefulWidget {
+  final BtoxState state;
+  final Store<BtoxState> store;
 
-class UserProfilePage extends StatefulWidget {
-  final AppState appState;
-
-  const UserProfilePage({super.key, required this.appState});
+  const UserProfilePage({super.key, required this.state, required this.store});
 
   @override
   State<UserProfilePage> createState() => _UserProfilePageState();
 }
 
-class _UserProfilePageState extends State<UserProfilePage> {
+final class _UserProfilePageState extends State<UserProfilePage> {
   final _formKey = GlobalKey<FormState>();
   final _statusMessageInputController = TextEditingController();
   final _nickInputController = TextEditingController();
   bool _applyButtonPressed = false;
-
-  @override
-  initState() {
-    super.initState();
-    _nickInputController.text = widget.appState.nickname.value;
-    _statusMessageInputController.text = widget.appState.statusMessage.value;
-  }
-
-  _onValidate() {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    if (widget.appState.nickname.value != _nickInputController.text ||
-        widget.appState.statusMessage.value !=
-            _statusMessageInputController.text) {
-      _setApplyButtonPressed(true);
-      widget.appState.nickname.value = _nickInputController.text;
-      widget.appState.statusMessage.value = _statusMessageInputController.text;
-    }
-  }
-
-  void _setApplyButtonPressed(bool pressed) {
-    setState(() {
-      _applyButtonPressed = pressed;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,5 +103,33 @@ class _UserProfilePageState extends State<UserProfilePage> {
         ),
       ),
     );
+  }
+
+  @override
+  initState() {
+    super.initState();
+    _nickInputController.text = widget.state.nickname;
+    _statusMessageInputController.text = widget.state.statusMessage;
+  }
+
+  _onValidate() {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    if (widget.state.nickname != _nickInputController.text ||
+        widget.state.statusMessage != _statusMessageInputController.text) {
+      _setApplyButtonPressed(true);
+      widget.store
+          .dispatch(BtoxUpdateNicknameAction(_nickInputController.text));
+      widget.store.dispatch(
+          BtoxUpdateStatusMessageAction(_statusMessageInputController.text));
+    }
+  }
+
+  void _setApplyButtonPressed(bool pressed) {
+    setState(() {
+      _applyButtonPressed = pressed;
+    });
   }
 }

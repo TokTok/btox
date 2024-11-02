@@ -1,15 +1,9 @@
+import 'package:btox/strings.dart';
 import 'package:flutter/material.dart';
 
-import 'strings.dart';
-
-class SettingsPage extends StatefulWidget {
+final class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
-  @override
-  State<SettingsPage> createState() => _SettingsPageState();
-}
-
-class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,21 +1,24 @@
+import 'package:btox/add_contact_page.dart';
+import 'package:btox/btox_state.dart';
+import 'package:btox/chat_page.dart';
+import 'package:btox/db/database.dart';
+import 'package:btox/profile.dart';
+import 'package:btox/settings.dart';
+import 'package:btox/strings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
-import 'add_contact_page.dart';
-import 'app_state.dart';
-import 'chat_page.dart';
-import 'db/database.dart';
-import 'profile.dart';
-import 'settings.dart';
-import 'strings.dart';
-
-class ContactListItem extends StatelessWidget {
-  const ContactListItem(
-      {super.key, required this.contact, required this.onTap});
-
+final class ContactListItem extends StatelessWidget {
   final Contact contact;
   final Function(Contact) onTap;
+
+  const ContactListItem({
+    super.key,
+    required this.contact,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,25 +30,15 @@ class ContactListItem extends StatelessWidget {
   }
 }
 
-class ContactListPage extends StatefulWidget {
-  ContactListPage({super.key, required this.title, required this.database});
-
+final class ContactListPage extends StatelessWidget {
   final String title;
   final Database database;
-  final appState = AppState();
 
-  @override
-  State<ContactListPage> createState() => _ContactListPageState();
-}
-
-class _ContactListPageState extends State<ContactListPage> {
-  void _onAddContact(String toxID, String message) {
-    widget.database.addContact(
-      ContactsCompanion.insert(
-        publicKey: toxID.substring(0, toxID.length - 12),
-      ),
-    );
-  }
+  const ContactListPage({
+    super.key,
+    required this.title,
+    required this.database,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +52,9 @@ class _ContactListPageState extends State<ContactListPage> {
                 color: Colors.blue,
               ),
               child: ListTile(
-                title: ValueListenableBuilder(
-                  valueListenable: widget.appState.nickname,
-                  builder: (context, String nickname, _) {
+                title: StoreConnector<BtoxState, String>(
+                  converter: (store) => store.state.nickname,
+                  builder: (context, nickname) {
                     return Text(
                       nickname,
                       style: const TextStyle(
@@ -72,9 +65,9 @@ class _ContactListPageState extends State<ContactListPage> {
                     );
                   },
                 ),
-                subtitle: ValueListenableBuilder(
-                  valueListenable: widget.appState.statusMessage,
-                  builder: (context, String statusMessage, _) {
+                subtitle: StoreConnector<BtoxState, String>(
+                  converter: (store) => store.state.statusMessage,
+                  builder: (context, String statusMessage) {
                     return Text(
                       statusMessage,
                       style: const TextStyle(
@@ -95,8 +88,13 @@ class _ContactListPageState extends State<ContactListPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        UserProfilePage(appState: widget.appState),
+                    builder: (context) => StoreConnector<BtoxState, BtoxState>(
+                      converter: (store) => store.state,
+                      builder: (context, state) => UserProfilePage(
+                        state: state,
+                        store: StoreProvider.of(context),
+                      ),
+                    ),
                   ),
                 );
               },
@@ -137,10 +135,10 @@ class _ContactListPageState extends State<ContactListPage> {
             );
           },
         ),
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: StreamBuilder<List<Contact>>(
-        stream: widget.database.watchContacts(),
+        stream: database.watchContacts(),
         builder: ((context, snapshot) {
           final contacts = snapshot.data ?? [];
 
@@ -154,10 +152,10 @@ class _ContactListPageState extends State<ContactListPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ChatPage(
-                        contact: widget.database.watchContact(contact.id),
-                        messages: widget.database.watchMessagesFor(contact.id),
+                        contact: database.watchContact(contact.id),
+                        messages: database.watchMessagesFor(contact.id),
                         onSendMessage: (String message) {
-                          widget.database.addMessage(MessagesCompanion.insert(
+                          database.addMessage(MessagesCompanion.insert(
                             contactId: contact.id,
                             content: message,
                             timestamp: DateTime.now().toUtc(),
@@ -181,6 +179,14 @@ class _ContactListPageState extends State<ContactListPage> {
         ),
         tooltip: Strings.addContact,
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  void _onAddContact(String toxID, String message) {
+    database.addContact(
+      ContactsCompanion.insert(
+        publicKey: toxID.substring(0, toxID.length - 12),
       ),
     );
   }

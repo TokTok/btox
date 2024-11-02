@@ -1,7 +1,6 @@
+import 'package:btox/db/database.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/wasm.dart';
-
-import 'database.dart';
 
 Database constructDb() => Database(
     DatabaseConnection.delayed(Future(() async => (await WasmDatabase.open(

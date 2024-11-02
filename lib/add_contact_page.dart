@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'strings.dart';
 
-class AddContactPage extends StatefulWidget {
+final class AddContactPage extends StatefulWidget {
   const AddContactPage({super.key, required this.onAddContact});
 
   final Function(String, String) onAddContact;
@@ -11,7 +11,7 @@ class AddContactPage extends StatefulWidget {
   State<AddContactPage> createState() => _AddContactPageState();
 }
 
-class _AddContactPageState extends State<AddContactPage> {
+final class _AddContactPageState extends State<AddContactPage> {
   final _formKey = GlobalKey<FormState>();
   final _toxIdInputController = TextEditingController();
   final _messageInputController =

@@ -1,9 +1,12 @@
+import 'package:btox/db/database.dart';
+import 'package:btox/strings.dart';
 import 'package:flutter/material.dart';
 
-import 'db/database.dart';
-import 'strings.dart';
+final class ChatPage extends StatefulWidget {
+  final Stream<Contact> contact;
+  final Stream<List<Message>> messages;
+  final void Function(String message) onSendMessage;
 
-class ChatPage extends StatefulWidget {
   const ChatPage({
     super.key,
     required this.contact,
@@ -11,23 +14,13 @@ class ChatPage extends StatefulWidget {
     required this.onSendMessage,
   });
 
-  final Stream<Contact> contact;
-  final Stream<List<Message>> messages;
-  final void Function(String message) onSendMessage;
-
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+final class _ChatPageState extends State<ChatPage> {
   final _messageInputFocus = FocusNode();
   final _messageInputController = TextEditingController();
-
-  void _onSendMessage() {
-    widget.onSendMessage(_messageInputController.text);
-    _messageInputController.clear();
-    _messageInputFocus.requestFocus();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,5 +74,11 @@ class _ChatPageState extends State<ChatPage> {
         ),
       ),
     );
+  }
+
+  void _onSendMessage() {
+    widget.onSendMessage(_messageInputController.text);
+    _messageInputController.clear();
+    _messageInputFocus.requestFocus();
   }
 }

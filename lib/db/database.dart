@@ -15,7 +15,7 @@ class Messages extends Table {
 }
 
 @DriftDatabase(tables: [Contacts, Messages])
-class Database extends _$Database {
+final class Database extends _$Database {
   Database(super.e);
 
   @override

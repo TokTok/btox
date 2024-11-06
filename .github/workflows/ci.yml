@@ -9,6 +9,9 @@ env:
   FLUTTER_VERSION: "3.24.0"
 
 jobs:
+  common:
+    uses: TokTok/ci-tools/.github/workflows/common-ci.yml@master
+
   format:
     runs-on: ubuntu-24.04
     steps:

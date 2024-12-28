@@ -4,10 +4,10 @@ import 'package:btox/chat_page.dart';
 import 'package:btox/db/database.dart';
 import 'package:btox/profile.dart';
 import 'package:btox/settings.dart';
-import 'package:btox/strings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 final class ContactListItem extends StatelessWidget {
@@ -23,7 +23,8 @@ final class ContactListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(contact.name ?? Strings.defaultContactName),
+      title: Text(
+          contact.name ?? AppLocalizations.of(context)!.defaultContactName),
       subtitle: Text(contact.publicKey, overflow: TextOverflow.ellipsis),
       onTap: () => onTap(contact),
     );
@@ -31,12 +32,10 @@ final class ContactListItem extends StatelessWidget {
 }
 
 final class ContactListPage extends StatelessWidget {
-  final String title;
   final Database database;
 
   const ContactListPage({
     super.key,
-    required this.title,
     required this.database,
   });
 
@@ -82,7 +81,7 @@ final class ContactListPage extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.person),
-              title: const Text(Strings.menuProfile),
+              title: Text(AppLocalizations.of(context)!.menuProfile),
               onTap: () {
                 Navigator.pop(context); // close drawer before navigating away
                 Navigator.push(
@@ -101,7 +100,7 @@ final class ContactListPage extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.settings),
-              title: const Text(Strings.menuSettings),
+              title: Text(AppLocalizations.of(context)!.menuSettings),
               onTap: () {
                 Navigator.pop(context); // close drawer before navigating away
                 Navigator.push(
@@ -115,7 +114,7 @@ final class ContactListPage extends StatelessWidget {
             if (defaultTargetPlatform == TargetPlatform.android)
               ListTile(
                 leading: const Icon(Icons.close),
-                title: const Text(Strings.menuQuit),
+                title: Text(AppLocalizations.of(context)!.menuQuit),
                 onTap: () {
                   SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                 },
@@ -135,7 +134,7 @@ final class ContactListPage extends StatelessWidget {
             );
           },
         ),
-        title: Text(title),
+        title: Text(AppLocalizations.of(context)!.title),
       ),
       body: StreamBuilder<List<Contact>>(
         stream: database.watchContacts(),
@@ -174,10 +173,13 @@ final class ContactListPage extends StatelessWidget {
         onPressed: () => Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AddContactPage(onAddContact: _onAddContact),
+            builder: (context) => AddContactPage(
+              onAddContact: _onAddContact,
+              selfName: StoreProvider.of<BtoxState>(context).state.nickname,
+            ),
           ),
         ),
-        tooltip: Strings.addContact,
+        tooltip: AppLocalizations.of(context)!.addContact,
         child: const Icon(Icons.add),
       ),
     );

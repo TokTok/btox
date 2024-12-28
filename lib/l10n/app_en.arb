@@ -1,0 +1,84 @@
+{
+  "defaultContactName": "Unknown",
+  "@defaultContactName": {
+    "description": "The default name for a contact when the name is not known"
+  },
+  "title": "bTox (working title)",
+  "@title": {
+    "description": "The title of the application"
+  },
+  "addContact": "Add contact",
+  "@addContact": {
+    "description": "The text for the button to add a contact"
+  },
+  "message": "Message",
+  "@message": {
+    "description": "The text for the message field"
+  },
+  "messageInput": "message",
+  "@messageInput": {
+    "description": "The placeholder text for the message input field"
+  },
+  "toxId": "Tox ID",
+  "@toxId": {
+    "description": "The text for the Tox ID field"
+  },
+  "defaultAddContactMessage": "Hey, I'm {nick}, come chat with me on bTox!",
+  "@defaultAddContactMessage": {
+    "description": "The default message to send when adding a contact",
+    "placeholders": {
+      "nick": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "add": "Add",
+  "@add": {
+    "description": "The text for the button to add a contact"
+  },
+  "toxIdLengthError": "The Tox ID must be 76 characters",
+  "@toxIdLengthError": {
+    "description": "The error message when the Tox ID is not 76 characters long"
+  },
+  "messageEmptyError": "The message can't be empty",
+  "@messageEmptyError": {
+    "description": "The error message when the message is empty"
+  },
+  "menuProfile": "Profile",
+  "@menuProfile": {
+    "description": "The text for the profile menu item"
+  },
+  "menuQuit": "Quit",
+  "@menuQuit": {
+    "description": "The text for the quit menu item"
+  },
+  "menuSettings": "Settings",
+  "@menuSettings": {
+    "description": "The text for the settings menu item"
+  },
+  "nickLengthError": "Nickname must be between 1 and 32 characters",
+  "@nickLengthError": {
+    "description": "The error message when the nickname is not between 1 and 32 characters long"
+  },
+  "statusMessageLengthError": "Status message may not exceed 256 characters",
+  "@statusMessageLengthError": {
+    "description": "The error message when the status message is longer than 256 characters"
+  },
+  "profileTextFieldNick": "Nickname",
+  "@profileTextFieldNick": {
+    "description": "The text for the nickname field"
+  },
+  "profileTextFieldUserStatusMessage": "Status message",
+  "@profileTextFieldUserStatusMessage": {
+    "description": "The text for the status message field"
+  },
+  "applyChanges": "Apply changes",
+  "@applyChanges": {
+    "description": "The text for the button to apply changes"
+  },
+  "applied": "Applied",
+  "@applied": {
+    "description": "The text when changes have been applied"
+  }
+}

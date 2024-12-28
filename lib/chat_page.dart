@@ -1,6 +1,6 @@
 import 'package:btox/db/database.dart';
-import 'package:btox/strings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 final class ChatPage extends StatefulWidget {
   final Stream<Contact> contact;
@@ -28,7 +28,8 @@ final class _ChatPageState extends State<ChatPage> {
       stream: widget.contact,
       builder: (context, snapshot) => Scaffold(
         appBar: AppBar(
-          title: Text(snapshot.data?.name ?? Strings.defaultContactName),
+          title: Text(snapshot.data?.name ??
+              AppLocalizations.of(context)!.defaultContactName),
         ),
         body: Column(
           children: [
@@ -57,7 +58,7 @@ final class _ChatPageState extends State<ChatPage> {
               child: TextField(
                 decoration: InputDecoration(
                   border: const UnderlineInputBorder(),
-                  labelText: Strings.message.toLowerCase(),
+                  labelText: AppLocalizations.of(context)!.messageInput,
                   suffixIcon: IconButton(
                     onPressed: () => _onSendMessage(),
                     icon: const Icon(Icons.send),

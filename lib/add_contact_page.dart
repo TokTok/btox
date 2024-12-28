@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-
-import 'strings.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 final class AddContactPage extends StatefulWidget {
-  const AddContactPage({super.key, required this.onAddContact});
-
+  final String selfName;
   final Function(String, String) onAddContact;
+
+  const AddContactPage({
+    super.key,
+    required this.selfName,
+    required this.onAddContact,
+  });
 
   @override
   State<AddContactPage> createState() => _AddContactPageState();
@@ -14,22 +18,18 @@ final class AddContactPage extends StatefulWidget {
 final class _AddContactPageState extends State<AddContactPage> {
   final _formKey = GlobalKey<FormState>();
   final _toxIdInputController = TextEditingController();
-  final _messageInputController =
-      TextEditingController(text: Strings.defaultAddContactMessage);
-
-  void _onAddContact() {
-    if (_formKey.currentState!.validate()) {
-      widget.onAddContact(
-          _toxIdInputController.text, _messageInputController.text);
-      Navigator.pop(context);
-    }
-  }
+  final _messageInputController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    if (_messageInputController.text.isEmpty) {
+      _messageInputController.text = AppLocalizations.of(context)!
+          .defaultAddContactMessage(widget.selfName);
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(Strings.addContact),
+        title: Text(AppLocalizations.of(context)!.addContact),
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -44,13 +44,13 @@ final class _AddContactPageState extends State<AddContactPage> {
                   validator: (value) {
                     value ??= '';
                     if (value.length != 76) {
-                      return '${Strings.toxIdLengthError} (${value.length}/76)';
+                      return '${AppLocalizations.of(context)!.toxIdLengthError} (${value.length}/76)';
                     }
                     return null;
                   },
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     border: UnderlineInputBorder(),
-                    labelText: Strings.toxId,
+                    labelText: AppLocalizations.of(context)!.toxId,
                   ),
                   controller: _toxIdInputController,
                   textInputAction: TextInputAction.next,
@@ -63,13 +63,13 @@ final class _AddContactPageState extends State<AddContactPage> {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return Strings.messageEmptyError;
+                      return AppLocalizations.of(context)!.messageEmptyError;
                     }
                     return null;
                   },
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     border: UnderlineInputBorder(),
-                    labelText: Strings.message,
+                    labelText: AppLocalizations.of(context)!.message,
                   ),
                   onEditingComplete: () => _onAddContact(),
                   controller: _messageInputController,
@@ -82,7 +82,7 @@ final class _AddContactPageState extends State<AddContactPage> {
                   padding: const EdgeInsets.all(16),
                   child: ElevatedButton(
                     onPressed: _onAddContact,
-                    child: const Text(Strings.add),
+                    child: Text(AppLocalizations.of(context)!.add),
                   ),
                 ),
               ),
@@ -91,5 +91,13 @@ final class _AddContactPageState extends State<AddContactPage> {
         ),
       ),
     );
+  }
+
+  void _onAddContact() {
+    if (_formKey.currentState!.validate()) {
+      widget.onAddContact(
+          _toxIdInputController.text, _messageInputController.text);
+      Navigator.pop(context);
+    }
   }
 }

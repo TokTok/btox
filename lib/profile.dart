@@ -1,7 +1,7 @@
 import 'package:btox/btox_actions.dart';
 import 'package:btox/btox_state.dart';
-import 'package:btox/strings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:redux/redux.dart';
 
 final class UserProfilePage extends StatefulWidget {
@@ -24,7 +24,7 @@ final class _UserProfilePageState extends State<UserProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(Strings.menuProfile),
+        title: Text(AppLocalizations.of(context)!.menuProfile),
       ),
       body: Form(
         key: _formKey,
@@ -33,8 +33,8 @@ final class _UserProfilePageState extends State<UserProfilePage> {
             const Padding(
               padding: EdgeInsets.all(8),
             ),
-            const Text(
-              Strings.profileTextFieldNick,
+            Text(
+              AppLocalizations.of(context)!.profileTextFieldNick,
               style: TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
@@ -47,7 +47,7 @@ final class _UserProfilePageState extends State<UserProfilePage> {
                 validator: (value) {
                   value ??= '';
                   if (value.isEmpty || value.length > 32) {
-                    return Strings.nickLengthError;
+                    return AppLocalizations.of(context)!.nickLengthError;
                   }
 
                   return null;
@@ -62,8 +62,8 @@ final class _UserProfilePageState extends State<UserProfilePage> {
             const Padding(
               padding: EdgeInsets.all(8),
             ),
-            const Text(
-              Strings.profileTextFieldUserStatusMessage,
+            Text(
+              AppLocalizations.of(context)!.profileTextFieldUserStatusMessage,
               style: TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
@@ -76,7 +76,8 @@ final class _UserProfilePageState extends State<UserProfilePage> {
                 validator: (value) {
                   value ??= '';
                   if (value.length > 256) {
-                    return Strings.statusMessageLengthError;
+                    return AppLocalizations.of(context)!
+                        .statusMessageLengthError;
                   }
 
                   return null;
@@ -96,8 +97,8 @@ final class _UserProfilePageState extends State<UserProfilePage> {
               ),
               onPressed: () => _onValidate(),
               child: _applyButtonPressed
-                  ? const Text(Strings.applied)
-                  : const Text(Strings.applyChanges),
+                  ? Text(AppLocalizations.of(context)!.applied)
+                  : Text(AppLocalizations.of(context)!.applyChanges),
             ),
           ],
         ),

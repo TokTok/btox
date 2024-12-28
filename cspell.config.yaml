@@ -1,0 +1,17 @@
+version: "0.2"
+dictionaryDefinitions: []
+dictionaries: []
+ignoreWords: []
+flagWords: []
+import: []
+ignorePaths:
+  - ".github/**"
+  - "build/**"
+  - "LICENSE*"
+  - "*.json"
+words:
+  - "btox"
+  - "iphydf"
+  - "kannywood"
+  - "robinlinden"
+  - "yanciman"

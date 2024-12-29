@@ -25,7 +25,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Fill in the contact data.
-    await tester.enterText(find.byKey(const Key('toxId')), allZeroToxId);
+    await tester.enterText(find.byKey(const Key('toxIdField')), allZeroToxId);
     await tester.pump();
     await tester.tap(find.text('Add'));
     await tester.pumpAndSettle();

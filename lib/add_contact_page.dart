@@ -1,3 +1,5 @@
+import 'package:btox/widgets/friend_request_message_field.dart';
+import 'package:btox/widgets/tox_id_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -36,52 +38,17 @@ final class _AddContactPageState extends State<AddContactPage> {
           key: _formKey,
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: TextFormField(
-                  key: const Key('toxId'),
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (value) {
-                    value ??= '';
-                    if (value.length != 76) {
-                      return '${AppLocalizations.of(context)!.toxIdLengthError} (${value.length}/76)';
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: AppLocalizations.of(context)!.toxId,
-                  ),
-                  controller: _toxIdInputController,
-                  textInputAction: TextInputAction.next,
-                  autofocus: true,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: TextFormField(
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppLocalizations.of(context)!.messageEmptyError;
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: AppLocalizations.of(context)!.message,
-                  ),
-                  onEditingComplete: () => _onAddContact(),
-                  controller: _messageInputController,
-                  textInputAction: TextInputAction.send,
-                ),
+              ToxIdField(controller: _toxIdInputController),
+              FriendRequestMessageField(
+                controller: _messageInputController,
+                onEditingComplete: () => _onAddContact(_formKey.currentState!),
               ),
               Align(
                 alignment: Alignment.topRight,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: ElevatedButton(
-                    onPressed: _onAddContact,
+                    onPressed: () => _onAddContact(_formKey.currentState!),
                     child: Text(AppLocalizations.of(context)!.add),
                   ),
                 ),
@@ -93,8 +60,8 @@ final class _AddContactPageState extends State<AddContactPage> {
     );
   }
 
-  void _onAddContact() {
-    if (_formKey.currentState!.validate()) {
+  void _onAddContact(FormState form) {
+    if (form.validate()) {
       widget.onAddContact(
           _toxIdInputController.text, _messageInputController.text);
       Navigator.pop(context);

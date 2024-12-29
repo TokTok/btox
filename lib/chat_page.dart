@@ -37,7 +37,7 @@ final class _ChatPageState extends State<ChatPage> {
               child: StreamBuilder<List<Message>>(
                 stream: widget.messages,
                 builder: ((context, snapshot) {
-                  final messages = snapshot.data ?? <Message>[];
+                  final messages = snapshot.data ?? [];
                   return ListView.builder(
                     reverse: true,
                     itemCount: messages.length,

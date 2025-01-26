@@ -2,5 +2,8 @@
 exclude:
   - "LICENSE"
   # Generated files.
-  - "linux/flutter/generated_plugin_registrant.cc"
-  - "windows/flutter/generated_plugin_registrant.cc"
+  - "linux/**/*.cc"
+  - "linux/**/*.h"
+  - "web/flutter_bootstrap.js"
+  - "windows/**/*.cc"
+  - "windows/**/*.h"

@@ -1,7 +1,8 @@
 {
+  "@@locale": "en",
   "defaultContactName": "Unknown",
   "@defaultContactName": {
-    "description": "The default name for a contact when the name is not known"
+    "description": "The default name for a contact when the name is not yet known"
   },
   "title": "bTox (working title)",
   "@title": {
@@ -33,13 +34,33 @@
       }
     }
   },
+  "addContactMessageLengthError": "Maximum {max} characters ({length} is too long)",
+  "@addContactMessageLengthError": {
+    "description": "The error message when the friend request message is too long",
+    "placeholders": {
+      "max": {
+        "type": "int",
+        "example": "256"
+      },
+      "length": {
+        "type": "int",
+        "example": "300"
+      }
+    }
+  },
   "add": "Add",
   "@add": {
     "description": "The text for the button to add a contact"
   },
-  "toxIdLengthError": "The Tox ID must be 76 characters",
+  "toxIdLengthError": "Must be {length} hexadecimal characters",
   "@toxIdLengthError": {
-    "description": "The error message when the Tox ID is not 76 characters long"
+    "description": "The error message when the Tox ID is not the right length or format",
+    "placeholders": {
+      "length": {
+        "type": "int",
+        "example": "76"
+      }
+    }
   },
   "messageEmptyError": "The message can't be empty",
   "@messageEmptyError": {
@@ -57,13 +78,25 @@
   "@menuSettings": {
     "description": "The text for the settings menu item"
   },
-  "nickLengthError": "Nickname must be between 1 and 32 characters",
+  "nickLengthError": "Nickname must be between 1 and {max} characters",
   "@nickLengthError": {
-    "description": "The error message when the nickname is not between 1 and 32 characters long"
+    "description": "The error message when the nickname is too short or too long",
+    "placeholders": {
+      "max": {
+        "type": "int",
+        "example": "32"
+      }
+    }
   },
-  "statusMessageLengthError": "Status message may not exceed 256 characters",
+  "statusMessageLengthError": "Status message may not exceed {max} characters",
   "@statusMessageLengthError": {
-    "description": "The error message when the status message is longer than 256 characters"
+    "description": "The error message when the status message is longer than the supported maximum",
+    "placeholders": {
+      "max": {
+        "type": "int",
+        "example": "128"
+      }
+    }
   },
   "profileTextFieldNick": "Nickname",
   "@profileTextFieldNick": {
@@ -80,5 +113,49 @@
   "applied": "Applied",
   "@applied": {
     "description": "The text when changes have been applied"
+  },
+  "newProfile": "New profile",
+  "@newProfile": {
+    "description": "The title text for the create profile dialog"
+  },
+  "create": "Create",
+  "@create": {
+    "description": "The text for the button create a new profile"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "The text for the logout menu item"
+  },
+  "deleteProfile": "Delete profile",
+  "@deleteProfile": {
+    "description": "The text for the delete profile menu item"
+  },
+  "deleteProfileMessage": "Are you sure you want to delete your '{name}' profile? This action cannot be undone. It will delete all your contacts and messages. Make sure you have a backup.",
+  "@deleteProfileMessage": {
+    "description": "The message to confirm the deletion of a profile",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "The text for the cancel button"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "The text for the delete button"
+  },
+  "profileDeleted": "Profile '{name}' deleted",
+  "@profileDeleted": {
+    "description": "The text when a profile has been deleted",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
   }
 }

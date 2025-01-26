@@ -1,3 +1,4 @@
+import 'package:btox/models/tox_constants.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -19,8 +20,10 @@ final class ToxIdField extends StatelessWidget {
         autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: (value) {
           value ??= '';
-          if (value.length != 76) {
-            return '${AppLocalizations.of(context)!.toxIdLengthError} (${value.length}/76)';
+          if (value.length != ToxConstants.addressSize * 2) {
+            final msg = AppLocalizations.of(context)!
+                .toxIdLengthError(ToxConstants.addressSize * 2);
+            return '$msg (${value.length}/76)';
           }
           return null;
         },

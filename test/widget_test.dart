@@ -1,6 +1,8 @@
-import 'package:btox/main.dart';
+import 'package:btox/models/profile_settings.dart';
+import 'package:btox/providers/database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:btox/btox_app.dart';
@@ -15,7 +17,30 @@ void main() {
       String.fromCharCodes(Iterable.generate(76, (_) => '0'.codeUnits.first));
   testWidgets('Add contact adds a contact', (WidgetTester tester) async {
     Database db = Database(NativeDatabase.memory());
-    await tester.pumpWidget(BtoxApp(database: db, store: createStore()));
+    final profileId = await db.addProfile(
+      ProfilesCompanion.insert(
+        active: Value(true),
+        settings: ProfileSettings(
+          nickname: 'Yeetman',
+          statusMessage: 'Yeeting everyone',
+        ),
+      ),
+    );
+
+    expect(profileId.value, 1);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [databaseProvider.overrideWith((ref) => db)],
+        child: const BtoxApp(),
+      ),
+    );
+
+    // Wait for the database to be loaded.
+    await tester.pumpAndSettle();
+
+    // Take a screenshot.
+    await expectLater(find.byType(BtoxApp), matchesGoldenFile('btox_app.png'));
 
     // Check that no contact with all 0s for the public key exists.
     expect(find.textContaining('00000000'), findsNothing);

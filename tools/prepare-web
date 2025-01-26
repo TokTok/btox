@@ -5,9 +5,9 @@ set -eux
 ./tools/prepare
 
 # SQLite wasm/js.
-SQLITE_VERSION=0.5.26
-curl -L "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3_flutter_libs-$SQLITE_VERSION/sqlite3.wasm" >web/sqlite3.wasm
+SQLITE_VERSION=2.6.1
+curl -L "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-$SQLITE_VERSION/sqlite3.wasm" -o web/sqlite3.wasm
 
 # Drift worker.
-DRIFT_VERSION=2.21.0
-curl -L "https://github.com/simolus3/drift/releases/download/drift-$DRIFT_VERSION/drift_worker.js" >web/drift_worker.js
+DRIFT_VERSION=2.23.1
+curl -L "https://github.com/simolus3/drift/releases/download/drift-$DRIFT_VERSION/drift_worker.js" -o web/drift_worker.js

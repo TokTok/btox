@@ -1,8 +1,9 @@
 import 'package:btox/db/database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-final class ChatPage extends StatefulWidget {
+final class ChatPage extends HookWidget {
   final Stream<Contact> contact;
   final Stream<List<Message>> messages;
   final void Function(String message) onSendMessage;
@@ -15,17 +16,12 @@ final class ChatPage extends StatefulWidget {
   });
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
-}
-
-final class _ChatPageState extends State<ChatPage> {
-  final _messageInputFocus = FocusNode();
-  final _messageInputController = TextEditingController();
-
-  @override
   Widget build(BuildContext context) {
+    final messageInputController = useTextEditingController();
+    final messageInputFocus = useFocusNode();
+
     return StreamBuilder<Contact>(
-      stream: widget.contact,
+      stream: contact,
       builder: (context, snapshot) => Scaffold(
         appBar: AppBar(
           title: Text(snapshot.data?.name ??
@@ -35,7 +31,7 @@ final class _ChatPageState extends State<ChatPage> {
           children: [
             Expanded(
               child: StreamBuilder<List<Message>>(
-                stream: widget.messages,
+                stream: messages,
                 builder: ((context, snapshot) {
                   final messages = snapshot.data ?? <Message>[];
                   return ListView.builder(
@@ -60,13 +56,19 @@ final class _ChatPageState extends State<ChatPage> {
                   border: const UnderlineInputBorder(),
                   labelText: AppLocalizations.of(context)!.messageInput,
                   suffixIcon: IconButton(
-                    onPressed: () => _onSendMessage(),
+                    onPressed: () => _onSendMessage(
+                      messageInputController,
+                      messageInputFocus,
+                    ),
                     icon: const Icon(Icons.send),
                   ),
                 ),
-                onEditingComplete: () => _onSendMessage(),
-                controller: _messageInputController,
-                focusNode: _messageInputFocus,
+                onEditingComplete: () => _onSendMessage(
+                  messageInputController,
+                  messageInputFocus,
+                ),
+                controller: messageInputController,
+                focusNode: messageInputFocus,
                 textInputAction: TextInputAction.send,
                 autofocus: true,
               ),
@@ -77,9 +79,12 @@ final class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  void _onSendMessage() {
-    widget.onSendMessage(_messageInputController.text);
-    _messageInputController.clear();
-    _messageInputFocus.requestFocus();
+  void _onSendMessage(
+    TextEditingController messageInputController,
+    FocusNode messageInputFocus,
+  ) {
+    onSendMessage(messageInputController.text);
+    messageInputController.clear();
+    messageInputFocus.requestFocus();
   }
 }

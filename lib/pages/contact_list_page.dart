@@ -1,42 +1,25 @@
-import 'package:btox/add_contact_page.dart';
-import 'package:btox/btox_state.dart';
-import 'package:btox/chat_page.dart';
 import 'package:btox/db/database.dart';
-import 'package:btox/profile.dart';
-import 'package:btox/settings.dart';
+import 'package:btox/logger.dart';
+import 'package:btox/pages/add_contact_page.dart';
+import 'package:btox/pages/chat_page.dart';
+import 'package:btox/pages/user_profile_page.dart';
+import 'package:btox/pages/settings_page.dart';
+import 'package:btox/widgets/contact_list_item.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 
-final class ContactListItem extends StatelessWidget {
-  final Contact contact;
-  final Function(Contact) onTap;
-
-  const ContactListItem({
-    super.key,
-    required this.contact,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(
-          contact.name ?? AppLocalizations.of(context)!.defaultContactName),
-      subtitle: Text(contact.publicKey, overflow: TextOverflow.ellipsis),
-      onTap: () => onTap(contact),
-    );
-  }
-}
+const _logger = Logger(['ContactListPage']);
 
 final class ContactListPage extends StatelessWidget {
   final Database database;
+  final Profile profile;
 
   const ContactListPage({
     super.key,
     required this.database,
+    required this.profile,
   });
 
   @override
@@ -51,33 +34,22 @@ final class ContactListPage extends StatelessWidget {
                 color: Colors.blue,
               ),
               child: ListTile(
-                title: StoreConnector<BtoxState, String>(
-                  converter: (store) => store.state.nickname,
-                  builder: (context, nickname) {
-                    return Text(
-                      nickname,
-                      style: const TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    );
-                  },
-                ),
-                subtitle: StoreConnector<BtoxState, String>(
-                  converter: (store) => store.state.statusMessage,
-                  builder: (context, String statusMessage) {
-                    return Text(
-                      statusMessage,
-                      style: const TextStyle(
-                        fontSize: 12.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w100,
-                      ),
-                    );
-                  },
-                ),
-              ),
+                  title: Text(
+                    profile.settings.nickname,
+                    style: const TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  subtitle: Text(
+                    profile.settings.statusMessage,
+                    style: const TextStyle(
+                      fontSize: 12.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w100,
+                    ),
+                  )),
             ),
             ListTile(
               leading: const Icon(Icons.person),
@@ -87,12 +59,24 @@ final class ContactListPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => StoreConnector<BtoxState, BtoxState>(
-                      converter: (store) => store.state,
-                      builder: (context, state) => UserProfilePage(
-                        state: state,
-                        store: StoreProvider.of(context),
-                      ),
+                    builder: (context) => StreamBuilder<Profile>(
+                      stream: database.watchProfile(profile.id),
+                      builder: (context, snapshot) {
+                        final profile = snapshot.data;
+                        if (profile == null) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        return UserProfilePage(
+                          profile: profile,
+                          onUpdateProfile: (settings) async {
+                            await database.updateProfileSettings(
+                                profile.id, settings);
+                            _logger.d('Updated profile settings');
+                          },
+                        );
+                      },
                     ),
                   ),
                 );
@@ -106,9 +90,21 @@ final class ContactListPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const SettingsPage(),
+                    builder: (context) => SettingsPage(
+                      database: database,
+                      profile: profile,
+                    ),
                   ),
                 );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: Text(AppLocalizations.of(context)!.logout),
+              onTap: () async {
+                Navigator.pop(context); // close drawer before navigating away
+                _logger.d('Logging out');
+                await database.deactivateProfiles();
               },
             ),
             if (defaultTargetPlatform == TargetPlatform.android)
@@ -137,7 +133,7 @@ final class ContactListPage extends StatelessWidget {
         title: Text(AppLocalizations.of(context)!.title),
       ),
       body: StreamBuilder<List<Contact>>(
-        stream: database.watchContacts(),
+        stream: database.watchContactsFor(profile.id),
         builder: ((context, snapshot) {
           final contacts = snapshot.data ?? [];
 
@@ -147,6 +143,7 @@ final class ContactListPage extends StatelessWidget {
               return ContactListItem(
                 contact: contacts[index],
                 onTap: (Contact contact) {
+                  _logger.d('Opening chat with contact: ${contact.id}');
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -174,21 +171,21 @@ final class ContactListPage extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => AddContactPage(
-              onAddContact: _onAddContact,
-              selfName: StoreProvider.of<BtoxState>(context).state.nickname,
+              onAddContact: (toxID, message) async {
+                final id = await database.addContact(
+                  ContactsCompanion.insert(
+                    profileId: profile.id,
+                    publicKey: toxID.substring(0, toxID.length - 12),
+                  ),
+                );
+                _logger.d('Added contact: $id');
+              },
+              selfName: profile.settings.nickname,
             ),
           ),
         ),
         tooltip: AppLocalizations.of(context)!.addContact,
         child: const Icon(Icons.add),
-      ),
-    );
-  }
-
-  void _onAddContact(String toxID, String message) {
-    database.addContact(
-      ContactsCompanion.insert(
-        publicKey: toxID.substring(0, toxID.length - 12),
       ),
     );
   }

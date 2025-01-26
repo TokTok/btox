@@ -6,7 +6,7 @@ on:
     branches: [master]
 
 env:
-  FLUTTER_VERSION: "3.27.1"
+  FLUTTER_VERSION: "3.27.3"
 
 jobs:
   common:
@@ -48,6 +48,12 @@ jobs:
       - run: ./tools/prepare
       - run: flutter test --coverage
       - run: bash <(curl -s https://codecov.io/bash)
+      - name: Upload failed test goldens
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failed-test-goldens
+          path: test/failures
 
   android-build:
     runs-on: ubuntu-24.04

@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 0.0.1
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
@@ -29,27 +29,37 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  cupertino_icons: ^1.0.2
-
-  drift: ^2.21.0
-  sqlite3_flutter_libs: ^0.5.26
-  path_provider: ^2.1.5
-  path: ^1.9.0
-  redux: ^5.0.0
-  flutter_redux: ^0.10.0
-  intl: any
   flutter_localizations:
     sdk: flutter
+
+  circular_buffer: ^0.12.0
+  clock: ^1.1.1
+  cupertino_icons: ^1.0.2
+  drift: ^2.21.0
+  flutter_hooks: ^0.20.5
+  flutter_riverpod: ^2.6.1
+  freezed_annotation: ^2.4.4
+  hooks_riverpod: ^2.6.1
+  intl: ^0.19.0
+  json_annotation: ^4.9.0
+  path_provider: ^2.1.5
+  path: ^1.9.0
+  riverpod_annotation: ^2.6.1
+  sqlite3_flutter_libs: ^0.5.26
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  analyzer: ^6.7.0
+  analyzer: ^7.1.0
   build_runner: ^2.1.7
+  custom_lint: ^0.7.0
   drift_dev: ^2.21.2
   flutter_lints: ^5.0.0
+  freezed: ^2.5.7
+  json_serializable: ^6.8.0
+  riverpod_generator: ^2.6.2
+  riverpod_lint: ^2.6.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

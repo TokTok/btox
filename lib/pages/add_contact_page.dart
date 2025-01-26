@@ -2,8 +2,9 @@ import 'package:btox/widgets/friend_request_message_field.dart';
 import 'package:btox/widgets/tox_id_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-final class AddContactPage extends StatefulWidget {
+final class AddContactPage extends HookWidget {
   final String selfName;
   final Function(String, String) onAddContact;
 
@@ -14,20 +15,12 @@ final class AddContactPage extends StatefulWidget {
   });
 
   @override
-  State<AddContactPage> createState() => _AddContactPageState();
-}
-
-final class _AddContactPageState extends State<AddContactPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _toxIdInputController = TextEditingController();
-  final _messageInputController = TextEditingController();
-
-  @override
   Widget build(BuildContext context) {
-    if (_messageInputController.text.isEmpty) {
-      _messageInputController.text = AppLocalizations.of(context)!
-          .defaultAddContactMessage(widget.selfName);
-    }
+    final formKey = useMemoized(() => GlobalKey<FormState>());
+    final toxIdInputController = useTextEditingController();
+    final messageInputController = useTextEditingController(
+      text: AppLocalizations.of(context)!.defaultAddContactMessage(selfName),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -35,20 +28,30 @@ final class _AddContactPageState extends State<AddContactPage> {
       ),
       body: SingleChildScrollView(
         child: Form(
-          key: _formKey,
+          key: formKey,
           child: Column(
             children: [
-              ToxIdField(controller: _toxIdInputController),
+              ToxIdField(controller: toxIdInputController),
               FriendRequestMessageField(
-                controller: _messageInputController,
-                onEditingComplete: () => _onAddContact(_formKey.currentState!),
+                controller: messageInputController,
+                onEditingComplete: () => _onAddContact(
+                  context,
+                  formKey.currentState!,
+                  toxIdInputController.text,
+                  messageInputController.text,
+                ),
               ),
               Align(
                 alignment: Alignment.topRight,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: ElevatedButton(
-                    onPressed: () => _onAddContact(_formKey.currentState!),
+                    onPressed: () => _onAddContact(
+                      context,
+                      formKey.currentState!,
+                      toxIdInputController.text,
+                      messageInputController.text,
+                    ),
                     child: Text(AppLocalizations.of(context)!.add),
                   ),
                 ),
@@ -60,10 +63,10 @@ final class _AddContactPageState extends State<AddContactPage> {
     );
   }
 
-  void _onAddContact(FormState form) {
+  void _onAddContact(
+      BuildContext context, FormState form, String toxId, String message) {
     if (form.validate()) {
-      widget.onAddContact(
-          _toxIdInputController.text, _messageInputController.text);
+      onAddContact(toxId, message);
       Navigator.pop(context);
     }
   }

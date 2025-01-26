@@ -1,3 +1,4 @@
+import 'package:btox/models/tox_constants.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -21,6 +22,12 @@ final class FriendRequestMessageField extends StatelessWidget {
         validator: (value) {
           if (value == null || value.isEmpty) {
             return AppLocalizations.of(context)!.messageEmptyError;
+          }
+          if (value.length > ToxConstants.maxFriendRequestLength) {
+            return AppLocalizations.of(context)!.addContactMessageLengthError(
+              ToxConstants.maxFriendRequestLength,
+              value.length,
+            );
           }
           return null;
         },

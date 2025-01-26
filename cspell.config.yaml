@@ -5,13 +5,14 @@ ignoreWords: []
 flagWords: []
 import: []
 ignorePaths:
-  - ".github/**"
-  - "build/**"
-  - "LICENSE*"
+  - .github/**
+  - build/**
+  - LICENSE*
   - "*.json"
 words:
-  - "btox"
-  - "iphydf"
-  - "kannywood"
-  - "robinlinden"
-  - "yanciman"
+  - btox
+  - iphydf
+  - kannywood
+  - nospam
+  - robinlinden
+  - yanciman

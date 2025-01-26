@@ -1,3 +1,3 @@
 import 'package:btox/db/database.dart';
 
-Database constructDb() => throw UnimplementedError();
+Future<Database> constructDb() => throw UnimplementedError();

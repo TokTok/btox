@@ -1,14 +1,16 @@
-import 'package:btox/models/tox_constants.dart';
+import 'package:btox/api/toxcore/tox.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 final class FriendRequestMessageField extends StatelessWidget {
+  final ToxConstants constants;
   final TextEditingController controller;
   final void Function() onEditingComplete;
 
   const FriendRequestMessageField({
     super.key,
+    required this.constants,
     required this.controller,
     required this.onEditingComplete,
   });
@@ -23,9 +25,9 @@ final class FriendRequestMessageField extends StatelessWidget {
           if (value == null || value.isEmpty) {
             return AppLocalizations.of(context)!.messageEmptyError;
           }
-          if (value.length > ToxConstants.maxFriendRequestLength) {
+          if (value.length > constants.maxFriendRequestLength) {
             return AppLocalizations.of(context)!.addContactMessageLengthError(
-              ToxConstants.maxFriendRequestLength,
+              constants.maxFriendRequestLength,
               value.length,
             );
           }

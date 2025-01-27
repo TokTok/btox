@@ -10,9 +10,15 @@ ignorePaths:
   - LICENSE*
   - "*.json"
 words:
+  - armeabi
   - btox
+  - dylib
+  - ffigen
   - iphydf
   - kannywood
+  - libtoxcore
+  - malloc
   - nospam
   - robinlinden
+  - toxcore
   - yanciman

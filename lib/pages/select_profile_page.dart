@@ -1,22 +1,25 @@
+import 'package:btox/api/toxcore/tox.dart';
 import 'package:btox/db/database.dart';
 import 'package:btox/logger.dart';
 import 'package:btox/pages/create_profile_page.dart';
-import 'package:btox/providers/database.dart';
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 const _logger = Logger(['SelectProfilePage']);
 
-final class SelectProfilePage extends ConsumerWidget {
+final class SelectProfilePage extends StatelessWidget {
+  final ToxConstants constants;
+  final Database database;
   final List<Profile> profiles;
 
   const SelectProfilePage({
     super.key,
+    required this.constants,
+    required this.database,
     required this.profiles,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Select Profile'),
@@ -30,8 +33,7 @@ final class SelectProfilePage extends ConsumerWidget {
             subtitle: Text(profile.settings.statusMessage),
             onTap: () async {
               _logger.d('Selecting profile: ${profile.id}');
-              final db = await ref.read(databaseProvider.future);
-              await db.activateProfile(profile.id);
+              await database.activateProfile(profile.id);
             },
           );
         },
@@ -42,6 +44,8 @@ final class SelectProfilePage extends ConsumerWidget {
             context,
             MaterialPageRoute(
               builder: (context) => CreateProfilePage(
+                constants: constants,
+                database: database,
                 onProfileCreated: (profileId) {
                   Navigator.pop(context);
                 },

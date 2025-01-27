@@ -1,3 +1,4 @@
+import 'package:btox/api/toxcore/tox.dart';
 import 'package:btox/db/database.dart';
 import 'package:btox/models/profile_settings.dart';
 import 'package:btox/widgets/nickname_field.dart';
@@ -7,11 +8,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 final class UserProfilePage extends HookWidget {
+  final ToxConstants constants;
   final Profile profile;
   final void Function(ProfileSettings) onUpdateProfile;
 
   const UserProfilePage({
     super.key,
+    required this.constants,
     required this.profile,
     required this.onUpdateProfile,
   });
@@ -56,6 +59,7 @@ final class UserProfilePage extends HookWidget {
               padding: EdgeInsets.all(8),
             ),
             NicknameField(
+              constants: constants,
               controller: nickInputController,
               onChanged: (value) => applyButtonPressed.value = false,
             ),
@@ -63,6 +67,7 @@ final class UserProfilePage extends HookWidget {
               padding: EdgeInsets.all(8),
             ),
             StatusMessageField(
+              constants: constants,
               controller: statusMessageInputController,
               onChanged: (value) => applyButtonPressed.value = false,
             ),

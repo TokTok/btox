@@ -2,8 +2,10 @@
 exclude:
   - "LICENSE"
   # Generated files.
+  - "**/CMakeLists.txt"
   - "linux/**/*.cc"
   - "linux/**/*.h"
+  - "tools/include/**/*.h"
   - "web/flutter_bootstrap.js"
   - "windows/**/*.cc"
   - "windows/**/*.h"

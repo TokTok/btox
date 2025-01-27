@@ -1,3 +1,4 @@
+import 'package:btox/api/toxcore/tox.dart';
 import 'package:btox/widgets/friend_request_message_field.dart';
 import 'package:btox/widgets/tox_id_field.dart';
 import 'package:flutter/material.dart';
@@ -5,11 +6,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 final class AddContactPage extends HookWidget {
+  final ToxConstants constants;
   final String selfName;
   final Function(String, String) onAddContact;
 
   const AddContactPage({
     super.key,
+    required this.constants,
     required this.selfName,
     required this.onAddContact,
   });
@@ -31,8 +34,12 @@ final class AddContactPage extends HookWidget {
           key: formKey,
           child: Column(
             children: [
-              ToxIdField(controller: toxIdInputController),
+              ToxIdField(
+                constants: constants,
+                controller: toxIdInputController,
+              ),
               FriendRequestMessageField(
+                constants: constants,
                 controller: messageInputController,
                 onEditingComplete: () => _onAddContact(
                   context,

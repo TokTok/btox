@@ -1,9 +1,24 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 set -eux
 
 # Make sure we have all packages downloaded.
 flutter pub get
+
+tools/prepare-toxcore
+
+# Generate the FFI bindings.
+if [ "${RUNNER_OS:-}" != "Windows" ]; then
+  if which clang; then
+    export CPATH="$(clang -v 2>&1 | grep "Selected GCC installation" | rev | cut -d' ' -f1 | rev)/include"
+  elif which gcc; then
+    export CPATH="$(: | gcc -E -Wp,-v - 2>&1 | grep -A1 '#include <...> search starts here:' | tail -n1 | xargs)"
+  else
+    echo "Neither clang nor gcc found."
+    exit 1
+  fi
+fi
+dart run ffigen
 
 # Generate the database (drift) code.
 dart run build_runner build --delete-conflicting-outputs

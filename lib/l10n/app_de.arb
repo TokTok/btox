@@ -1,7 +1,5 @@
 {
   "@@locale": "de",
-  "helloWorld": "Hallo Welt!",
-  "@helloWorld": {},
   "add": "Hinzufügen",
   "@add": {
     "description": "The text for the button to add a contact"

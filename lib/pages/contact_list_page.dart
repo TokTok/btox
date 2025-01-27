@@ -1,55 +1,73 @@
+import 'package:btox/api/toxcore/tox.dart';
 import 'package:btox/db/database.dart';
 import 'package:btox/logger.dart';
 import 'package:btox/pages/add_contact_page.dart';
 import 'package:btox/pages/chat_page.dart';
 import 'package:btox/pages/user_profile_page.dart';
 import 'package:btox/pages/settings_page.dart';
+import 'package:btox/providers/tox.dart';
 import 'package:btox/widgets/contact_list_item.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const _logger = Logger(['ContactListPage']);
 
-final class ContactListPage extends StatelessWidget {
+final class ContactListPage extends ConsumerWidget {
+  final ToxConstants constants;
   final Database database;
   final Profile profile;
 
   const ContactListPage({
     super.key,
+    required this.constants,
     required this.database,
     required this.profile,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
-          children: <Widget>[
+          children: [
             DrawerHeader(
               decoration: const BoxDecoration(
                 color: Colors.blue,
               ),
               child: ListTile(
-                  title: Text(
-                    profile.settings.nickname,
-                    style: const TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w400,
-                    ),
+                title: Text(
+                  profile.settings.nickname,
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w400,
                   ),
-                  subtitle: Text(
-                    profile.settings.statusMessage,
-                    style: const TextStyle(
-                      fontSize: 12.0,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w100,
+                ),
+                subtitle: Text(
+                  profile.settings.statusMessage,
+                  style: const TextStyle(
+                    fontSize: 12.0,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w100,
+                  ),
+                ),
+                trailing: ref.watch(toxEventsProvider).when(
+                      data: (event) {
+                        final online =
+                            event == 'TOX_EVENT_SELF_CONNECTION_STATUS';
+                        return Icon(
+                          online ? Icons.online_prediction : Icons.offline_bolt,
+                          color: online ? Colors.green : Colors.red,
+                        );
+                      },
+                      loading: () => const CircularProgressIndicator(),
+                      error: (error, _) => Text('Error: $error'),
                     ),
-                  )),
+              ),
             ),
             ListTile(
               leading: const Icon(Icons.person),
@@ -69,6 +87,7 @@ final class ContactListPage extends StatelessWidget {
                           );
                         }
                         return UserProfilePage(
+                          constants: constants,
                           profile: profile,
                           onUpdateProfile: (settings) async {
                             await database.updateProfileSettings(
@@ -171,6 +190,7 @@ final class ContactListPage extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => AddContactPage(
+              constants: constants,
               onAddContact: (toxID, message) async {
                 final id = await database.addContact(
                   ContactsCompanion.insert(

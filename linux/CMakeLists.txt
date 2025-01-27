@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(runner LANGUAGES CXX)
 
-set(BINARY_NAME "btox")
+set(BINARY_NAME "bTox")
 set(APPLICATION_ID "chat.tox.btox")
 
 cmake_policy(SET CMP0063 NEW)
@@ -68,6 +68,9 @@ set_target_properties(${BINARY_NAME}
 # them to the application.
 include(flutter/generated_plugins.cmake)
 
+# TODO(iphydf): Figure out where this actually needs to go.
+target_link_libraries(${BINARY_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/vendored/libtoxcore.so")
+set(PLUGIN_BUNDLED_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/vendored/libtoxcore.so.2" ${PLUGIN_BUNDLED_LIBRARIES})
 
 # === Installation ===
 # By default, "installing" just makes a relocatable bundle in the build

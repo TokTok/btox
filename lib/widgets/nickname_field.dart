@@ -1,13 +1,15 @@
-import 'package:btox/models/tox_constants.dart';
+import 'package:btox/api/toxcore/tox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 final class NicknameField extends StatelessWidget {
+  final ToxConstants constants;
   final TextEditingController controller;
   final void Function(String)? onChanged;
 
   const NicknameField({
     super.key,
+    required this.constants,
     required this.controller,
     this.onChanged,
   });
@@ -28,9 +30,9 @@ final class NicknameField extends StatelessWidget {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           validator: (value) {
             value ??= '';
-            if (value.isEmpty || value.length > ToxConstants.maxNameLength) {
+            if (value.isEmpty || value.length > constants.maxNameLength) {
               return AppLocalizations.of(context)!.nickLengthError(
-                ToxConstants.maxNameLength,
+                constants.maxNameLength,
               );
             }
 

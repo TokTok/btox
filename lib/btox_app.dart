@@ -3,6 +3,7 @@ import 'package:btox/pages/contact_list_page.dart';
 import 'package:btox/pages/create_profile_page.dart';
 import 'package:btox/pages/select_profile_page.dart';
 import 'package:btox/providers/database.dart';
+import 'package:btox/providers/tox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,26 +32,37 @@ final class BtoxApp extends ConsumerWidget {
                 child: Text('Error: $error'),
               ),
             ),
-            data: (db) => StreamBuilder<List<Profile>>(
-              stream: db.watchProfiles(),
-              builder: (context, snapshot) {
-                final profiles = snapshot.data ?? const [];
-                if (profiles.isEmpty) {
-                  return const CreateProfilePage();
-                }
+            data: (database) {
+              final constants = ref.read(toxConstantsProvider);
+              return StreamBuilder<List<Profile>>(
+                stream: database.watchProfiles(),
+                builder: (context, snapshot) {
+                  final profiles = snapshot.data ?? const [];
+                  if (profiles.isEmpty) {
+                    return CreateProfilePage(
+                      constants: constants,
+                      database: database,
+                    );
+                  }
 
-                final activeProfiles =
-                    profiles.where((profile) => profile.active).toList();
-                if (activeProfiles.isEmpty) {
-                  return SelectProfilePage(profiles: profiles);
-                }
+                  final activeProfiles =
+                      profiles.where((profile) => profile.active);
+                  if (activeProfiles.isEmpty) {
+                    return SelectProfilePage(
+                      constants: constants,
+                      database: database,
+                      profiles: profiles,
+                    );
+                  }
 
-                return ContactListPage(
-                  database: db,
-                  profile: activeProfiles.first,
-                );
-              },
-            ),
+                  return ContactListPage(
+                    constants: constants,
+                    database: database,
+                    profile: activeProfiles.first,
+                  );
+                },
+              );
+            },
           ),
     );
   }

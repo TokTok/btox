@@ -1,2 +1,2 @@
 [build]
-command = "if cd flutter; then git fetch && git reset --hard 3.27.3 && cd ..; else git clone https://github.com/flutter/flutter.git --branch 3.27.3; fi && export PATH=flutter/bin:$PATH && flutter config --enable-web && ./tools/prepare-web && flutter build web --release"
+command = "flutter config --enable-web && ./tools/prepare-web && flutter build web --release"

@@ -7,6 +7,11 @@ on:
     branches: [master]
     types: [opened, reopened, synchronize]
 
+# Cancel old PR builds when pushing new commits.
+concurrency:
+  group: release-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   release:
     uses: TokTok/ci-tools/.github/workflows/release-drafter.yml@master

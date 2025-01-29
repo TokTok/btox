@@ -130,7 +130,7 @@
   "@deleteProfile": {
     "description": "The text for the delete profile menu item"
   },
-  "deleteProfileMessage": "Are you sure you want to delete your '{name}' profile? This action cannot be undone. It will delete all your contacts and messages. Make sure you have a backup.",
+  "deleteProfileMessage": "Are you sure you want to delete your \"{name}\" profile? This action cannot be undone. It will delete all your contacts and messages. Make sure you have a backup.",
   "@deleteProfileMessage": {
     "description": "The message to confirm the deletion of a profile",
     "placeholders": {
@@ -148,7 +148,7 @@
   "@delete": {
     "description": "The text for the delete button"
   },
-  "profileDeleted": "Profile '{name}' deleted",
+  "profileDeleted": "Profile \"{name}\" deleted",
   "@profileDeleted": {
     "description": "The text when a profile has been deleted",
     "placeholders": {

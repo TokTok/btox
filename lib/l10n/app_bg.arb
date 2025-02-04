@@ -1,1 +1,160 @@
-{}
+{
+  "profileDeleted": "Профилът „{name}“ е премахнат",
+  "@profileDeleted": {
+    "description": "The text when a profile has been deleted",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "defaultContactName": "Неизвестен",
+  "@defaultContactName": {
+    "description": "The default name for a contact when the name is not yet known"
+  },
+  "title": "bTox (работно заглавие)",
+  "@title": {
+    "description": "The title of the application"
+  },
+  "addContact": "Добавяне на контакт",
+  "@addContact": {
+    "description": "The text for the button to add a contact"
+  },
+  "message": "Съобщение",
+  "@message": {
+    "description": "The text for the message field"
+  },
+  "messageInput": "Въведете съобщение",
+  "@messageInput": {
+    "description": "The placeholder text for the message input field"
+  },
+  "toxId": "Идентификатор на Tox",
+  "@toxId": {
+    "description": "The text for the Tox ID field"
+  },
+  "defaultAddContactMessage": "Здравей, аз съм {nick}, ела да си поговориш с мен в bTox!",
+  "@defaultAddContactMessage": {
+    "description": "The default message to send when adding a contact",
+    "placeholders": {
+      "nick": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "addContactMessageLengthError": "Максимален брой {max} знака ({length} е твърде много)",
+  "@addContactMessageLengthError": {
+    "description": "The error message when the friend request message is too long",
+    "placeholders": {
+      "max": {
+        "type": "int",
+        "example": "256"
+      },
+      "length": {
+        "type": "int",
+        "example": "300"
+      }
+    }
+  },
+  "add": "Добавяне",
+  "@add": {
+    "description": "The text for the button to add a contact"
+  },
+  "messageEmptyError": "Съобщението не трябва да бъде празно",
+  "@messageEmptyError": {
+    "description": "The error message when the message is empty"
+  },
+  "menuProfile": "Профил",
+  "@menuProfile": {
+    "description": "The text for the profile menu item"
+  },
+  "menuQuit": "Изход",
+  "@menuQuit": {
+    "description": "The text for the quit menu item"
+  },
+  "menuSettings": "Настройки",
+  "@menuSettings": {
+    "description": "The text for the settings menu item"
+  },
+  "nickLengthError": "Псевдонимът трябва да съдържа между 1 и {max} знака",
+  "@nickLengthError": {
+    "description": "The error message when the nickname is too short or too long",
+    "placeholders": {
+      "max": {
+        "type": "int",
+        "example": "32"
+      }
+    }
+  },
+  "statusMessageLengthError": "Съобщението за състоянието не може да надвишава {max} знака",
+  "@statusMessageLengthError": {
+    "description": "The error message when the status message is longer than the supported maximum",
+    "placeholders": {
+      "max": {
+        "type": "int",
+        "example": "128"
+      }
+    }
+  },
+  "profileTextFieldNick": "Псевдоним",
+  "@profileTextFieldNick": {
+    "description": "The text for the nickname field"
+  },
+  "profileTextFieldUserStatusMessage": "Съобщение за състоянието",
+  "@profileTextFieldUserStatusMessage": {
+    "description": "The text for the status message field"
+  },
+  "applyChanges": "Прилагане на промените",
+  "@applyChanges": {
+    "description": "The text for the button to apply changes"
+  },
+  "applied": "Приложени",
+  "@applied": {
+    "description": "The text when changes have been applied"
+  },
+  "newProfile": "Нов профил",
+  "@newProfile": {
+    "description": "The title text for the create profile dialog"
+  },
+  "create": "Създаване",
+  "@create": {
+    "description": "The text for the button create a new profile"
+  },
+  "logout": "Изход от профила",
+  "@logout": {
+    "description": "The text for the logout menu item"
+  },
+  "deleteProfile": "Премахване на профила",
+  "@deleteProfile": {
+    "description": "The text for the delete profile menu item"
+  },
+  "cancel": "Отказ",
+  "@cancel": {
+    "description": "The text for the cancel button"
+  },
+  "delete": "Премахване",
+  "@delete": {
+    "description": "The text for the delete button"
+  },
+  "toxIdLengthError": "Трябва да бъде {length} шеснадесетични знака",
+  "@toxIdLengthError": {
+    "description": "The error message when the Tox ID is not the right length or format",
+    "placeholders": {
+      "length": {
+        "type": "int",
+        "example": "76"
+      }
+    }
+  },
+  "deleteProfileMessage": "Желаете ли профила „{name}“ да бъде премахнат? Действието е необратимо. То ще премахне всички контакти и съобщения. Уверете се, че имате резервно копие.",
+  "@deleteProfileMessage": {
+    "description": "The message to confirm the deletion of a profile",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  }
+}

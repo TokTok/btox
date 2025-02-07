@@ -14,11 +14,13 @@ if [ "${RUNNER_OS:-}" != "Windows" ]; then
   elif which gcc; then
     export CPATH="$(: | gcc -E -Wp,-v - 2>&1 | grep -A1 '#include <...> search starts here:' | tail -n1 | xargs)"
   else
-    echo "Neither clang nor gcc found."
-    exit 1
+    echo "WARNING: Neither clang nor gcc found. Not generating FFI bindings."
   fi
 fi
-dart run ffigen
+
+if [ -n "${CPATH:-}" ] || [ "${RUNNER_OS:-}" = "Windows" ]; then
+  dart run ffigen
+fi
 
 # Generate the database (drift) code.
 dart run build_runner build --delete-conflicting-outputs

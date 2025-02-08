@@ -1,3 +1,4 @@
+import 'package:btox/models/crypto.dart';
 import 'package:btox/models/id.dart';
 import 'package:btox/models/persistence.dart';
 import 'package:btox/models/profile_settings.dart';
@@ -23,6 +24,7 @@ final class Database extends _$Database {
   int get schemaVersion => 1;
 
   Future<void> activateProfile(Id<Profiles> id) async {
+    // Currently we only support 1 active profile at a time.
     await deactivateProfiles();
 
     await (update(profiles)..where((p) => p.id.equals(id.value)))
@@ -30,6 +32,15 @@ final class Database extends _$Database {
       active: Value(true),
     ));
   }
+
+  Future<Id<Contacts>> addContact(ContactsCompanion entry) async =>
+      Id(await into(contacts).insert(entry));
+
+  Future<Id<Messages>> addMessage(MessagesCompanion entry) async =>
+      Id(await into(messages).insert(entry));
+
+  Future<Id<Profiles>> addProfile(ProfilesCompanion entry) async =>
+      Id(await into(profiles).insert(entry));
 
   Future<void> deactivateProfiles() async {
     await update(profiles).write(ProfilesCompanion(
@@ -59,14 +70,8 @@ final class Database extends _$Database {
     });
   }
 
-  Future<Id<Contacts>> addContact(ContactsCompanion entry) async =>
-      Id(await into(contacts).insert(entry));
-
-  Future<Id<Messages>> addMessage(MessagesCompanion entry) async =>
-      Id(await into(messages).insert(entry));
-
-  Future<Id<Profiles>> addProfile(ProfilesCompanion entry) async =>
-      Id(await into(profiles).insert(entry));
+  Future<Message> getMessage(Id<Messages> id) async =>
+      (select(messages)..where((m) => m.id.equals(id.value))).getSingle();
 
   Future<void> updateProfileSettings(
       Id<Profiles> id, ProfileSettings settings) async {

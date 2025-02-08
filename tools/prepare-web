@@ -11,3 +11,6 @@ curl -L "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-$SQL
 # Drift worker.
 DRIFT_VERSION=2.23.1
 curl -L "https://github.com/simolus3/drift/releases/download/drift-$DRIFT_VERSION/drift_worker.js" -o web/drift_worker.js
+
+# Sodium libs.
+flutter pub run sodium_libs:update_web

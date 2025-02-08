@@ -4,6 +4,7 @@ import 'package:btox/db/database.dart';
 import 'package:btox/ffi/tox_constants.web.dart';
 import 'package:btox/ffi/tox_ffi.web.dart';
 import 'package:btox/ffi/toxcore.web.dart';
+import 'package:btox/models/crypto.dart';
 import 'package:btox/models/profile_settings.dart';
 import 'package:btox/providers/database.dart';
 import 'package:btox/providers/tox.dart';
@@ -17,10 +18,15 @@ import 'package:flutter_test/flutter_test.dart';
 // Drift's timers being created during the test and then only torn down during
 // the tearDown after being reported as leaks at the test end.
 void main() {
-  final String allZeroToxId =
-      String.fromCharCodes(Iterable.generate(76, (_) => '0'.codeUnits.first));
+  final mySecretKey = SecretKey.fromString(
+      String.fromCharCodes(Iterable.generate(64, (_) => 'F'.codeUnits.first)));
+  final myToxId = ToxAddress.fromString(
+      String.fromCharCodes(Iterable.generate(76, (_) => '0'.codeUnits.first)));
+  final friendToxId =
+      String.fromCharCodes(Iterable.generate(76, (_) => '1'.codeUnits.first));
+
   testWidgets('Add contact adds a contact', (WidgetTester tester) async {
-    Database db = Database(NativeDatabase.memory());
+    final Database db = Database(NativeDatabase.memory());
     final profileId = await db.addProfile(
       ProfilesCompanion.insert(
         active: Value(true),
@@ -28,6 +34,9 @@ void main() {
           nickname: 'Yeetman',
           statusMessage: 'Yeeting everyone',
         ),
+        secretKey: mySecretKey,
+        publicKey: myToxId.publicKey,
+        nospam: myToxId.nospam,
       ),
     );
 
@@ -51,21 +60,21 @@ void main() {
     // Take a screenshot.
     await expectLater(find.byType(BtoxApp), matchesGoldenFile('btox_app.png'));
 
-    // Check that no contact with all 0s for the public key exists.
-    expect(find.textContaining('00000000'), findsNothing);
+    // Check that no contact with all 1s for the public key exists.
+    expect(find.textContaining('11111111'), findsNothing);
 
     // Navigate to the 'add contact' screen.
     await tester.tap(find.byIcon(Icons.add));
     await tester.pumpAndSettle();
 
     // Fill in the contact data.
-    await tester.enterText(find.byKey(const Key('toxId')), allZeroToxId);
+    await tester.enterText(find.byKey(const Key('toxId')), friendToxId);
     await tester.pump();
     await tester.tap(find.text('Add'));
     await tester.pumpAndSettle();
 
     // Verify that the contact appeared.
-    expect(find.textContaining('00000000'), findsOneWidget);
+    expect(find.textContaining('11111111'), findsOneWidget);
 
     await db.close();
   });

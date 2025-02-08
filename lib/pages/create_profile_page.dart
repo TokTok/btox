@@ -1,6 +1,7 @@
 import 'package:btox/api/toxcore/tox.dart';
 import 'package:btox/db/database.dart';
 import 'package:btox/logger.dart';
+import 'package:btox/models/crypto.dart';
 import 'package:btox/models/id.dart';
 import 'package:btox/models/persistence.dart';
 import 'package:btox/models/profile_settings.dart';
@@ -58,12 +59,24 @@ final class CreateProfilePage extends HookWidget {
             ElevatedButton(
               onPressed: () async {
                 _logger.d('Creating new profile');
-                final id = await database.addProfile(ProfilesCompanion(
+                final addr = ToxAddress.fromString(
+                  String.fromCharCodes(
+                    Iterable.generate(76, (_) => '0'.codeUnits.first),
+                  ),
+                );
+                final id = await database.addProfile(ProfilesCompanion.insert(
                   active: const Value(true),
-                  settings: Value(ProfileSettings(
+                  settings: ProfileSettings(
                     nickname: nicknameController.text,
                     statusMessage: statusMessageController.text,
-                  )),
+                  ),
+                  secretKey: SecretKey.fromString(
+                    String.fromCharCodes(
+                      Iterable.generate(64, (_) => 'F'.codeUnits.first),
+                    ),
+                  ),
+                  publicKey: addr.publicKey,
+                  nospam: addr.nospam,
                 ));
                 _logger.d('Created new profile with ID $id');
                 onProfileCreated?.call(id);

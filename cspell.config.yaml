@@ -11,6 +11,7 @@ ignorePaths:
   - "*.json"
 words:
   - armeabi
+  - blocksize
   - btox
   - dylib
   - ffigen
@@ -19,6 +20,12 @@ words:
   - libtoxcore
   - malloc
   - nospam
+  - randombytes
   - robinlinden
+  - skwasm
+  - sqlcipher
+  - toxav
   - toxcore
+  - toxencryptsave
+  - unpad
   - yanciman

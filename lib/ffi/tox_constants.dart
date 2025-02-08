@@ -1,3 +1,3 @@
-export 'tox_constants.native.dart'
+export 'tox_constants.web.dart'
     if (dart.library.html) 'tox_constants.web.dart'
-    if (dart.library.js) 'tox_constants.web.dart';
+    if (dart.library.ffi) 'tox_constants.native.dart';

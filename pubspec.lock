@@ -199,13 +199,21 @@ packages:
     source: hosted
     version: "3.1.2"
   crypto:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: crypto
       sha256: "1e445881f28f22d6140f181e07737b22f1e099a5e1ff94b0af2f9e4a463f4855"
       url: "https://pub.dev"
     source: hosted
     version: "3.0.6"
+  csslib:
+    dependency: transitive
+    description:
+      name: csslib
+      sha256: "09bad715f418841f976c77db72d5398dc1253c21fb9c0c7f0b0b985860b2d58e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -218,18 +226,18 @@ packages:
     dependency: "direct dev"
     description:
       name: custom_lint
-      sha256: "6d509673c4dd0baa90e60dc8366bc2acc6690f16a7d44bfae31294d82c5d2a62"
+      sha256: "021897cce2b6c783b2521543e362e7fe1a2eaab17bf80514d8de37f99942ed9e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.1"
+    version: "0.7.3"
   custom_lint_builder:
     dependency: transitive
     description:
       name: custom_lint_builder
-      sha256: "8cc525c7b160eb47bb1ded8b2633c0f8b907930eb986ac577aded87cdd2835fe"
+      sha256: e4235b9d8cef59afe621eba086d245205c8a0a6c70cd470be7cb17494d6df32d
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.1"
+    version: "0.7.3"
   custom_lint_core:
     dependency: transitive
     description:
@@ -258,18 +266,18 @@ packages:
     dependency: "direct main"
     description:
       name: drift
-      sha256: "76f23535e19a9f2be92f954e74d8802e96f526e5195d7408c1a20f6659043941"
+      sha256: ab4d0e7aa1793829b1dd8e72d71bbf0b53bf4ff84b184045d1ab71b0832e632e
       url: "https://pub.dev"
     source: hosted
-    version: "2.24.0"
+    version: "2.25.0"
   drift_dev:
     dependency: "direct dev"
     description:
       name: drift_dev
-      sha256: d1d90b0d55b22de412b77186f3bf3179a4b7e2acc4c8fb3a7aaf28a01abc194b
+      sha256: "9aaf4e4c406afb93e907b5e21e0120a2618abb436bec5809fa9190232f3eed47"
       url: "https://pub.dev"
     source: hosted
-    version: "2.24.0"
+    version: "2.25.0"
   fake_async:
     dependency: transitive
     description:
@@ -349,6 +357,11 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_web_plugins:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   freezed:
     dependency: "direct dev"
     description:
@@ -405,6 +418,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.3.0"
+  html:
+    dependency: transitive
+    description:
+      name: html
+      sha256: "1fc58edeaec4307368c60d59b7e15b9d658b57d7f3125098b6294153c75337ec"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.15.5"
   http:
     dependency: "direct main"
     description:
@@ -533,6 +554,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.11.1"
+  messagepack:
+    dependency: "direct main"
+    description:
+      name: messagepack
+      sha256: "11e69dd79ba84ba901261558881b42ac8b24155a7846a344875a32c8b0866d71"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.1"
   meta:
     dependency: transitive
     description:
@@ -738,6 +767,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  sodium:
+    dependency: "direct main"
+    description:
+      name: sodium
+      sha256: "93d7c8d9af1f57cbd1ddeeb815902d3e0c1e1c8579a78cf229bcd97e1714f061"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.4"
+  sodium_libs:
+    dependency: "direct main"
+    description:
+      name: sodium_libs
+      sha256: "4e5d96a7805369dd51b24975a9072c51433466ae5716a33cff70316a14d97af9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.3+1"
   source_gen:
     dependency: transitive
     description:
@@ -770,22 +815,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.0"
-  sqlite3:
-    dependency: transitive
-    description:
-      name: sqlite3
-      sha256: "35d3726fe18ab1463403a5cc8d97dbc81f2a0b08082e8173851363fcc97b6627"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.7.2"
-  sqlite3_flutter_libs:
+  sqlcipher_flutter_libs:
     dependency: "direct main"
     description:
-      name: sqlite3_flutter_libs
-      sha256: "50a7e3f294c741d3142eed0ff228e38498334e11e0ccb9d73e0496e005949e44"
+      name: sqlcipher_flutter_libs
+      sha256: a6a08d3082c1deaacc8f6670c78a9c2384991102db5b234d5293aa2c65e87f61
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.29"
+    version: "0.6.4"
+  sqlite3:
+    dependency: "direct main"
+    description:
+      name: sqlite3
+      sha256: decd58236d7c59e01ae81b34ebd158e6a1b61e0ae5397fc428736eb91ab82808
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.7.3"
   sqlparser:
     dependency: transitive
     description:
@@ -834,6 +879,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0"
+  synchronized:
+    dependency: transitive
+    description:
+      name: synchronized
+      sha256: "69fe30f3a8b04a0be0c15ae6490fc859a78ef4c43ae2dd5e8a623d45bfcf9225"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.3.0+3"
   term_glyph:
     dependency: transitive
     description:
@@ -948,4 +1001,4 @@ packages:
     version: "2.2.2"
 sdks:
   dart: ">=3.6.0 <4.0.0"
-  flutter: ">=3.24.0"
+  flutter: ">=3.27.0"

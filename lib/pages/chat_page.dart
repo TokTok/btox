@@ -6,7 +6,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 final class ChatPage extends HookWidget {
   final Stream<Contact> contact;
   final Stream<List<Message>> messages;
-  final void Function(String message) onSendMessage;
+  final void Function(Message? parent, String message) onSendMessage;
 
   const ChatPage({
     super.key,
@@ -27,14 +27,14 @@ final class ChatPage extends HookWidget {
           title: Text(snapshot.data?.name ??
               AppLocalizations.of(context)!.defaultContactName),
         ),
-        body: Column(
-          children: [
-            Expanded(
-              child: StreamBuilder<List<Message>>(
-                stream: messages,
-                builder: ((context, snapshot) {
-                  final messages = snapshot.data ?? <Message>[];
-                  return ListView.builder(
+        body: StreamBuilder<List<Message>>(
+          stream: messages,
+          builder: ((context, snapshot) {
+            final messages = snapshot.data ?? <Message>[];
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
                     reverse: true,
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
@@ -45,45 +45,48 @@ final class ChatPage extends HookWidget {
                         subtitle: Text(message.timestamp.toLocal().toString()),
                       );
                     },
-                  );
-                }),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: const UnderlineInputBorder(),
-                  labelText: AppLocalizations.of(context)!.messageInput,
-                  suffixIcon: IconButton(
-                    onPressed: () => _onSendMessage(
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      border: const UnderlineInputBorder(),
+                      labelText: AppLocalizations.of(context)!.messageInput,
+                      suffixIcon: IconButton(
+                        onPressed: () => _onSendMessage(
+                          messages.lastOrNull,
+                          messageInputController,
+                          messageInputFocus,
+                        ),
+                        icon: const Icon(Icons.send),
+                      ),
+                    ),
+                    onEditingComplete: () => _onSendMessage(
+                      messages.lastOrNull,
                       messageInputController,
                       messageInputFocus,
                     ),
-                    icon: const Icon(Icons.send),
+                    controller: messageInputController,
+                    focusNode: messageInputFocus,
+                    textInputAction: TextInputAction.send,
+                    autofocus: true,
                   ),
                 ),
-                onEditingComplete: () => _onSendMessage(
-                  messageInputController,
-                  messageInputFocus,
-                ),
-                controller: messageInputController,
-                focusNode: messageInputFocus,
-                textInputAction: TextInputAction.send,
-                autofocus: true,
-              ),
-            ),
-          ],
+              ],
+            );
+          }),
         ),
       ),
     );
   }
 
   void _onSendMessage(
+    Message? parent,
     TextEditingController messageInputController,
     FocusNode messageInputFocus,
   ) {
-    onSendMessage(messageInputController.text);
+    onSendMessage(parent, messageInputController.text);
     messageInputController.clear();
     messageInputFocus.requestFocus();
   }

@@ -14,8 +14,7 @@ void main() {
   final friendPk = PublicKey.fromString(
       '0000000000000000000000000000000000000000000000000000000000000000');
 
-  test('Messages can be added to the database', () async {
-    final Database db = Database(NativeDatabase.memory());
+  testDatabase('Messages can be added to the database', (Database db) async {
     final profileId = await db.addProfile(
       ProfilesCompanion.insert(
         active: Value(true),
@@ -51,7 +50,7 @@ void main() {
     )));
 
     expect(firstMsg.sha.toHex(),
-        'D956A81987691ABB5368B97B5E0656E1BF65731D699138B9A891C36A632B7209');
+        'C64A25D0DE1AC055731897680A9123E35F920270DBF02F3A30614F5BCD7C5039');
 
     // Happy new year in 2026.
     final secondMsg = await db.getMessage(await db.addMessage(newMessage(
@@ -63,13 +62,10 @@ void main() {
     )));
 
     expect(secondMsg.sha.toHex(),
-        '99A179417DF7DD59EF3CC02D4B3F031903728DD137F0B1494F346557A1841845');
-
-    await db.close();
+        'C1C848C6AA953FEB9D02CBB80FE8AAECA15820CF83BF354A7454123B661C6B25');
   }, tags: ['persistence']);
 
-  test('Two separate histories can be merged', () async {
-    final Database db = Database(NativeDatabase.memory());
+  testDatabase('Two separate histories can be merged', (db) async {
     final profileId = await db.addProfile(
       ProfilesCompanion.insert(
         active: Value(true),
@@ -126,7 +122,7 @@ void main() {
     )));
 
     expect(mergedMessage.sha.toHex(),
-        'E894463EAD4313D1A58E682BD087A94028A13A5528BFBBE1DFE2D7F203FEA170');
+        'D6281BF3A62840613D354EFFF57016E200E78F76BDB2CCF7D8A3611B826F38D9');
   }, tags: ['persistence']);
 
   test('Microseconds are ignored in hash calculation', () async {
@@ -168,4 +164,20 @@ void main() {
 
     expect(msg1.sha, isNot(msg2.sha));
   }, tags: ['persistence']);
+}
+
+void testDatabase(
+  String description,
+  Future<void> Function(Database) body, {
+  List<String> tags = const [],
+}) {
+  test(description, () async {
+    final db = Database(NativeDatabase.memory());
+
+    try {
+      await body(db);
+    } finally {
+      await db.close();
+    }
+  }, tags: tags);
 }

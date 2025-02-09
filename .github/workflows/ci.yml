@@ -146,7 +146,7 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
       - run: ./tools/prepare-web
-      - run: flutter build web --wasm
+      - run: flutter build web
 
   windows-build:
     runs-on: windows-2022

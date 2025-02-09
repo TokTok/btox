@@ -1,12 +1,27 @@
+import 'package:btox/api/toxcore/tox.dart';
 import 'package:btox/db/database.dart';
 import 'package:btox/pages/contact_list_page.dart';
 import 'package:btox/pages/create_profile_page.dart';
 import 'package:btox/pages/select_profile_page.dart';
 import 'package:btox/providers/database.dart';
+import 'package:btox/providers/sodium.dart';
 import 'package:btox/providers/tox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sodium/sodium.dart';
+
+part 'btox_app.g.dart';
+
+@riverpod
+Future<(Database, Sodium, ToxConstants)> appInit(Ref ref) async {
+  return (
+    await ref.watch(databaseProvider.future),
+    await ref.watch(sodiumProvider.future),
+    await ref.watch(toxConstantsProvider.future),
+  );
+}
 
 final class BtoxApp extends ConsumerWidget {
   const BtoxApp({super.key});
@@ -21,7 +36,7 @@ final class BtoxApp extends ConsumerWidget {
         brightness: Brightness.dark,
         primarySwatch: Colors.blue,
       ),
-      home: ref.watch(databaseProvider).when(
+      home: ref.watch(appInitProvider).when(
             loading: () => const Scaffold(
               body: Center(
                 child: CircularProgressIndicator(),
@@ -32,8 +47,8 @@ final class BtoxApp extends ConsumerWidget {
                 child: Text('Error: $error'),
               ),
             ),
-            data: (database) {
-              final constants = ref.read(toxConstantsProvider);
+            data: (init) {
+              final (database, sodium, constants) = init;
               return StreamBuilder<List<Profile>>(
                 stream: database.watchProfiles(),
                 builder: (context, snapshot) {
@@ -41,6 +56,7 @@ final class BtoxApp extends ConsumerWidget {
                   if (profiles.isEmpty) {
                     return CreateProfilePage(
                       constants: constants,
+                      sodium: sodium,
                       database: database,
                     );
                   }
@@ -50,6 +66,7 @@ final class BtoxApp extends ConsumerWidget {
                   if (activeProfiles.isEmpty) {
                     return SelectProfilePage(
                       constants: constants,
+                      sodium: sodium,
                       database: database,
                       profiles: profiles,
                     );

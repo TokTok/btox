@@ -10,6 +10,8 @@ final class ApiException<T extends Enum> implements Exception {
 }
 
 abstract class Tox {
+  const Tox();
+
   String get address;
 
   bool get isAlive;

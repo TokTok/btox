@@ -10,17 +10,20 @@ import 'package:btox/widgets/status_message_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:sodium/sodium.dart';
 
 const _logger = Logger(['CreateProfilePage']);
 
 final class CreateProfilePage extends HookWidget {
   final ToxConstants constants;
+  final Sodium sodium;
   final Database database;
   final Function(Id<Profiles>)? onProfileCreated;
 
   const CreateProfilePage({
     super.key,
     required this.constants,
+    required this.sodium,
     required this.database,
     this.onProfileCreated,
   });
@@ -59,24 +62,17 @@ final class CreateProfilePage extends HookWidget {
             ElevatedButton(
               onPressed: () async {
                 _logger.d('Creating new profile');
-                final addr = ToxAddress.fromString(
-                  String.fromCharCodes(
-                    Iterable.generate(76, (_) => '0'.codeUnits.first),
-                  ),
-                );
+                final keyPair = sodium.crypto.box.keyPair();
+
                 final id = await database.addProfile(ProfilesCompanion.insert(
                   active: const Value(true),
                   settings: ProfileSettings(
                     nickname: nicknameController.text,
                     statusMessage: statusMessageController.text,
                   ),
-                  secretKey: SecretKey.fromString(
-                    String.fromCharCodes(
-                      Iterable.generate(64, (_) => 'F'.codeUnits.first),
-                    ),
-                  ),
-                  publicKey: addr.publicKey,
-                  nospam: addr.nospam,
+                  secretKey: SecretKey.fromSodium(keyPair.secretKey),
+                  publicKey: PublicKey(keyPair.publicKey),
+                  nospam: ToxAddressNospam(0),
                 ));
                 _logger.d('Created new profile with ID $id');
                 onProfileCreated?.call(id);

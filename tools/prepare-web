@@ -1,8 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-set -eux
-
-tools/prepare
+set -eux -o pipefail
 
 # SQLite wasm/js.
 SQLITE_VERSION=2.6.1
@@ -14,3 +12,8 @@ curl -L "https://github.com/simolus3/drift/releases/download/drift-$DRIFT_VERSIO
 
 # Sodium libs.
 flutter pub run sodium_libs:update_web
+
+# Toxcore libs.
+tar -C web/ -zxf <(curl -L https://github.com/TokTok/c-toxcore/releases/download/nightly/toxcore-nightly-wasm.tar.gz)
+
+tools/prepare

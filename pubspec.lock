@@ -470,10 +470,10 @@ packages:
     dependency: transitive
     description:
       name: js
-      sha256: c1b2e9b5ea78c45e1a0788d29606ba27dc5f71f019f32ca5140f61ef071838cf
+      sha256: f2c445dce49627136094980615a031419f7f3eb393237e4ecd97ac15dea343f3
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.1"
+    version: "0.6.7"
   json_annotation:
     dependency: "direct main"
     description:
@@ -554,14 +554,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.11.1"
-  messagepack:
-    dependency: "direct main"
-    description:
-      name: messagepack
-      sha256: "11e69dd79ba84ba901261558881b42ac8b24155a7846a344875a32c8b0866d71"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.1"
   meta:
     dependency: transitive
     description:
@@ -943,6 +935,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "14.3.0"
+  wasm_ffi:
+    dependency: "direct main"
+    description:
+      name: wasm_ffi
+      sha256: f4539052e4d80575bb4820c836a2d6400af061b71c1605af60ebfb30b7c5369a
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.7"
   watcher:
     dependency: transitive
     description:

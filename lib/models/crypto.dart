@@ -1,6 +1,7 @@
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:drift/drift.dart';
+import 'package:sodium/sodium.dart';
 
 /// Compares two [Uint8List]s by comparing 8 bytes at a time.
 bool _memEquals(Uint8List bytes1, Uint8List bytes2) {
@@ -78,6 +79,10 @@ final class SecretKey extends _CryptoNumber {
   static const kLength = 32;
 
   SecretKey(super.bytes);
+
+  factory SecretKey.fromSodium(SecureKey value) {
+    return SecretKey(Uint8List.fromList(value.extractBytes()));
+  }
 
   factory SecretKey.fromString(String value) {
     return SecretKey(Uint8List.fromList(hex.decode(value)));

@@ -8,11 +8,3 @@ part 'sodium.g.dart';
 Future<Sodium> sodium(Ref ref) async {
   return SodiumInit.init();
 }
-
-@riverpod
-Stream<KeyPair> sodiumKeyPair(Ref ref) async* {
-  final sodium = await ref.watch(sodiumProvider.future);
-  while (true) {
-    yield sodium.crypto.box.keyPair();
-  }
-}

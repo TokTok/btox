@@ -1,9 +1,8 @@
-import 'package:btox/api/toxcore/tox_options.dart';
 import 'package:btox/btox_app.dart';
 import 'package:btox/db/database.dart';
-import 'package:btox/ffi/tox_constants.web.dart';
-import 'package:btox/ffi/tox_ffi.web.dart';
-import 'package:btox/ffi/toxcore.web.dart';
+import 'package:btox/providers/sodium.dart';
+import 'mocks/fake_sodium.dart';
+import 'mocks/fake_tox_constants.dart';
 import 'package:btox/models/crypto.dart';
 import 'package:btox/models/profile_settings.dart';
 import 'package:btox/providers/database.dart';
@@ -12,6 +11,8 @@ import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'mocks/fake_toxcore.dart';
 
 // The database can't be constructed/torn down in the Flutter test framework
 // setUp and tearDown functions as that leads to leaks being reported due to
@@ -46,9 +47,9 @@ void main() {
       ProviderScope(
         overrides: [
           databaseProvider.overrideWith((ref) => db),
-          toxConstantsProvider
-              .overrideWith((ref) => toxcoreConstants(ToxFfi())),
-          toxProvider.overrideWith((ref) => Toxcore(ToxFfi(), ToxOptions())),
+          sodiumProvider.overrideWith((ref) => FakeSodium()),
+          toxConstantsProvider.overrideWith((ref) => fakeToxcoreConstants),
+          toxProvider.overrideWith((ref) => FakeToxcore()),
         ],
         child: const BtoxApp(),
       ),

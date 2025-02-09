@@ -1,7 +1,7 @@
 import 'package:btox/api/toxcore/tox.dart';
 import 'package:btox/api/toxcore/tox_options.dart';
 import 'package:btox/ffi/tox_constants.dart' as ffi;
-import 'package:btox/ffi/tox_ffi.dart' as ffi;
+import 'package:btox/ffi/tox_library.dart' as ffi;
 import 'package:btox/ffi/toxcore.dart' as ffi;
 import 'package:btox/logger.dart';
 import 'package:btox/providers/bootstrap_nodes.dart';
@@ -15,15 +15,15 @@ const _logger = Logger(['ToxProvider']);
 @riverpod
 Future<Tox> tox(Ref ref) async {
   final options = ToxOptions();
-  final tox = ffi.Toxcore(ref.read(ffi.toxFfiProvider), options);
+  final tox = ffi.Toxcore(await ref.read(ffi.toxFfiProvider.future), options);
   ref.onDispose(tox.kill);
   _logger.d('Tox instance created: ${tox.address.toUpperCase()}');
   return tox;
 }
 
 @riverpod
-ToxConstants toxConstants(Ref ref) {
-  return ffi.toxcoreConstants(ref.read(ffi.toxFfiProvider));
+Future<ToxConstants> toxConstants(Ref ref) async {
+  return ffi.toxcoreConstants(await ref.read(ffi.toxFfiProvider.future));
 }
 
 @riverpod

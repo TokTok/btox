@@ -20,6 +20,15 @@ fi
 
 if [ -n "${CPATH:-}" ] || [ "${RUNNER_OS:-}" = "Windows" ]; then
   dart run ffigen
+  sed \
+    -e 's|dart:ffi|package:wasm_ffi/ffi.dart|g' \
+    -e 's|ignore_for_file: type=lint|ignore_for_file: type=lint, subtype_of_sealed_class|' \
+    -e 's|ffi\.Bool|ffi.Int8|g' \
+    -e 's|ffi\.Char|ffi.Int8|g' \
+    -e 's|ffi\.Size|ffi.Uint32|g' \
+    -e 's|ffi\.UnsignedInt|ffi.Uint32|g' \
+    lib/ffi/generated/toxcore.ffi.dart \
+    >lib/ffi/generated/toxcore.js.dart
 fi
 
 # Generate the database (drift) code.

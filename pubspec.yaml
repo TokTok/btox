@@ -46,7 +46,6 @@ dependencies:
   http: ^1.3.0
   intl: ^0.19.0
   json_annotation: ^4.9.0
-  messagepack: ^0.2.1
   path_provider: ^2.1.5
   path: ^1.9.0
   riverpod_annotation: ^2.6.1
@@ -54,6 +53,7 @@ dependencies:
   sodium: ^3.4.4
   sqlcipher_flutter_libs: ^0.6.4
   sqlite3: ^2.7.3
+  wasm_ffi: ^2.0.7
 
 dev_dependencies:
   flutter_test:
@@ -82,6 +82,9 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # assets:
+  #   - assets/images/
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
@@ -109,7 +112,7 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 
 ffigen:
-  output: lib/ffi/generated/toxcore.native.dart
+  output: lib/ffi/generated/toxcore.ffi.dart
   headers:
     entry-points:
       - tools/include/tox/tox.h
@@ -123,7 +126,5 @@ ffigen:
   name: ToxFfi
   description: Bindings to TokTok/c-toxcore.
   silence-enum-warning: true
-  structs:
-    dependency-only: opaque
   compiler-opts:
     - "-DTOX_HIDE_DEPRECATED"

@@ -1,20 +1,12 @@
 // Fake implementation of the Tox class for testing purposes.
 import 'package:btox/api/toxcore/tox.dart' as api;
-import 'package:btox/api/toxcore/tox_options.dart';
-import 'package:btox/ffi/tox_ffi.web.dart';
 
-final class Toxcore extends api.Tox {
+final class FakeToxcore extends api.Tox {
   @override
   String name = 'Yanciman';
 
   @override
   String statusMessage = 'Producing works of art in Kannywood';
-
-  factory Toxcore(ToxFfi ffi, ToxOptions options) {
-    return Toxcore._();
-  }
-
-  Toxcore._();
 
   @override
   String get address {

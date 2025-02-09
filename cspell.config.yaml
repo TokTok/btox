@@ -14,11 +14,14 @@ words:
   - blocksize
   - btox
   - dylib
+  - emscripten
   - ffigen
   - iphydf
   - kannywood
   - libtoxcore
   - malloc
+  - messagepack
+  - msgpack
   - nospam
   - randombytes
   - robinlinden

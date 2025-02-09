@@ -3,17 +3,20 @@ import 'package:btox/db/database.dart';
 import 'package:btox/logger.dart';
 import 'package:btox/pages/create_profile_page.dart';
 import 'package:flutter/material.dart';
+import 'package:sodium/sodium.dart';
 
 const _logger = Logger(['SelectProfilePage']);
 
 final class SelectProfilePage extends StatelessWidget {
   final ToxConstants constants;
+  final Sodium sodium;
   final Database database;
   final List<Profile> profiles;
 
   const SelectProfilePage({
     super.key,
     required this.constants,
+    required this.sodium,
     required this.database,
     required this.profiles,
   });
@@ -45,6 +48,7 @@ final class SelectProfilePage extends StatelessWidget {
             MaterialPageRoute(
               builder: (context) => CreateProfilePage(
                 constants: constants,
+                sodium: sodium,
                 database: database,
                 onProfileCreated: (profileId) {
                   Navigator.pop(context);

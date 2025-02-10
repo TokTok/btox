@@ -1,5 +1,5 @@
 name: btox
-description: A new Flutter project.
+description: bTox chat client
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -64,11 +64,25 @@ dev_dependencies:
   custom_lint: ^0.7.0
   drift_dev: ^2.21.2
   ffigen: ^15.0.0
+  flutter_launcher_icons: ^0.14.1
   flutter_lints: ^5.0.0
   freezed: ^2.5.7
   json_serializable: ^6.8.0
   riverpod_generator: ^2.6.2
   riverpod_lint: ^2.6.2
+
+# dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  macos:
+    generate: true
+  windows:
+    generate: true
+  web:
+    generate: true
+  image_path: "assets/images/btox-icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -82,8 +96,8 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # assets:
-  #   - assets/images/
+  assets:
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

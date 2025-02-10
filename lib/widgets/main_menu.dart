@@ -1,20 +1,17 @@
 import 'package:btox/api/toxcore/tox.dart';
-import 'package:btox/api/toxcore/tox_events.dart';
 import 'package:btox/db/database.dart';
-import 'package:btox/ffi/tox_library.dart';
 import 'package:btox/logger.dart';
 import 'package:btox/pages/settings_page.dart';
 import 'package:btox/pages/user_profile_page.dart';
-import 'package:btox/providers/tox.dart';
+import 'package:btox/widgets/connection_status_icon.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const _logger = Logger(['MainMenu']);
 
-final class MainMenu extends ConsumerWidget {
+final class MainMenu extends StatelessWidget {
   final ToxConstants constants;
   final Profile profile;
   final Database database;
@@ -27,7 +24,7 @@ final class MainMenu extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
@@ -38,33 +35,13 @@ final class MainMenu extends ConsumerWidget {
           child: ListTile(
             title: Text(
               profile.settings.nickname,
-              style: const TextStyle(
-                fontSize: 16.0,
-                color: Colors.white,
-                fontWeight: FontWeight.w400,
-              ),
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             subtitle: Text(
               profile.settings.statusMessage,
-              style: const TextStyle(
-                fontSize: 12.0,
-                color: Colors.white,
-                fontWeight: FontWeight.w100,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
-            trailing: ref.watch(toxEventsProvider).when(
-                  data: (event) {
-                    final online = event is ToxEventSelfConnectionStatus &&
-                        event.connectionStatus !=
-                            Tox_Connection.TOX_CONNECTION_NONE;
-                    return Icon(
-                      online ? Icons.online_prediction : Icons.offline_bolt,
-                      color: online ? Colors.green : Colors.red,
-                    );
-                  },
-                  loading: () => const CircularProgressIndicator(),
-                  error: (error, _) => Text('Error: $error'),
-                ),
+            trailing: ConnectionStatusIcon(profile: profile),
           ),
         ),
         ListTile(

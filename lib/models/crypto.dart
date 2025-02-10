@@ -53,7 +53,7 @@ final class PublicKey extends _CryptoNumber {
 
   PublicKey(super.bytes);
 
-  factory PublicKey.fromString(String value) {
+  factory PublicKey.fromJson(String value) {
     return PublicKey(Uint8List.fromList(hex.decode(value)));
   }
 
@@ -66,11 +66,11 @@ final class PublicKeyConverter extends TypeConverter<PublicKey, String>
   const PublicKeyConverter();
 
   @override
-  PublicKey fromJson(String json) => PublicKey.fromString(json);
+  PublicKey fromJson(String json) => PublicKey.fromJson(json);
   @override
   PublicKey fromSql(String fromDb) => fromJson(fromDb);
   @override
-  String toJson(PublicKey value) => value.toHex();
+  String toJson(PublicKey value) => value.toJson();
   @override
   String toSql(PublicKey value) => toJson(value);
 }
@@ -101,7 +101,7 @@ final class SecretKeyConverter extends TypeConverter<SecretKey, String>
   @override
   SecretKey fromSql(String fromDb) => fromJson(fromDb);
   @override
-  String toJson(SecretKey value) => value.toHex();
+  String toJson(SecretKey value) => value.toJson();
   @override
   String toSql(SecretKey value) => toJson(value);
 }
@@ -132,7 +132,7 @@ final class Sha256Converter extends TypeConverter<Sha256, String>
   @override
   Sha256 fromSql(String fromDb) => fromJson(fromDb);
   @override
-  String toJson(Sha256 value) => value.toHex();
+  String toJson(Sha256 value) => value.toJson();
   @override
   String toSql(Sha256 value) => toJson(value);
 }
@@ -203,12 +203,12 @@ sealed class _CryptoNumber {
         _memEquals(bytes, other.bytes);
   }
 
-  String toHex() {
+  String toJson() {
     return hex.encode(bytes).toUpperCase();
   }
 
   @override
   String toString() {
-    return '$runtimeType(${toHex()})';
+    return '$runtimeType(${toJson()})';
   }
 }

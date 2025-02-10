@@ -64,11 +64,25 @@ dev_dependencies:
   custom_lint: ^0.7.0
   drift_dev: ^2.21.2
   ffigen: ^15.0.0
+  flutter_launcher_icons: ^0.14.1
   flutter_lints: ^5.0.0
   freezed: ^2.5.7
   json_serializable: ^6.8.0
   riverpod_generator: ^2.6.2
   riverpod_lint: ^2.6.2
+
+# dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  macos:
+    generate: true
+  windows:
+    generate: true
+  web:
+    generate: true
+  image_path: "assets/images/btox-icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

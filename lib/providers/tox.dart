@@ -1,4 +1,5 @@
 import 'package:btox/api/toxcore/tox.dart';
+import 'package:btox/api/toxcore/tox_events.dart';
 import 'package:btox/api/toxcore/tox_options.dart';
 import 'package:btox/ffi/tox_constants.dart' as ffi;
 import 'package:btox/ffi/tox_library.dart' as ffi;
@@ -27,7 +28,7 @@ Future<ToxConstants> toxConstants(Ref ref) async {
 }
 
 @riverpod
-Stream<String> toxEvents(Ref ref) async* {
+Stream<Event> toxEvents(Ref ref) async* {
   final tox = await ref.watch(toxProvider.future);
 
   final nodes = (await ref.watch(bootstrapNodesProvider.future))
@@ -42,7 +43,7 @@ Stream<String> toxEvents(Ref ref) async* {
 
   while (tox.isAlive) {
     for (final event in tox.iterate()) {
-      if (event == 'TOX_EVENT_DHT_GET_NODES_RESPONSE') {
+      if (event is ToxEventDhtNodesResponse) {
         continue;
       }
       _logger.d('Tox event: $event');

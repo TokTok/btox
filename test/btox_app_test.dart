@@ -49,7 +49,8 @@ void main() {
           databaseProvider.overrideWith((ref) => db),
           sodiumProvider.overrideWith((ref) => FakeSodium()),
           toxConstantsProvider.overrideWith((ref) => fakeToxcoreConstants),
-          toxProvider.overrideWith((ref) => FakeToxcore()),
+          toxProvider(mySecretKey, myToxId.nospam)
+              .overrideWith((ref) async => FakeToxcore()),
         ],
         child: const BtoxApp(),
       ),

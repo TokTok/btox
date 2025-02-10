@@ -3,7 +3,7 @@ import 'package:crypto/crypto.dart';
 import 'package:drift/drift.dart';
 import 'package:sodium/sodium.dart';
 
-/// Compares two [Uint8List]s by comparing 8 bytes at a time.
+/// Compares two [Uint8List]s by comparing 4 bytes at a time.
 bool _memEquals(Uint8List bytes1, Uint8List bytes2) {
   if (identical(bytes1, bytes2)) {
     return true;
@@ -13,10 +13,10 @@ bool _memEquals(Uint8List bytes1, Uint8List bytes2) {
     return false;
   }
 
-  // Treat the original byte lists as lists of 8-byte words.
-  final numWords = bytes1.lengthInBytes ~/ 8;
-  final words1 = bytes1.buffer.asUint64List(0, numWords);
-  final words2 = bytes2.buffer.asUint64List(0, numWords);
+  // Treat the original byte lists as lists of 4-byte words.
+  final numWords = bytes1.lengthInBytes ~/ 4;
+  final words1 = bytes1.buffer.asUint32List(0, numWords);
+  final words2 = bytes2.buffer.asUint32List(0, numWords);
 
   for (var i = 0; i < words1.length; i += 1) {
     if (words1[i] != words2[i]) {
@@ -32,6 +32,12 @@ bool _memEquals(Uint8List bytes1, Uint8List bytes2) {
   }
 
   return true;
+}
+
+/// Returns a hash code for the given [Uint8List].
+int _memHash(Uint8List bytes) {
+  // Very slow, but ok for now. Can optimize later.
+  return Object.hashAll(bytes);
 }
 
 final class NospamConverter extends TypeConverter<ToxAddressNospam, int>
@@ -155,7 +161,7 @@ final class ToxAddress extends _CryptoNumber {
   ToxAddressNospam get nospam =>
       ToxAddressNospam(bytes.buffer.asByteData().getUint32(PublicKey.kLength));
   PublicKey get publicKey =>
-      PublicKey(Uint8List.fromList(bytes.sublist(0, PublicKey.kLength)));
+      PublicKey(Uint8List.view(bytes.buffer, 0, PublicKey.kLength));
 }
 
 final class ToxAddressHash {
@@ -185,14 +191,14 @@ final class ToxAddressNospam {
 sealed class _CryptoNumber {
   final Uint8List bytes;
 
-  _CryptoNumber(this.bytes) {
+  _CryptoNumber(Uint8List bytes) : bytes = bytes.asUnmodifiableView() {
     if (bytes.length != length) {
       throw ArgumentError('Invalid $runtimeType length: ${bytes.length}');
     }
   }
 
   @override
-  int get hashCode => bytes.hashCode;
+  int get hashCode => _memHash(bytes);
 
   int get length;
 

@@ -1,8 +1,9 @@
 import 'package:btox/api/toxcore/tox.dart';
 import 'package:btox/ffi/tox_library.dart';
+import 'package:btox/models/crypto.dart';
 
 ToxConstants toxcoreConstants(ToxLibrary lib) {
-  return ToxConstants(
+  final constants = ToxConstants(
     addressSize: lib.ffi.tox_address_size(),
     conferenceIdSize: lib.ffi.tox_conference_id_size(),
     fileIdLength: lib.ffi.tox_file_id_length(),
@@ -29,4 +30,9 @@ ToxConstants toxcoreConstants(ToxLibrary lib) {
     publicKeySize: lib.ffi.tox_public_key_size(),
     secretKeySize: lib.ffi.tox_secret_key_size(),
   );
+
+  assert(constants.addressSize == ToxAddress.kLength);
+  assert(constants.publicKeySize == PublicKey.kLength);
+  assert(constants.secretKeySize == SecretKey.kLength);
+  return constants;
 }

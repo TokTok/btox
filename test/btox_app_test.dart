@@ -1,18 +1,22 @@
+import 'dart:typed_data';
+
 import 'package:btox/btox_app.dart';
 import 'package:btox/db/database.dart';
-import 'package:btox/providers/sodium.dart';
-import 'mocks/fake_sodium.dart';
-import 'mocks/fake_tox_constants.dart';
 import 'package:btox/models/crypto.dart';
+import 'package:btox/models/identicon.dart';
 import 'package:btox/models/profile_settings.dart';
 import 'package:btox/providers/database.dart';
+import 'package:btox/providers/sodium.dart';
 import 'package:btox/providers/tox.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'mocks/fake_sodium.dart';
+import 'mocks/fake_tox_constants.dart';
 import 'mocks/fake_toxcore.dart';
+import 'mocks/image_data.dart';
 
 // The database can't be constructed/torn down in the Flutter test framework
 // setUp and tearDown functions as that leads to leaks being reported due to
@@ -23,8 +27,8 @@ void main() {
       String.fromCharCodes(Iterable.generate(64, (_) => 'F'.codeUnits.first)));
   final myToxId = ToxAddress.fromString(
       String.fromCharCodes(Iterable.generate(76, (_) => '0'.codeUnits.first)));
-  final friendToxId =
-      String.fromCharCodes(Iterable.generate(76, (_) => '1'.codeUnits.first));
+  final friendToxId = ToxAddress.fromString(
+      String.fromCharCodes(Iterable.generate(76, (_) => '1'.codeUnits.first)));
 
   testWidgets('Add contact adds a contact', (WidgetTester tester) async {
     final Database db = Database(NativeDatabase.memory());
@@ -51,6 +55,9 @@ void main() {
           toxConstantsProvider.overrideWith((ref) => fakeToxcoreConstants),
           toxProvider(mySecretKey, myToxId.nospam)
               .overrideWith((ref) async => FakeToxcore()),
+          identiconProvider(friendToxId.publicKey).overrideWith(
+            (ref) => MemoryImage(Uint8List.fromList(kBlueSquarePng)),
+          ),
         ],
         child: const BtoxApp(),
       ),
@@ -70,7 +77,8 @@ void main() {
     await tester.pumpAndSettle();
 
     // Fill in the contact data.
-    await tester.enterText(find.byKey(const Key('toxId')), friendToxId);
+    await tester.enterText(
+        find.byKey(const Key('toxId')), friendToxId.toJson());
     await tester.pump();
     await tester.tap(find.text('Add'));
     await tester.pumpAndSettle();

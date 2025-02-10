@@ -16,6 +16,7 @@ words:
   - dylib
   - emscripten
   - ffigen
+  - identicons
   - iphydf
   - kannywood
   - libtoxcore

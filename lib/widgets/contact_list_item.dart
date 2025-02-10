@@ -1,4 +1,5 @@
 import 'package:btox/db/database.dart';
+import 'package:btox/widgets/circle_identicon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -19,6 +20,7 @@ final class ContactListItem extends StatelessWidget {
           contact.name ?? AppLocalizations.of(context)!.defaultContactName),
       subtitle:
           Text(contact.publicKey.toJson(), overflow: TextOverflow.ellipsis),
+      trailing: CircleIdenticon(publicKey: contact.publicKey),
       onTap: () => onTap(contact),
     );
   }

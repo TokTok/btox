@@ -1,5 +1,7 @@
 import 'package:btox/api/toxcore/tox.dart';
+import 'package:btox/api/toxcore/tox_events.dart';
 import 'package:btox/db/database.dart';
+import 'package:btox/ffi/tox_library.dart';
 import 'package:btox/logger.dart';
 import 'package:btox/pages/settings_page.dart';
 import 'package:btox/pages/user_profile_page.dart';
@@ -52,7 +54,9 @@ final class MainMenu extends ConsumerWidget {
             ),
             trailing: ref.watch(toxEventsProvider).when(
                   data: (event) {
-                    final online = event == 'TOX_EVENT_SELF_CONNECTION_STATUS';
+                    final online = event is ToxEventSelfConnectionStatus &&
+                        event.connectionStatus !=
+                            Tox_Connection.TOX_CONNECTION_NONE;
                     return Icon(
                       online ? Icons.online_prediction : Icons.offline_bolt,
                       color: online ? Colors.green : Colors.red,

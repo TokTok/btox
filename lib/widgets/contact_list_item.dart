@@ -18,7 +18,7 @@ final class ContactListItem extends StatelessWidget {
       title: Text(
           contact.name ?? AppLocalizations.of(context)!.defaultContactName),
       subtitle:
-          Text(contact.publicKey.toHex(), overflow: TextOverflow.ellipsis),
+          Text(contact.publicKey.toJson(), overflow: TextOverflow.ellipsis),
       onTap: () => onTap(contact),
     );
   }

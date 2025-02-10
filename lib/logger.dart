@@ -39,7 +39,7 @@ String _callerFileLine() {
 final class Logger {
   static const _bufferSize = 1000;
   static final CircularBuffer<LogLine> _log = CircularBuffer(_bufferSize);
-  static bool verbose = false;
+  static bool verbose = kIsWeb;
 
   static List<LogLine> get log => List.unmodifiable(_log);
 

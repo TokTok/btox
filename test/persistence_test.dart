@@ -11,7 +11,7 @@ void main() {
       String.fromCharCodes(Iterable.generate(64, (_) => 'F'.codeUnits.first)));
   final myToxId = ToxAddress.fromString(
       String.fromCharCodes(Iterable.generate(76, (_) => '0'.codeUnits.first)));
-  final friendPk = PublicKey.fromString(
+  final friendPk = PublicKey.fromJson(
       '0000000000000000000000000000000000000000000000000000000000000000');
 
   testDatabase('Messages can be added to the database', (Database db) async {
@@ -49,7 +49,7 @@ void main() {
       content: 'Happy new year!',
     )));
 
-    expect(firstMsg.sha.toHex(),
+    expect(firstMsg.sha.toJson(),
         'C64A25D0DE1AC055731897680A9123E35F920270DBF02F3A30614F5BCD7C5039');
 
     // Happy new year in 2026.
@@ -61,7 +61,7 @@ void main() {
       content: 'Happy new year!',
     )));
 
-    expect(secondMsg.sha.toHex(),
+    expect(secondMsg.sha.toJson(),
         'C1C848C6AA953FEB9D02CBB80FE8AAECA15820CF83BF354A7454123B661C6B25');
   }, tags: ['persistence']);
 
@@ -121,7 +121,7 @@ void main() {
       content: 'Haha, jinx!',
     )));
 
-    expect(mergedMessage.sha.toHex(),
+    expect(mergedMessage.sha.toJson(),
         'D6281BF3A62840613D354EFFF57016E200E78F76BDB2CCF7D8A3611B826F38D9');
   }, tags: ['persistence']);
 

@@ -5,6 +5,7 @@ import 'package:btox/models/crypto.dart';
 import 'package:btox/models/messaging.dart';
 import 'package:btox/pages/add_contact_page.dart';
 import 'package:btox/pages/chat_page.dart';
+import 'package:btox/widgets/connection_status_icon.dart';
 import 'package:btox/widgets/contact_list_item.dart';
 import 'package:btox/widgets/main_menu.dart';
 import 'package:clock/clock.dart';
@@ -48,7 +49,20 @@ final class ContactListPage extends ConsumerWidget {
             );
           },
         ),
-        title: Text(AppLocalizations.of(context)!.title),
+        title: Row(children: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: SizedBox(
+              height: 24,
+              width: 24,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: ConnectionStatusIcon(profile: profile),
+              ),
+            ),
+          ),
+          Text(AppLocalizations.of(context)!.title),
+        ]),
       ),
       body: StreamBuilder<List<Contact>>(
         stream: database.watchContactsFor(profile.id),
@@ -96,7 +110,7 @@ final class ContactListPage extends ConsumerWidget {
                 final id = await database.addContact(
                   ContactsCompanion.insert(
                     profileId: profile.id,
-                    publicKey: PublicKey.fromString(
+                    publicKey: PublicKey.fromJson(
                         toxID.substring(0, toxID.length - 12)),
                   ),
                 );

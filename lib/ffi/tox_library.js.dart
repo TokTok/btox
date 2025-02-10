@@ -11,7 +11,7 @@ part 'tox_library.js.g.dart';
 
 const _logger = Logger(['ToxLibrary']);
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<ToxLibrary> toxFfi(Ref ref) async {
   _logger.d('Loading libtoxcore.wasm');
   final library = await DynamicLibrary.open('libtoxcore.js');

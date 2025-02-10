@@ -1,12 +1,18 @@
 import 'package:btox/api/toxcore/tox_events.dart';
+import 'package:btox/models/crypto.dart';
 
 final class ApiException<T extends Enum> implements Exception {
   final T error;
+  final String? functionName;
+  final List<Object?> args;
 
-  const ApiException(this.error);
+  const ApiException(this.error, [this.functionName, this.args = const []]);
 
   @override
   String toString() {
+    if (functionName != null) {
+      return 'ApiException: $error in $functionName with args $args';
+    }
     return 'ApiException: $error';
   }
 }
@@ -14,7 +20,7 @@ final class ApiException<T extends Enum> implements Exception {
 abstract class Tox {
   const Tox();
 
-  String get address;
+  ToxAddress get address;
 
   bool get isAlive;
 
@@ -22,11 +28,15 @@ abstract class Tox {
 
   set name(String value);
 
+  ToxAddressNospam get nospam;
+
+  set nospam(ToxAddressNospam value);
+
   set statusMessage(String value);
 
-  void addTcpRelay(String host, int port, String publicKey);
+  void addTcpRelay(String host, int port, PublicKey publicKey);
 
-  void bootstrap(String host, int port, String publicKey);
+  void bootstrap(String host, int port, PublicKey publicKey);
 
   List<Event> iterate();
 

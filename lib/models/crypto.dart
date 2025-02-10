@@ -186,7 +186,9 @@ sealed class _CryptoNumber {
   final Uint8List bytes;
 
   _CryptoNumber(this.bytes) {
-    assert(bytes.length == length);
+    if (bytes.length != length) {
+      throw ArgumentError('Invalid $runtimeType length: ${bytes.length}');
+    }
   }
 
   @override

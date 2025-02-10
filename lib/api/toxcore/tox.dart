@@ -1,3 +1,5 @@
+import 'package:btox/api/toxcore/tox_events.dart';
+
 final class ApiException<T extends Enum> implements Exception {
   final T error;
 
@@ -26,7 +28,7 @@ abstract class Tox {
 
   void bootstrap(String host, int port, String publicKey);
 
-  List<String> iterate();
+  List<Event> iterate();
 
   void kill();
 }

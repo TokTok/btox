@@ -29,7 +29,9 @@ Future<Database> constructDb(String databaseKey) async {
   return Database(NativeDatabase(file, setup: (database) {
     // https://drift.simonbinder.eu/platforms/encryption/#important-notice
     final cipherVersion = database.select('PRAGMA cipher_version;');
-    assert(cipherVersion.isNotEmpty, 'Failed to get cipher version');
+    if (cipherVersion.isEmpty) {
+      throw Exception('Failed to get cipher version');
+    }
     _logger.d('Encrypted database: ${cipherVersion.first}');
 
     final escapedKey = databaseKey.replaceAll("'", "''");

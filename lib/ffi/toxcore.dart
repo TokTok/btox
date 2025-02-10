@@ -1,10 +1,14 @@
 import 'dart:convert';
 
 import 'package:btox/api/toxcore/tox.dart' as api;
+import 'package:btox/api/toxcore/tox_events.dart';
 import 'package:btox/api/toxcore/tox_options.dart' as api;
 import 'package:btox/ffi/tox_library.dart';
 import 'package:btox/logger.dart';
+import 'package:btox/packets/messagepack.dart';
 import 'package:convert/convert.dart';
+
+export 'package:btox/ffi/tox_library.dart' hide ToxLibrary, toxFfiProvider;
 
 final _logger = Logger(['Tox']);
 
@@ -102,15 +106,20 @@ final class Toxcore extends api.Tox {
   }
 
   @override
-  List<String> iterate() {
+  List<Event> iterate() {
     final events =
         _handleError(_lib.allocator, Tox_Err_Events_Iterate.fromValue, (err) {
       return _lib.ffi.tox_events_iterate(_tox, true, err);
     });
 
-    return List.generate(_lib.ffi.tox_events_get_size(events), (i) {
-      final event = _lib.ffi.tox_events_get(events, i);
-      return _lib.ffi.tox_event_get_type(event).name;
+    return _scoped(_lib.allocator,
+        _lib.allocator<Uint8>(_lib.ffi.tox_events_bytes_size(events)),
+        f: (ptr) {
+      if (!_lib.ffi.tox_events_get_bytes(events, ptr)) {
+        throw Exception('Failed to get events bytes');
+      }
+      return Event.unpackList(
+          Unpacker(ptr.asTypedList(_lib.ffi.tox_events_bytes_size(events))));
     });
   }
 

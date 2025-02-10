@@ -1,5 +1,6 @@
 // Fake implementation of the Tox class for testing purposes.
 import 'package:btox/api/toxcore/tox.dart' as api;
+import 'package:btox/api/toxcore/tox_events.dart';
 
 final class FakeToxcore extends api.Tox {
   @override
@@ -26,7 +27,7 @@ final class FakeToxcore extends api.Tox {
   void bootstrap(String host, int port, String publicKey) {}
 
   @override
-  List<String> iterate() {
+  List<Event> iterate() {
     return [];
   }
 

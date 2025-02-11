@@ -8,4 +8,5 @@ exclude:
   - "tools/include/**/*.h"
   - "web/flutter_bootstrap.js"
   - "windows/**/*.cc"
+  - "windows/**/*.cpp"
   - "windows/**/*.h"

@@ -90,10 +90,10 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "chat.tox" "\0"
-            VALUE "FileDescription", "A new Flutter project." "\0"
+            VALUE "FileDescription", "btox" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "btox" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2022 chat.tox. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 chat.tox. All rights reserved." "\0"
             VALUE "OriginalFilename", "btox.exe" "\0"
             VALUE "ProductName", "btox" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"

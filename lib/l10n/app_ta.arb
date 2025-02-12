@@ -1,1 +1,160 @@
-{}
+{
+  "defaultContactName": "தெரியவில்லை",
+  "@defaultContactName": {
+    "description": "The default name for a contact when the name is not yet known"
+  },
+  "title": "BTOX (வேலை தலைப்பு)",
+  "@title": {
+    "description": "The title of the application"
+  },
+  "addContact": "தொடர்பைச் சேர்க்கவும்",
+  "@addContact": {
+    "description": "The text for the button to add a contact"
+  },
+  "message": "செய்தி",
+  "@message": {
+    "description": "The text for the message field"
+  },
+  "messageInput": "செய்தி",
+  "@messageInput": {
+    "description": "The placeholder text for the message input field"
+  },
+  "toxId": "நச்சு ஐடி",
+  "@toxId": {
+    "description": "The text for the Tox ID field"
+  },
+  "defaultAddContactMessage": "ஏய், நான் {nick}, BTOX இல் என்னுடன் அரட்டையடிக்க வாருங்கள்!",
+  "@defaultAddContactMessage": {
+    "description": "The default message to send when adding a contact",
+    "placeholders": {
+      "nick": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "addContactMessageLengthError": "அதிகபட்ச {max} எழுத்துக்கள் ({length} மிக நீளமானது)",
+  "@addContactMessageLengthError": {
+    "description": "The error message when the friend request message is too long",
+    "placeholders": {
+      "max": {
+        "type": "int",
+        "example": "256"
+      },
+      "length": {
+        "type": "int",
+        "example": "300"
+      }
+    }
+  },
+  "add": "கூட்டு",
+  "@add": {
+    "description": "The text for the button to add a contact"
+  },
+  "toxIdLengthError": "{length} எக்சாடெசிமல் எழுத்துக்கள் இருக்க வேண்டும்",
+  "@toxIdLengthError": {
+    "description": "The error message when the Tox ID is not the right length or format",
+    "placeholders": {
+      "length": {
+        "type": "int",
+        "example": "76"
+      }
+    }
+  },
+  "messageEmptyError": "செய்தி காலியாக இருக்க முடியாது",
+  "@messageEmptyError": {
+    "description": "The error message when the message is empty"
+  },
+  "menuProfile": "சுயவிவரம்",
+  "@menuProfile": {
+    "description": "The text for the profile menu item"
+  },
+  "menuQuit": "வெளியேறு",
+  "@menuQuit": {
+    "description": "The text for the quit menu item"
+  },
+  "menuSettings": "அமைப்புகள்",
+  "@menuSettings": {
+    "description": "The text for the settings menu item"
+  },
+  "nickLengthError": "புனைப்பெயர் 1 முதல் {max} எழுத்துகளுக்கு இடையில் இருக்க வேண்டும்",
+  "@nickLengthError": {
+    "description": "The error message when the nickname is too short or too long",
+    "placeholders": {
+      "max": {
+        "type": "int",
+        "example": "32"
+      }
+    }
+  },
+  "profileTextFieldUserStatusMessage": "நிலை செய்தி",
+  "@profileTextFieldUserStatusMessage": {
+    "description": "The text for the status message field"
+  },
+  "applyChanges": "மாற்றங்களைப் பயன்படுத்துங்கள்",
+  "@applyChanges": {
+    "description": "The text for the button to apply changes"
+  },
+  "applied": "பயன்படுத்தப்பட்டது",
+  "@applied": {
+    "description": "The text when changes have been applied"
+  },
+  "newProfile": "புதிய சுயவிவரம்",
+  "@newProfile": {
+    "description": "The title text for the create profile dialog"
+  },
+  "create": "உருவாக்கு",
+  "@create": {
+    "description": "The text for the button create a new profile"
+  },
+  "logout": "வெளியேற்றம்",
+  "@logout": {
+    "description": "The text for the logout menu item"
+  },
+  "deleteProfile": "சுயவிவரத்தை நீக்கு",
+  "@deleteProfile": {
+    "description": "The text for the delete profile menu item"
+  },
+  "deleteProfileMessage": "உங்கள் \"{name}\" சுயவிவரத்தை நீக்க விரும்புகிறீர்களா? இந்த செயலை செயல்தவிர்க்க முடியாது. இது உங்கள் எல்லா தொடர்புகளையும் செய்திகளையும் நீக்கும். உங்களிடம் காப்புப்பிரதி இருப்பதை உறுதிப்படுத்திக் கொள்ளுங்கள்.",
+  "@deleteProfileMessage": {
+    "description": "The message to confirm the deletion of a profile",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "cancel": "ரத்துசெய்",
+  "@cancel": {
+    "description": "The text for the cancel button"
+  },
+  "delete": "நீக்கு",
+  "@delete": {
+    "description": "The text for the delete button"
+  },
+  "profileDeleted": "சுயவிவரம் \"{name}\" நீக்கப்பட்டது",
+  "@profileDeleted": {
+    "description": "The text when a profile has been deleted",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "statusMessageLengthError": "நிலை செய்தி {max} எழுத்துக்களை விட அதிகமாக இருக்காது",
+  "@statusMessageLengthError": {
+    "description": "The error message when the status message is longer than the supported maximum",
+    "placeholders": {
+      "max": {
+        "type": "int",
+        "example": "128"
+      }
+    }
+  },
+  "profileTextFieldNick": "புனைப்பெயர்",
+  "@profileTextFieldNick": {
+    "description": "The text for the nickname field"
+  }
+}

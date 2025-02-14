@@ -5,6 +5,7 @@ import 'package:btox/db/database.dart';
 import 'package:btox/models/crypto.dart';
 import 'package:btox/models/identicon.dart';
 import 'package:btox/models/profile_settings.dart';
+import 'package:btox/providers/bootstrap_nodes.dart';
 import 'package:btox/providers/database.dart';
 import 'package:btox/providers/sodium.dart';
 import 'package:btox/providers/tox.dart';
@@ -13,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'mocks/fake_bootstrap_nodes.dart';
 import 'mocks/fake_sodium.dart';
 import 'mocks/fake_tox_constants.dart';
 import 'mocks/fake_toxcore.dart';
@@ -31,6 +33,8 @@ void main() {
       String.fromCharCodes(Iterable.generate(76, (_) => '1'.codeUnits.first)));
 
   testWidgets('Add contact adds a contact', (WidgetTester tester) async {
+    final tox = FakeToxcore();
+
     final Database db = Database(NativeDatabase.memory());
     final profileId = await db.addProfile(
       ProfilesCompanion.insert(
@@ -50,11 +54,11 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          bootstrapNodesProvider.overrideWith(fakeBootstrapNodesProvider),
           databaseProvider.overrideWith((ref) => db),
           sodiumProvider.overrideWith((ref) => FakeSodium()),
           toxConstantsProvider.overrideWith((ref) => fakeToxcoreConstants),
-          toxProvider(mySecretKey, myToxId.nospam)
-              .overrideWith((ref) async => FakeToxcore()),
+          toxProvider(mySecretKey, myToxId.nospam).overrideWith((ref) => tox),
           identiconProvider(friendToxId.publicKey).overrideWith(
             (ref) => MemoryImage(Uint8List.fromList(kBlueSquarePng)),
           ),
@@ -85,6 +89,9 @@ void main() {
 
     // Verify that the contact appeared.
     expect(find.textContaining('11111111'), findsOneWidget);
+
+    tox.kill();
+    await tester.pump(const Duration(seconds: 1));
 
     await db.close();
   });

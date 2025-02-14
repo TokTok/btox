@@ -97,6 +97,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/fonts/
     - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see

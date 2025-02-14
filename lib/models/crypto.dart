@@ -1,44 +1,8 @@
+import 'package:btox/models/bytes.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:drift/drift.dart';
 import 'package:sodium/sodium.dart';
-
-/// Compares two [Uint8List]s by comparing 4 bytes at a time.
-bool _memEquals(Uint8List bytes1, Uint8List bytes2) {
-  if (identical(bytes1, bytes2)) {
-    return true;
-  }
-
-  if (bytes1.lengthInBytes != bytes2.lengthInBytes) {
-    return false;
-  }
-
-  // Treat the original byte lists as lists of 4-byte words.
-  final numWords = bytes1.lengthInBytes ~/ 4;
-  final words1 = bytes1.buffer.asUint32List(0, numWords);
-  final words2 = bytes2.buffer.asUint32List(0, numWords);
-
-  for (var i = 0; i < words1.length; i += 1) {
-    if (words1[i] != words2[i]) {
-      return false;
-    }
-  }
-
-  // Compare any remaining bytes.
-  for (var i = words1.lengthInBytes; i < bytes1.lengthInBytes; i += 1) {
-    if (bytes1[i] != bytes2[i]) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-/// Returns a hash code for the given [Uint8List].
-int _memHash(Uint8List bytes) {
-  // Very slow, but ok for now. Can optimize later.
-  return Object.hashAll(bytes);
-}
 
 final class NospamConverter extends TypeConverter<ToxAddressNospam, int>
     with JsonTypeConverter2<ToxAddressNospam, int, int> {
@@ -54,7 +18,7 @@ final class NospamConverter extends TypeConverter<ToxAddressNospam, int>
   int toSql(ToxAddressNospam value) => toJson(value);
 }
 
-final class PublicKey extends _CryptoNumber {
+final class PublicKey extends _CryptoBytes {
   static const kLength = 32;
 
   PublicKey(super.bytes);
@@ -81,7 +45,7 @@ final class PublicKeyConverter extends TypeConverter<PublicKey, String>
   String toSql(PublicKey value) => toJson(value);
 }
 
-final class SecretKey extends _CryptoNumber {
+final class SecretKey extends _CryptoBytes {
   static const kLength = 32;
 
   SecretKey(super.bytes);
@@ -112,7 +76,7 @@ final class SecretKeyConverter extends TypeConverter<SecretKey, String>
   String toSql(SecretKey value) => toJson(value);
 }
 
-final class Sha256 extends _CryptoNumber {
+final class Sha256 extends _CryptoBytes {
   static const kLength = 32;
 
   Sha256(super.bytes);
@@ -143,7 +107,7 @@ final class Sha256Converter extends TypeConverter<Sha256, String>
   String toSql(Sha256 value) => toJson(value);
 }
 
-final class ToxAddress extends _CryptoNumber {
+final class ToxAddress extends _CryptoBytes {
   static const kLength = 38;
 
   ToxAddress(super.bytes);
@@ -164,24 +128,20 @@ final class ToxAddress extends _CryptoNumber {
       PublicKey(Uint8List.view(bytes.buffer, 0, PublicKey.kLength));
 }
 
-final class ToxAddressHash {
+final class ToxAddressHash extends _CryptoNumber {
   static const kLength = 2;
 
-  final int value;
-
-  ToxAddressHash(this.value) {
+  ToxAddressHash(super.value) {
     if (value < 0 || value > 0xFFFF) {
       throw ArgumentError('Tox address hash must be a 16-bit unsigned integer');
     }
   }
 }
 
-final class ToxAddressNospam {
+final class ToxAddressNospam extends _CryptoNumber {
   static const kLength = 4;
 
-  final int value;
-
-  ToxAddressNospam(this.value) {
+  ToxAddressNospam(super.value) {
     if (value < 0 || value > 0xFFFFFFFF) {
       throw ArgumentError('Nospam must be a 32-bit unsigned integer');
     }
@@ -189,24 +149,45 @@ final class ToxAddressNospam {
 }
 
 sealed class _CryptoNumber {
+  final int value;
+
+  const _CryptoNumber(this.value);
+
+  @override
+  int get hashCode => value;
+
+  @override
+  bool operator ==(Object other) {
+    return other is _CryptoNumber &&
+        other.runtimeType == runtimeType &&
+        other.value == value;
+  }
+
+  @override
+  String toString() {
+    return '$runtimeType($value)';
+  }
+}
+
+sealed class _CryptoBytes {
   final Uint8List bytes;
 
-  _CryptoNumber(Uint8List bytes) : bytes = bytes.asUnmodifiableView() {
+  _CryptoBytes(Uint8List bytes) : bytes = bytes.asUnmodifiableView() {
     if (bytes.length != length) {
       throw ArgumentError('Invalid $runtimeType length: ${bytes.length}');
     }
   }
 
   @override
-  int get hashCode => _memHash(bytes);
+  int get hashCode => memHash(bytes);
 
   int get length;
 
   @override
   bool operator ==(Object other) {
-    return other is _CryptoNumber &&
+    return other is _CryptoBytes &&
         other.runtimeType == runtimeType &&
-        _memEquals(bytes, other.bytes);
+        memEquals(bytes, other.bytes);
   }
 
   String toJson() {

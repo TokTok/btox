@@ -1,7 +1,10 @@
 // Fake implementation of the Tox class for testing purposes.
 import 'package:btox/api/toxcore/tox.dart' as api;
 import 'package:btox/api/toxcore/tox_events.dart';
+import 'package:btox/logger.dart';
 import 'package:btox/models/crypto.dart';
+
+const _logger = Logger(['FakeToxcore']);
 
 final class FakeToxcore extends api.Tox {
   @override
@@ -17,7 +20,7 @@ final class FakeToxcore extends api.Tox {
   }
 
   @override
-  bool get isAlive => true;
+  bool isAlive = true;
 
   @override
   int get iterationInterval => 20;
@@ -34,7 +37,10 @@ final class FakeToxcore extends api.Tox {
   }
 
   @override
-  void kill() {}
+  void kill() {
+    _logger.d('Killing Tox instance');
+    isAlive = false;
+  }
 
   @override
   ToxAddressNospam get nospam => address.nospam;

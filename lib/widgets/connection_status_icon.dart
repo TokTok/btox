@@ -1,9 +1,12 @@
 import 'package:btox/api/toxcore/tox_events.dart';
 import 'package:btox/db/database.dart';
 import 'package:btox/ffi/toxcore.dart';
+import 'package:btox/logger.dart';
 import 'package:btox/providers/tox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+const _logger = Logger(['ConnectionStatusIcon']);
 
 final class ConnectionStatusIcon extends ConsumerWidget {
   final Profile profile;
@@ -28,7 +31,13 @@ final class ConnectionStatusIcon extends ConsumerWidget {
             Icons.offline_bolt_outlined,
             color: Colors.red,
           ),
-          error: (error, _) => Text('Error: $error'),
+          error: (error, _) {
+            _logger.e('Error: $error');
+            return const Icon(
+              Icons.error,
+              color: Colors.red,
+            );
+          },
         );
   }
 }

@@ -67,6 +67,7 @@ final class CreateProfilePage extends HookWidget {
             padding: EdgeInsets.all(8),
           ),
           ElevatedButton(
+            key: const Key('createProfileButton'),
             onPressed: () async {
               _logger.d('Creating new profile');
               final keyPair = sodium.crypto.box.keyPair();

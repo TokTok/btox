@@ -20,6 +20,7 @@ final class FriendRequestMessageField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: TextFormField(
+        key: const Key('friendRequestMessageField'),
         autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: (value) {
           if (value == null || value.isEmpty) {

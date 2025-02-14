@@ -30,12 +30,10 @@ final class ContactListPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      drawer: Drawer(
-        child: MainMenu(
-          constants: constants,
-          profile: profile,
-          database: database,
-        ),
+      drawer: MainMenu(
+        constants: constants,
+        profile: profile,
+        database: database,
       ),
       appBar: AppBar(
         leading: Builder(
@@ -101,6 +99,7 @@ final class ContactListPage extends ConsumerWidget {
         }),
       ),
       floatingActionButton: FloatingActionButton(
+        key: const Key('addContactButton'),
         onPressed: () => Navigator.push(
           context,
           MaterialPageRoute(

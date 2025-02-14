@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [master]
+  push:
+    branches: [master]
 
 # Cancel old PR builds when pushing new commits.
 concurrency:
@@ -19,6 +21,7 @@ jobs:
     uses: TokTok/ci-tools/.github/workflows/common-ci.yml@master
 
   format:
+    if: github.event_name != 'push'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +34,7 @@ jobs:
       - run: dart format . && git diff --exit-code
 
   analyze:
+    if: github.event_name != 'push'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -46,6 +50,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
@@ -54,7 +60,11 @@ jobs:
       - run: sudo apt-get install -y libsqlite3-dev
       - run: ./tools/prepare
       - run: flutter test --coverage
-      - run: bash <(curl -s https://codecov.io/bash)
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
       - name: Upload failed test goldens
         if: failure()
         uses: actions/upload-artifact@v4

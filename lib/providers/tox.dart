@@ -16,6 +16,8 @@ const _logger = Logger(['ToxProvider']);
 
 @riverpod
 Future<Tox> tox(Ref ref, SecretKey secretKey, ToxAddressNospam nospam) async {
+  _logger.d('Creating Tox instance with nospam $nospam');
+
   final options = ToxOptions(
     savedata: secretKey.bytes,
     savedataType: ffi.Tox_Savedata_Type.TOX_SAVEDATA_TYPE_SECRET_KEY,

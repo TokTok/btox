@@ -27,6 +27,7 @@ final class StatusMessageField extends StatelessWidget {
       Padding(
         padding: const EdgeInsets.all(8),
         child: TextFormField(
+          key: const Key('statusMessageField'),
           autovalidateMode: AutovalidateMode.onUserInteraction,
           validator: (value) {
             value ??= '';

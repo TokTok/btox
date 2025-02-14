@@ -50,6 +50,7 @@ final class ChatPage extends HookWidget {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: TextField(
+                    key: const Key('messageField'),
                     decoration: InputDecoration(
                       border: const UnderlineInputBorder(),
                       labelText: AppLocalizations.of(context)!.messageInput,

@@ -25,8 +25,7 @@ final class MainMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: EdgeInsets.zero,
+    return NavigationDrawer(
       children: [
         DrawerHeader(
           decoration: const BoxDecoration(

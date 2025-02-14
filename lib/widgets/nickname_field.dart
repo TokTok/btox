@@ -27,6 +27,7 @@ final class NicknameField extends StatelessWidget {
       Padding(
         padding: const EdgeInsets.all(8),
         child: TextFormField(
+          key: const Key('nicknameField'),
           autovalidateMode: AutovalidateMode.onUserInteraction,
           validator: (value) {
             value ??= '';

@@ -11,4 +11,4 @@ PRODUCT_NAME = btox
 PRODUCT_BUNDLE_IDENTIFIER = chat.tox.btox
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2022-2025 The TokTok Team.
+PRODUCT_COPYRIGHT = Copyright © 2025 chat.tox. All rights reserved.

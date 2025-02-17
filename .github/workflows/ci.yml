@@ -12,7 +12,7 @@ concurrency:
 
 env:
   FLUTTER_CHANNEL: "stable"
-  FLUTTER_VERSION: "3.27.4"
+  FLUTTER_VERSION: "3.29.0"
 
 jobs:
   common:
@@ -25,7 +25,8 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
-          flutter-version: ${{ env.FLUTTER_VERSION }}
+          # Formatter changed in 3.29. We're not ready yet.
+          flutter-version: "3.27.4"
           cache: true
       - run: dart format . && git diff --exit-code
 

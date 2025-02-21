@@ -127,7 +127,11 @@ if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
     COMPONENT Runtime)
 endif()
 
-# Install the Tox library.
-install(FILES "${CMAKE_SOURCE_DIR}/vendored/libtoxcore.so.2"
+# Install the Tox library: libtoxcore.so*
+file(GLOB TOX_LIBS "${CMAKE_SOURCE_DIR}/vendored/libtoxcore.so*")
+if(NOT TOX_LIBS)
+  message(FATAL_ERROR "Tox library not found")
+endif()
+install(FILES ${TOX_LIBS}
   DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
   COMPONENT Runtime)

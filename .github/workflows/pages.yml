@@ -1,49 +1,13 @@
 name: pages
 
 on:
+  workflow_dispatch:
   push:
     branches: ["master"]
 
-  workflow_dispatch:
-
-env:
-  FLUTTER_CHANNEL: "stable"
-  FLUTTER_VERSION: "3.29.0"
-
 jobs:
-  deploy-pages:
-    runs-on: ubuntu-24.04
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    permissions:
-      contents: read
-      id-token: write
-      pages: write
-
-    steps:
-      - name: Checkout tree
-        uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: ${{ env.FLUTTER_CHANNEL }}
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-
-      - name: Build content
-        run: |
-          ./tools/prepare-web
-          flutter build web --base-href "/btox/"
-
-      - name: Set-up Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: build/web
-
-      - name: Deploy GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+  pages:
+    name: Pages
+    uses: TokTok/ci-tools/.github/workflows/flutter-pages.yml@master
+    with:
+      project-name: btox

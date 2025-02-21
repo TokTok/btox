@@ -20,6 +20,10 @@ jobs:
   common:
     uses: TokTok/ci-tools/.github/workflows/common-ci.yml@master
 
+  prepare:
+    name: Prepare
+    uses: TokTok/ci-tools/.github/workflows/deploy-prepare.yml@master
+
   format:
     if: github.event_name != 'push'
     runs-on: ubuntu-24.04
@@ -73,6 +77,7 @@ jobs:
           path: test/failures
 
   android-build:
+    needs: [prepare]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -83,12 +88,25 @@ jobs:
           cache: true
       - run: ./tools/prepare
       - run: flutter build apk
+      - run: cp build/app/outputs/flutter-apk/app-release.apk btox-android.apk
       - uses: actions/upload-artifact@v4
         with:
           name: btox-android.apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: btox-android.apk
+      - name: Upload to nightly release
+        uses: ncipollo/release-action@v1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          allowUpdates: true
+          tag: nightly
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          prerelease: true
+          replacesArtifacts: true
+          artifacts: btox-android.apk
 
   linux-build:
+    needs: [prepare]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -105,8 +123,20 @@ jobs:
         with:
           name: btox-linux.tar.gz
           path: btox-linux.tar.gz
+      - name: Upload to nightly release
+        uses: ncipollo/release-action@v1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          allowUpdates: true
+          tag: nightly
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          prerelease: true
+          replacesArtifacts: true
+          artifacts: btox-linux.tar.gz
 
   ios-build:
+    needs: [prepare]
     runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
@@ -126,8 +156,20 @@ jobs:
         with:
           name: btox-ios.ipa
           path: btox-ios.ipa
+      - name: Upload to nightly release
+        uses: ncipollo/release-action@v1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          allowUpdates: true
+          tag: nightly
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          prerelease: true
+          replacesArtifacts: true
+          artifacts: btox-ios.ipa
 
   macos-build:
+    needs: [prepare]
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
@@ -143,23 +185,20 @@ jobs:
         with:
           name: btox-macos.tar.gz
           path: btox-macos.tar.gz
-
-  web-build:
-    runs-on: windows-2022
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - name: Upload to nightly release
+        uses: ncipollo/release-action@v1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
-          channel: ${{ env.FLUTTER_CHANNEL }}
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-      - run: ./tools/prepare-web
-      - run: flutter build web
+          allowUpdates: true
+          tag: nightly
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          prerelease: true
+          replacesArtifacts: true
+          artifacts: btox-macos.tar.gz
 
   windows-build:
+    needs: [prepare]
     runs-on: windows-2022
     defaults:
       run:
@@ -173,7 +212,19 @@ jobs:
           cache: true
       - run: ./tools/prepare
       - run: flutter build windows
+      - run: cp build/windows/x64/runner/Release/btox.exe btox-windows-x64.exe
       - uses: actions/upload-artifact@v4
         with:
           name: btox-windows-x64.exe
-          path: build/windows/x64/runner/Release/btox.exe
+          path: btox-windows-x64.exe
+      - name: Upload to nightly release
+        uses: ncipollo/release-action@v1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          allowUpdates: true
+          tag: nightly
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          prerelease: true
+          replacesArtifacts: true
+          artifacts: btox-windows-x64.exe

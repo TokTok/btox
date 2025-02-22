@@ -21,7 +21,7 @@ abstract class Messages extends Table {
   IntColumn get contactId =>
       integer().references(Contacts, #id).map(const IdConverter<Contacts>())();
 
-  TextColumn get origin => text().map(const PublicKeyConverter())();
+  TextColumn get author => text().map(const PublicKeyConverter())();
 
   // The SHA-256 hash of the message content, timestamp, and parent/merge hashes.
   TextColumn get sha => text()
@@ -31,7 +31,7 @@ abstract class Messages extends Table {
       .references(Messages, #id)
       .map(const IdConverter<Messages>())
       .nullable()();
-  IntColumn get merge => integer()
+  IntColumn get merged => integer()
       .references(Messages, #id)
       .map(const IdConverter<Messages>())
       .nullable()();

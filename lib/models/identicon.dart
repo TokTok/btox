@@ -9,10 +9,6 @@ import 'package:btox/logger.dart';
 import 'package:btox/models/crypto.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-part 'identicon.g.dart';
 
 /// Width from the center to the outside, for 5 columns it's 3, 6 -> 3, 7 -> 4.
 const _kActiveCols = (_kIdenticonRows + 1) ~/ 2;
@@ -31,11 +27,6 @@ const _kIdenticonColorBytes = 6;
 const _kIdenticonRows = 5;
 
 const _logger = Logger(['Identicon']);
-
-@riverpod
-Future<Identicon> identicon(Ref ref, PublicKey publicKey) async {
-  return Identicon.fromBytes(publicKey.bytes);
-}
 
 double _bytesToColor(Uint8List bytes) {
   assert(bytes.length == _kIdenticonColorBytes, 'bytes: $bytes');
@@ -129,6 +120,10 @@ final class Identicon {
     return Identicon(identiconColors, colors);
   }
 
+  factory Identicon.fromPublicKey(PublicKey publicKey) {
+    return Identicon.fromBytes(publicKey.bytes);
+  }
+
   Future<ui.Image> toImage() async {
     _logger.v('Generating identicon image');
     final matrix = toMatrix();
@@ -187,14 +182,14 @@ final class IdenticonImageProvider extends ImageProvider<Identicon> {
   const IdenticonImageProvider(this.identicon);
 
   @override
-  Future<Identicon> obtainKey(ImageConfiguration configuration) async {
-    return identicon;
-  }
-
-  @override
   ImageStreamCompleter loadImage(Identicon key, ImageDecoderCallback decode) {
     return OneFrameImageStreamCompleter(
       key.toImage().then((image) => ImageInfo(image: image)),
     );
+  }
+
+  @override
+  Future<Identicon> obtainKey(ImageConfiguration configuration) async {
+    return identicon;
   }
 }

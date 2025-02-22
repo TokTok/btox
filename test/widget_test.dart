@@ -122,6 +122,7 @@ void main() {
 
       // Send a message.
       await tester.enterText(find.byKey(const Key('messageField')), 'Hello!');
+      await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.send));
       await tester.pumpAndSettle();
 

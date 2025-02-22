@@ -2,16 +2,16 @@
 import 'dart:typed_data';
 
 import 'package:btox/ffi/toxcore.dart';
+import 'package:btox/models/crypto.dart';
 import 'package:btox/packets/messagepack.dart';
+import 'package:btox/packets/packet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'tox_events.freezed.dart';
 part 'tox_events.g.dart';
 
-sealed class Event {
+sealed class Event extends Packet {
   const Event();
-
-  void pack(Packer packer);
 
   factory Event.unpack(Unpacker unpacker, Tox_Event_Type type) {
     switch (type) {
@@ -158,7 +158,7 @@ class ToxEventConferenceInvite extends Event with _$ToxEventConferenceInvite {
   factory ToxEventConferenceInvite.unpack(Unpacker unpacker) {
     ensure(unpacker.unpackListLength(), 3);
     return ToxEventConferenceInvite(
-      cookie: Uint8List.fromList(unpacker.unpackBinary()),
+      cookie: unpacker.unpackBinary()!,
       type: Tox_Conference_Type.fromValue(unpacker.unpackInt()!),
       friendNumber: unpacker.unpackInt()!,
     );
@@ -195,7 +195,7 @@ class ToxEventConferenceMessage extends Event with _$ToxEventConferenceMessage {
   factory ToxEventConferenceMessage.unpack(Unpacker unpacker) {
     ensure(unpacker.unpackListLength(), 4);
     return ToxEventConferenceMessage(
-      message: Uint8List.fromList(unpacker.unpackBinary()),
+      message: unpacker.unpackBinary()!,
       type: Tox_Message_Type.fromValue(unpacker.unpackInt()!),
       conferenceNumber: unpacker.unpackInt()!,
       peerNumber: unpacker.unpackInt()!,
@@ -262,7 +262,7 @@ class ToxEventConferencePeerName extends Event
   factory ToxEventConferencePeerName.unpack(Unpacker unpacker) {
     ensure(unpacker.unpackListLength(), 3);
     return ToxEventConferencePeerName(
-      name: Uint8List.fromList(unpacker.unpackBinary()),
+      name: unpacker.unpackBinary()!,
       conferenceNumber: unpacker.unpackInt()!,
       peerNumber: unpacker.unpackInt()!,
     );
@@ -298,7 +298,7 @@ class ToxEventConferenceTitle extends Event with _$ToxEventConferenceTitle {
   factory ToxEventConferenceTitle.unpack(Unpacker unpacker) {
     ensure(unpacker.unpackListLength(), 3);
     return ToxEventConferenceTitle(
-      title: Uint8List.fromList(unpacker.unpackBinary()),
+      title: unpacker.unpackBinary()!,
       conferenceNumber: unpacker.unpackInt()!,
       peerNumber: unpacker.unpackInt()!,
     );
@@ -323,7 +323,7 @@ class ToxEventDhtNodesResponse extends Event with _$ToxEventDhtNodesResponse {
     converters: [Uint8ListConverter()],
   )
   const factory ToxEventDhtNodesResponse({
-    required Uint8List publicKey,
+    required PublicKey publicKey,
     required Uint8List ip,
     required int port,
   }) = _ToxEventDhtNodesResponse;
@@ -334,8 +334,8 @@ class ToxEventDhtNodesResponse extends Event with _$ToxEventDhtNodesResponse {
   factory ToxEventDhtNodesResponse.unpack(Unpacker unpacker) {
     ensure(unpacker.unpackListLength(), 3);
     return ToxEventDhtNodesResponse(
-      publicKey: Uint8List.fromList(unpacker.unpackBinary()),
-      ip: Uint8List.fromList(unpacker.unpackBinary()),
+      publicKey: PublicKey.unpack(unpacker),
+      ip: unpacker.unpackBinary()!,
       port: unpacker.unpackInt()!,
     );
   }
@@ -344,7 +344,7 @@ class ToxEventDhtNodesResponse extends Event with _$ToxEventDhtNodesResponse {
   void pack(Packer packer) {
     packer
       ..packListLength(3)
-      ..packBinary(publicKey)
+      ..pack(publicKey)
       ..packBinary(ip)
       ..packInt(port);
   }
@@ -410,7 +410,7 @@ class ToxEventFileRecv extends Event with _$ToxEventFileRecv {
   factory ToxEventFileRecv.unpack(Unpacker unpacker) {
     ensure(unpacker.unpackListLength(), 5);
     return ToxEventFileRecv(
-      filename: Uint8List.fromList(unpacker.unpackBinary()),
+      filename: unpacker.unpackBinary()!,
       fileNumber: unpacker.unpackInt()!,
       fileSize: unpacker.unpackInt()!,
       friendNumber: unpacker.unpackInt()!,
@@ -451,7 +451,7 @@ class ToxEventFileRecvChunk extends Event with _$ToxEventFileRecvChunk {
   factory ToxEventFileRecvChunk.unpack(Unpacker unpacker) {
     ensure(unpacker.unpackListLength(), 4);
     return ToxEventFileRecvChunk(
-      data: Uint8List.fromList(unpacker.unpackBinary()),
+      data: unpacker.unpackBinary()!,
       fileNumber: unpacker.unpackInt()!,
       friendNumber: unpacker.unpackInt()!,
       position: unpacker.unpackInt()!,
@@ -558,7 +558,7 @@ class ToxEventFriendLosslessPacket extends Event
   factory ToxEventFriendLosslessPacket.unpack(Unpacker unpacker) {
     ensure(unpacker.unpackListLength(), 3);
     return ToxEventFriendLosslessPacket(
-      data: Uint8List.fromList(unpacker.unpackBinary()),
+      data: unpacker.unpackBinary()!,
       dataLength: unpacker.unpackInt()!,
       friendNumber: unpacker.unpackInt()!,
     );
@@ -594,7 +594,7 @@ class ToxEventFriendLossyPacket extends Event with _$ToxEventFriendLossyPacket {
   factory ToxEventFriendLossyPacket.unpack(Unpacker unpacker) {
     ensure(unpacker.unpackListLength(), 3);
     return ToxEventFriendLossyPacket(
-      data: Uint8List.fromList(unpacker.unpackBinary()),
+      data: unpacker.unpackBinary()!,
       dataLength: unpacker.unpackInt()!,
       friendNumber: unpacker.unpackInt()!,
     );
@@ -634,7 +634,7 @@ class ToxEventFriendMessage extends Event with _$ToxEventFriendMessage {
       friendNumber: unpacker.unpackInt()!,
       type: Tox_Message_Type.fromValue(unpacker.unpackInt()!),
       messageLength: unpacker.unpackInt()!,
-      message: Uint8List.fromList(unpacker.unpackBinary()),
+      message: unpacker.unpackBinary()!,
     );
   }
 
@@ -668,7 +668,7 @@ class ToxEventFriendName extends Event with _$ToxEventFriendName {
   factory ToxEventFriendName.unpack(Unpacker unpacker) {
     ensure(unpacker.unpackListLength(), 2);
     return ToxEventFriendName(
-      name: Uint8List.fromList(unpacker.unpackBinary()),
+      name: unpacker.unpackBinary()!,
       friendNumber: unpacker.unpackInt()!,
     );
   }
@@ -724,7 +724,7 @@ class ToxEventFriendRequest extends Event with _$ToxEventFriendRequest {
   )
   const factory ToxEventFriendRequest({
     required Uint8List message,
-    required Uint8List publicKey,
+    required PublicKey publicKey,
   }) = _ToxEventFriendRequest;
 
   factory ToxEventFriendRequest.fromJson(Map<String, dynamic> json) =>
@@ -733,8 +733,8 @@ class ToxEventFriendRequest extends Event with _$ToxEventFriendRequest {
   factory ToxEventFriendRequest.unpack(Unpacker unpacker) {
     ensure(unpacker.unpackListLength(), 2);
     return ToxEventFriendRequest(
-      message: Uint8List.fromList(unpacker.unpackBinary()),
-      publicKey: Uint8List.fromList(unpacker.unpackBinary()),
+      message: unpacker.unpackBinary()!,
+      publicKey: PublicKey.unpack(unpacker),
     );
   }
 
@@ -743,7 +743,7 @@ class ToxEventFriendRequest extends Event with _$ToxEventFriendRequest {
     packer
       ..packListLength(2)
       ..packBinary(message)
-      ..packBinary(publicKey);
+      ..pack(publicKey);
   }
 }
 
@@ -799,7 +799,7 @@ class ToxEventFriendStatusMessage extends Event
   factory ToxEventFriendStatusMessage.unpack(Unpacker unpacker) {
     ensure(unpacker.unpackListLength(), 2);
     return ToxEventFriendStatusMessage(
-      message: Uint8List.fromList(unpacker.unpackBinary()),
+      message: unpacker.unpackBinary()!,
       friendNumber: unpacker.unpackInt()!,
     );
   }
@@ -867,7 +867,7 @@ class ToxEventGroupCustomPacket extends Event with _$ToxEventGroupCustomPacket {
     return ToxEventGroupCustomPacket(
       groupNumber: unpacker.unpackInt()!,
       peerId: unpacker.unpackInt()!,
-      data: Uint8List.fromList(unpacker.unpackBinary()),
+      data: unpacker.unpackBinary()!,
     );
   }
 
@@ -905,7 +905,7 @@ class ToxEventGroupCustomPrivatePacket extends Event
     return ToxEventGroupCustomPrivatePacket(
       groupNumber: unpacker.unpackInt()!,
       peerId: unpacker.unpackInt()!,
-      data: Uint8List.fromList(unpacker.unpackBinary()),
+      data: unpacker.unpackBinary()!,
     );
   }
 
@@ -940,8 +940,8 @@ class ToxEventGroupInvite extends Event with _$ToxEventGroupInvite {
     ensure(unpacker.unpackListLength(), 3);
     return ToxEventGroupInvite(
       friendNumber: unpacker.unpackInt()!,
-      inviteData: Uint8List.fromList(unpacker.unpackBinary()),
-      groupName: Uint8List.fromList(unpacker.unpackBinary()),
+      inviteData: unpacker.unpackBinary()!,
+      groupName: unpacker.unpackBinary()!,
     );
   }
 
@@ -1012,7 +1012,7 @@ class ToxEventGroupMessage extends Event with _$ToxEventGroupMessage {
       groupNumber: unpacker.unpackInt()!,
       peerId: unpacker.unpackInt()!,
       messageType: Tox_Message_Type.fromValue(unpacker.unpackInt()!),
-      message: Uint8List.fromList(unpacker.unpackBinary()),
+      message: unpacker.unpackBinary()!,
       messageId: unpacker.unpackInt()!,
     );
   }
@@ -1087,7 +1087,7 @@ class ToxEventGroupPassword extends Event with _$ToxEventGroupPassword {
     ensure(unpacker.unpackListLength(), 2);
     return ToxEventGroupPassword(
       groupNumber: unpacker.unpackInt()!,
-      password: Uint8List.fromList(unpacker.unpackBinary()),
+      password: unpacker.unpackBinary()!,
     );
   }
 
@@ -1125,8 +1125,8 @@ class ToxEventGroupPeerExit extends Event with _$ToxEventGroupPeerExit {
       groupNumber: unpacker.unpackInt()!,
       peerId: unpacker.unpackInt()!,
       exitType: Tox_Group_Exit_Type.fromValue(unpacker.unpackInt()!),
-      name: Uint8List.fromList(unpacker.unpackBinary()),
-      partMessage: Uint8List.fromList(unpacker.unpackBinary()),
+      name: unpacker.unpackBinary()!,
+      partMessage: unpacker.unpackBinary()!,
     );
   }
 
@@ -1228,7 +1228,7 @@ class ToxEventGroupPeerName extends Event with _$ToxEventGroupPeerName {
     return ToxEventGroupPeerName(
       groupNumber: unpacker.unpackInt()!,
       peerId: unpacker.unpackInt()!,
-      name: Uint8List.fromList(unpacker.unpackBinary()),
+      name: unpacker.unpackBinary()!,
     );
   }
 
@@ -1335,7 +1335,7 @@ class ToxEventGroupPrivateMessage extends Event
       groupNumber: unpacker.unpackInt()!,
       peerId: unpacker.unpackInt()!,
       messageType: Tox_Message_Type.fromValue(unpacker.unpackInt()!),
-      message: Uint8List.fromList(unpacker.unpackBinary()),
+      message: unpacker.unpackBinary()!,
       messageId: unpacker.unpackInt()!,
     );
   }
@@ -1400,7 +1400,7 @@ class ToxEventGroupTopic extends Event with _$ToxEventGroupTopic {
     return ToxEventGroupTopic(
       groupNumber: unpacker.unpackInt()!,
       peerId: unpacker.unpackInt()!,
-      topic: Uint8List.fromList(unpacker.unpackBinary()),
+      topic: unpacker.unpackBinary()!,
     );
   }
 

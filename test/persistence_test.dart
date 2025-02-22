@@ -7,7 +7,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  final mySecretKey = SecretKey.fromString(
+  final mySecretKey = SecretKey.fromJson(
       String.fromCharCodes(Iterable.generate(64, (_) => 'F'.codeUnits.first)));
   final myToxId = ToxAddress.fromString(
       String.fromCharCodes(Iterable.generate(76, (_) => '0'.codeUnits.first)));
@@ -44,7 +44,8 @@ void main() {
     final firstMsg = await db.getMessage(await db.addMessage(newMessage(
       contactId: contactId,
       parent: null,
-      origin: myToxId.publicKey,
+      merged: null,
+      author: myToxId.publicKey,
       timestamp: DateTime(2025, 1, 1, 0, 2, 10, 123),
       content: 'Happy new year!',
     )));
@@ -56,7 +57,8 @@ void main() {
     final secondMsg = await db.getMessage(await db.addMessage(newMessage(
       contactId: contactId,
       parent: firstMsg,
-      origin: myToxId.publicKey,
+      merged: null,
+      author: myToxId.publicKey,
       timestamp: DateTime(2026, 1, 1, 0, 2, 10, 123),
       content: 'Happy new year!',
     )));
@@ -95,7 +97,8 @@ void main() {
     final myFirstMsg = await db.getMessage(await db.addMessage(newMessage(
       contactId: contactId,
       parent: null,
-      origin: myToxId.publicKey,
+      merged: null,
+      author: myToxId.publicKey,
       // 2 minutes after midnight.
       timestamp: DateTime(2025, 1, 1, 0, 2, 10, 123),
       content: 'Happy new year!',
@@ -105,7 +108,8 @@ void main() {
     final friendFirstMsg = await db.getMessage(await db.addMessage(newMessage(
       contactId: contactId,
       parent: null,
-      origin: friendPk,
+      merged: null,
+      author: friendPk,
       // 1 minute before my message.
       timestamp: myFirstMsg.timestamp.subtract(const Duration(minutes: 1)),
       content: 'Happy new year!',
@@ -115,7 +119,7 @@ void main() {
       contactId: contactId,
       parent: myFirstMsg,
       merged: friendFirstMsg,
-      origin: myToxId.publicKey,
+      author: myToxId.publicKey,
       // 1 minute after my message.
       timestamp: myFirstMsg.timestamp.add(const Duration(minutes: 1)),
       content: 'Haha, jinx!',
@@ -129,7 +133,8 @@ void main() {
     final msg1 = newMessage(
       contactId: Id(1),
       parent: null,
-      origin: myToxId.publicKey,
+      merged: null,
+      author: myToxId.publicKey,
       timestamp: DateTime(2025, 1, 1, 0, 2, 10, 123, 456),
       content: 'Happy new year!',
     );
@@ -137,7 +142,8 @@ void main() {
     final msg2 = newMessage(
       contactId: Id(1),
       parent: null,
-      origin: myToxId.publicKey,
+      merged: null,
+      author: myToxId.publicKey,
       timestamp: msg1.timestamp.value.add(const Duration(microseconds: 100)),
       content: 'Happy new year!',
     );
@@ -149,7 +155,8 @@ void main() {
     final msg1 = newMessage(
       contactId: Id(1),
       parent: null,
-      origin: myToxId.publicKey,
+      merged: null,
+      author: myToxId.publicKey,
       timestamp: DateTime(2025, 1, 1, 0, 2, 10, 123),
       content: 'Happy new year!',
     );
@@ -157,7 +164,8 @@ void main() {
     final msg2 = newMessage(
       contactId: Id(1),
       parent: null,
-      origin: myToxId.publicKey,
+      merged: null,
+      author: myToxId.publicKey,
       timestamp: msg1.timestamp.value.add(const Duration(microseconds: 1000)),
       content: 'Happy new year!',
     );

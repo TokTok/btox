@@ -21,7 +21,7 @@ import 'mocks/fake_toxcore.dart';
 // Drift's timers being created during the test and then only torn down during
 // the tearDown after being reported as leaks at the test end.
 void main() {
-  final mySecretKey = SecretKey.fromString(
+  final mySecretKey = SecretKey.fromJson(
       String.fromCharCodes(Iterable.generate(64, (_) => 'F'.codeUnits.first)));
   final myToxId = ToxAddress.fromString(
       String.fromCharCodes(Iterable.generate(76, (_) => '0'.codeUnits.first)));

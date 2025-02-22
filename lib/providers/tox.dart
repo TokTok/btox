@@ -44,9 +44,11 @@ Stream<Event> toxEvents(
       .nodes
       .where((node) => node.tcpPorts.isNotEmpty)
       .toList(growable: false);
-  _logger.d('Got ${nodes.length} bootstrap nodes; using 8...');
+  final selectedNodes = nodes.take(8);
+  _logger.d('Got ${nodes.length} bootstrap nodes; '
+      'using ${selectedNodes.length}...');
   try {
-    for (final node in nodes.take(8)) {
+    for (final node in selectedNodes) {
       tox.bootstrap(node.ipv4, node.port, node.publicKey);
       tox.addTcpRelay(node.ipv4, node.tcpPorts.first, node.publicKey);
     }

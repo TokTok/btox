@@ -1,5 +1,6 @@
 import 'package:btox/api/toxcore/tox.dart';
 import 'package:btox/db/database.dart';
+import 'package:btox/l10n/generated/app_localizations.dart';
 import 'package:btox/logger.dart';
 import 'package:btox/models/crypto.dart';
 import 'package:btox/models/messaging.dart';
@@ -10,7 +11,6 @@ import 'package:btox/widgets/contact_list_item.dart';
 import 'package:btox/widgets/main_menu.dart';
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const _logger = Logger(['ContactListPage']);
@@ -78,13 +78,15 @@ final class ContactListPage extends ConsumerWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ChatPage(
+                        profile: profile,
                         contact: database.watchContact(contact.id),
                         messages: database.watchMessagesFor(contact.id),
                         onSendMessage: (Message? parent, String message) {
                           database.addMessage(newMessage(
                             contactId: contact.id,
                             parent: parent,
-                            origin: profile.publicKey,
+                            merged: null,
+                            author: profile.publicKey,
                             timestamp: clock.now().toUtc(),
                             content: message,
                           ));

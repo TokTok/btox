@@ -1,8 +1,8 @@
 import 'package:btox/api/toxcore/tox.dart';
+import 'package:btox/l10n/generated/app_localizations.dart';
 import 'package:btox/widgets/friend_request_message_field.dart';
 import 'package:btox/widgets/tox_id_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 final class AddContactPage extends HookWidget {

@@ -1,4 +1,6 @@
 import 'package:btox/models/bytes.dart';
+import 'package:btox/packets/messagepack.dart';
+import 'package:btox/packets/packet.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:drift/drift.dart';
@@ -18,7 +20,7 @@ final class NospamConverter extends TypeConverter<ToxAddressNospam, int>
   int toSql(ToxAddressNospam value) => toJson(value);
 }
 
-final class PublicKey extends _CryptoBytes {
+final class PublicKey extends _CryptoBytes with Packet {
   static const kLength = 32;
 
   PublicKey(super.bytes);
@@ -27,8 +29,17 @@ final class PublicKey extends _CryptoBytes {
     return PublicKey(Uint8List.fromList(hex.decode(value)));
   }
 
+  factory PublicKey.unpack(Unpacker unpacker) {
+    return PublicKey(unpacker.unpackBinary()!);
+  }
+
   @override
   int get length => PublicKey.kLength;
+
+  @override
+  void pack(Packer packer) {
+    packer.packBinary(bytes);
+  }
 }
 
 final class PublicKeyConverter extends TypeConverter<PublicKey, String>
@@ -50,12 +61,12 @@ final class SecretKey extends _CryptoBytes {
 
   SecretKey(super.bytes);
 
-  factory SecretKey.fromSodium(SecureKey value) {
-    return SecretKey(Uint8List.fromList(value.extractBytes()));
+  factory SecretKey.fromJson(String value) {
+    return SecretKey(Uint8List.fromList(hex.decode(value)));
   }
 
-  factory SecretKey.fromString(String value) {
-    return SecretKey(Uint8List.fromList(hex.decode(value)));
+  factory SecretKey.fromSodium(SecureKey value) {
+    return SecretKey(Uint8List.fromList(value.extractBytes()));
   }
 
   @override
@@ -67,7 +78,7 @@ final class SecretKeyConverter extends TypeConverter<SecretKey, String>
   const SecretKeyConverter();
 
   @override
-  SecretKey fromJson(String json) => SecretKey.fromString(json);
+  SecretKey fromJson(String json) => SecretKey.fromJson(json);
   @override
   SecretKey fromSql(String fromDb) => fromJson(fromDb);
   @override
@@ -76,7 +87,7 @@ final class SecretKeyConverter extends TypeConverter<SecretKey, String>
   String toSql(SecretKey value) => toJson(value);
 }
 
-final class Sha256 extends _CryptoBytes {
+final class Sha256 extends _CryptoBytes with Packet {
   static const kLength = 32;
 
   Sha256(super.bytes);
@@ -91,6 +102,11 @@ final class Sha256 extends _CryptoBytes {
 
   @override
   int get length => Sha256.kLength;
+
+  @override
+  void pack(Packer packer) {
+    packer.packBinary(bytes);
+  }
 }
 
 final class Sha256Converter extends TypeConverter<Sha256, String>
@@ -148,27 +164,6 @@ final class ToxAddressNospam extends _CryptoNumber {
   }
 }
 
-sealed class _CryptoNumber {
-  final int value;
-
-  const _CryptoNumber(this.value);
-
-  @override
-  int get hashCode => value;
-
-  @override
-  bool operator ==(Object other) {
-    return other is _CryptoNumber &&
-        other.runtimeType == runtimeType &&
-        other.value == value;
-  }
-
-  @override
-  String toString() {
-    return '$runtimeType($value)';
-  }
-}
-
 sealed class _CryptoBytes {
   final Uint8List bytes;
 
@@ -197,5 +192,26 @@ sealed class _CryptoBytes {
   @override
   String toString() {
     return '$runtimeType(${toJson()})';
+  }
+}
+
+sealed class _CryptoNumber {
+  final int value;
+
+  const _CryptoNumber(this.value);
+
+  @override
+  int get hashCode => value;
+
+  @override
+  bool operator ==(Object other) {
+    return other is _CryptoNumber &&
+        other.runtimeType == runtimeType &&
+        other.value == value;
+  }
+
+  @override
+  String toString() {
+    return '$runtimeType($value)';
   }
 }

@@ -1,5 +1,6 @@
 import 'package:btox/api/toxcore/tox.dart';
 import 'package:btox/db/database.dart';
+import 'package:btox/l10n/generated/app_localizations.dart';
 import 'package:btox/pages/contact_list_page.dart';
 import 'package:btox/pages/create_profile_page.dart';
 import 'package:btox/pages/select_profile_page.dart';
@@ -7,7 +8,6 @@ import 'package:btox/providers/database.dart';
 import 'package:btox/providers/sodium.dart';
 import 'package:btox/providers/tox.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sodium/sodium.dart';

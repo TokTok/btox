@@ -4,6 +4,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:btox/packets/messagepack/tags.dart';
+
 // dart2js doesn't support 64 bit ints, so we unpack using 2x 32 bit ints.
 int _getUint64(ByteData d, int offset) =>
     (d.getUint32(offset) << 32) | d.getUint32(offset + 4);
@@ -17,9 +19,9 @@ int _getInt64(ByteData d, int offset) =>
 /// Throws [FormatException] if value is not an requested type,
 /// but in that case throwing exception not corrupt internal state,
 /// so other unpackXXX methods can be called after that.
-class Unpacker {
+final class Unpacker {
   /// Manipulates with provided [Uint8List] to sequentially unpack values.
-  /// Use [Unpaker.fromList()] to unpack raw `List<int>` bytes.
+  /// Use [Unpacker.fromList()] to unpack raw `List<int>` bytes.
   Unpacker(this._list) : _d = ByteData.view(_list.buffer, _list.offsetInBytes);
 
   ///Convenient
@@ -29,7 +31,14 @@ class Unpacker {
   final ByteData _d;
   int _offset = 0;
 
-  final _strCodec = const Utf8Codec();
+  bool get hasNull => _d.getUint8(_offset) == kTagNil;
+
+  void unpackNull() {
+    if (!hasNull) {
+      throw _formatException('null', _d.getUint8(_offset));
+    }
+    _offset += 1;
+  }
 
   /// Unpack value if it exist. Otherwise returns `null`.
   ///
@@ -37,13 +46,13 @@ class Unpacker {
   bool? unpackBool() {
     final b = _d.getUint8(_offset);
     bool? v;
-    if (b == 0xc2) {
+    if (b == kTagFalse) {
       v = false;
       _offset += 1;
-    } else if (b == 0xc3) {
+    } else if (b == kTagTrue) {
       v = true;
       _offset += 1;
-    } else if (b == 0xc0) {
+    } else if (b == kTagNil) {
       v = null;
       _offset += 1;
     } else {
@@ -62,31 +71,31 @@ class Unpacker {
       /// Int value in fixnum range [-32..127] encoded in header 1 byte
       v = _d.getInt8(_offset);
       _offset += 1;
-    } else if (b == 0xcc) {
+    } else if (b == kTagUint8) {
       v = _d.getUint8(++_offset);
       _offset += 1;
-    } else if (b == 0xcd) {
+    } else if (b == kTagUint16) {
       v = _d.getUint16(++_offset);
       _offset += 2;
-    } else if (b == 0xce) {
+    } else if (b == kTagUint32) {
       v = _d.getUint32(++_offset);
       _offset += 4;
-    } else if (b == 0xcf) {
+    } else if (b == kTagUint64) {
       v = _getUint64(_d, ++_offset);
       _offset += 8;
-    } else if (b == 0xd0) {
+    } else if (b == kTagInt8) {
       v = _d.getInt8(++_offset);
       _offset += 1;
-    } else if (b == 0xd1) {
+    } else if (b == kTagInt16) {
       v = _d.getInt16(++_offset);
       _offset += 2;
-    } else if (b == 0xd2) {
+    } else if (b == kTagInt32) {
       v = _d.getInt32(++_offset);
       _offset += 4;
-    } else if (b == 0xd3) {
+    } else if (b == kTagInt64) {
       v = _getInt64(_d, ++_offset);
       _offset += 8;
-    } else if (b == 0xc0) {
+    } else if (b == kTagNil) {
       v = null;
       _offset += 1;
     } else {
@@ -101,13 +110,13 @@ class Unpacker {
   double? unpackDouble() {
     final b = _d.getUint8(_offset);
     double? v;
-    if (b == 0xca) {
+    if (b == kTagFloat32) {
       v = _d.getFloat32(++_offset);
       _offset += 4;
-    } else if (b == 0xcb) {
+    } else if (b == kTagFloat64) {
       v = _d.getFloat64(++_offset);
       _offset += 8;
-    } else if (b == 0xc0) {
+    } else if (b == kTagNil) {
       v = null;
       _offset += 1;
     } else {
@@ -122,26 +131,26 @@ class Unpacker {
   /// Throws [FormatException] if value is not a String.
   String? unpackString() {
     final b = _d.getUint8(_offset);
-    if (b == 0xc0) {
+    if (b == kTagNil) {
       _offset += 1;
       return null;
     }
     int len;
 
-    /// fixstr 101XXXXX stores a byte array whose len is upto 31 bytes:
+    /// fixstr 101XXXXX stores a byte array whose len is up to 31 bytes:
     if (b & 0xE0 == 0xA0) {
       len = b & 0x1F;
       _offset += 1;
-    } else if (b == 0xc0) {
+    } else if (b == kTagNil) {
       _offset += 1;
       return null;
-    } else if (b == 0xd9) {
+    } else if (b == kTagStr8) {
       len = _d.getUint8(++_offset);
       _offset += 1;
-    } else if (b == 0xda) {
+    } else if (b == kTagStr16) {
       len = _d.getUint16(++_offset);
       _offset += 2;
-    } else if (b == 0xdb) {
+    } else if (b == kTagStr32) {
       len = _d.getUint32(++_offset);
       _offset += 4;
     } else {
@@ -150,7 +159,7 @@ class Unpacker {
     final data =
         Uint8List.view(_list.buffer, _list.offsetInBytes + _offset, len);
     _offset += len;
-    return _strCodec.decode(data);
+    return utf8.decode(data);
   }
 
   /// Unpack [List.length] if packed value is an [List] or `null`.
@@ -162,16 +171,16 @@ class Unpacker {
     final b = _d.getUint8(_offset);
     int len;
     if (b & 0xF0 == 0x90) {
-      /// fixarray 1001XXXX stores an array whose length is upto 15 elements:
+      /// fixarray 1001XXXX stores an array whose length is up to 15 elements:
       len = b & 0xF;
       _offset += 1;
-    } else if (b == 0xc0) {
+    } else if (b == kTagNil) {
       len = 0;
       _offset += 1;
-    } else if (b == 0xdc) {
+    } else if (b == kTagArray16) {
       len = _d.getUint16(++_offset);
       _offset += 2;
-    } else if (b == 0xdd) {
+    } else if (b == kTagArray32) {
       len = _d.getUint32(++_offset);
       _offset += 4;
     } else {
@@ -189,16 +198,16 @@ class Unpacker {
     final b = _d.getUint8(_offset);
     int len;
     if (b & 0xF0 == 0x80) {
-      /// fixmap 1000XXXX stores a map whose length is upto 15 elements
+      /// fixmap 1000XXXX stores a map whose length is up to 15 elements
       len = b & 0xF;
       _offset += 1;
-    } else if (b == 0xc0) {
+    } else if (b == kTagNil) {
       len = 0;
       _offset += 1;
-    } else if (b == 0xde) {
+    } else if (b == kTagMap16) {
       len = _d.getUint16(++_offset);
       _offset += 2;
-    } else if (b == 0xdf) {
+    } else if (b == kTagMap32) {
       len = _d.getUint32(++_offset);
       _offset += 4;
     } else {
@@ -211,19 +220,19 @@ class Unpacker {
   ///
   /// Encoded in msgpack packet null unpacks to [List] with 0 length for convenience.
   /// Throws [FormatException] if value is not a binary.
-  List<int> unpackBinary() {
+  Uint8List? unpackBinary() {
     final b = _d.getUint8(_offset);
     int len;
-    if (b == 0xc4) {
+    if (b == kTagNil) {
+      _offset += 1;
+      return null;
+    } else if (b == kTagBin8) {
       len = _d.getUint8(++_offset);
       _offset += 1;
-    } else if (b == 0xc0) {
-      len = 0;
-      _offset += 1;
-    } else if (b == 0xc5) {
+    } else if (b == kTagBin16) {
       len = _d.getUint16(++_offset);
       _offset += 2;
-    } else if (b == 0xc6) {
+    } else if (b == kTagBin32) {
       len = _d.getUint32(++_offset);
       _offset += 4;
     } else {
@@ -232,37 +241,37 @@ class Unpacker {
     final data =
         Uint8List.view(_list.buffer, _list.offsetInBytes + _offset, len);
     _offset += len;
-    return data.toList();
+    return data.asUnmodifiableView();
   }
 
   Object? _unpack() {
     final b = _d.getUint8(_offset);
     if (b <= 0x7f ||
         b >= 0xe0 ||
-        b == 0xcc ||
-        b == 0xcd ||
-        b == 0xce ||
-        b == 0xcf ||
-        b == 0xd0 ||
-        b == 0xd1 ||
-        b == 0xd2 ||
-        b == 0xd3) {
+        b == kTagUint8 ||
+        b == kTagUint16 ||
+        b == kTagUint32 ||
+        b == kTagUint64 ||
+        b == kTagInt8 ||
+        b == kTagInt16 ||
+        b == kTagInt32 ||
+        b == kTagInt64) {
       return unpackInt();
-    } else if (b == 0xc0 || b == 0xc2 || b == 0xc3) {
+    } else if (b == kTagNil || b == kTagFalse || b == kTagTrue) {
       return unpackBool(); //null included
-    } else if (b == 0xca || b == 0xcb) {
+    } else if (b == kTagFloat32 || b == kTagFloat64) {
       return unpackDouble();
     } else if ((b & 0xE0) == 0xA0 ||
-        b == 0xc0 ||
-        b == 0xd9 ||
-        b == 0xda ||
-        b == 0xdb) {
+        b == kTagNil ||
+        b == kTagStr8 ||
+        b == kTagStr16 ||
+        b == kTagStr32) {
       return unpackString();
-    } else if (b == 0xc4 || b == 0xc5 || b == 0xc6) {
+    } else if (b == kTagBin8 || b == kTagBin16 || b == kTagBin32) {
       return unpackBinary();
-    } else if ((b & 0xF0) == 0x90 || b == 0xdc || b == 0xdd) {
+    } else if ((b & 0xF0) == 0x90 || b == kTagArray16 || b == kTagArray32) {
       return unpackList();
-    } else if ((b & 0xF0) == 0x80 || b == 0xde || b == 0xdf) {
+    } else if ((b & 0xF0) == 0x80 || b == kTagMap16 || b == kTagMap32) {
       return unpackMap();
     } else {
       throw _formatException('Unknown', b);

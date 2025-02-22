@@ -1,17 +1,18 @@
 import 'package:btox/api/toxcore/tox.dart';
 import 'package:btox/db/database.dart';
+import 'package:btox/l10n/generated/app_localizations.dart';
 import 'package:btox/logger.dart';
 import 'package:btox/pages/settings_page.dart';
 import 'package:btox/pages/user_profile_page.dart';
-import 'package:btox/widgets/connection_status_icon.dart';
+import 'package:btox/widgets/circle_identicon.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const _logger = Logger(['MainMenu']);
 
-final class MainMenu extends StatelessWidget {
+final class MainMenu extends ConsumerWidget {
   final ToxConstants constants;
   final Profile profile;
   final Database database;
@@ -24,13 +25,11 @@ final class MainMenu extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return NavigationDrawer(
       children: [
         DrawerHeader(
-          decoration: const BoxDecoration(
-            color: Colors.blue,
-          ),
+          decoration: const BoxDecoration(color: Colors.blue),
           child: ListTile(
             title: Text(
               profile.settings.nickname,
@@ -40,7 +39,7 @@ final class MainMenu extends StatelessWidget {
               profile.settings.statusMessage,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            trailing: ConnectionStatusIcon(profile: profile),
+            trailing: CircleIdenticon(publicKey: profile.publicKey),
           ),
         ),
         ListTile(

@@ -4,6 +4,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:btox/packets/messagepack/tags.dart';
+import 'package:btox/packets/packet.dart';
+
 // dart2js doesn't support 64 bit ints, so we pack using 2x 32 bit ints.
 void _setUint64(ByteData d, int offset, int v) {
   d.setUint32(offset, v >> 32);
@@ -25,7 +28,7 @@ void _setInt64(ByteData d, int offset, int v) {
 /// Streaming packing requires buffer to collect your data.
 /// Try to figure out the best initial size of this buffer, that minimal enough to fit your most common data packing scenario.
 /// Try to find balance. Provide this value in constructor [Packer()]
-class Packer {
+final class Packer {
   /// Provide the [_bufSize] size, that minimal enough to fit your most used data packets.
   /// Try to find balance, small buffer is good, and if most of your data will fit to it, performance will be good.
   /// If buffer not enough it will be increased automatically.
@@ -82,7 +85,7 @@ class Packer {
   /// Other packXXX implicitly handle null values.
   void packNull() {
     if (_buf.length - _offset < 1) _nextBuf();
-    _d.setUint8(_offset++, 0xc0);
+    _d.setUint8(_offset++, kTagNil);
   }
 
   /// Pack [bool] or `null`.
@@ -90,9 +93,9 @@ class Packer {
   void packBool(bool? v) {
     if (_buf.length - _offset < 1) _nextBuf();
     if (v == null) {
-      _d.setUint8(_offset++, 0xc0);
+      _d.setUint8(_offset++, kTagNil);
     } else {
-      _d.setUint8(_offset++, v ? 0xc3 : 0xc2);
+      _d.setUint8(_offset++, v ? kTagTrue : kTagFalse);
     }
   }
 
@@ -101,41 +104,41 @@ class Packer {
     // max 8 byte int + 1 control byte
     if (_buf.length - _offset < 9) _nextBuf();
     if (v == null) {
-      _d.setUint8(_offset++, 0xc0);
+      _d.setUint8(_offset++, kTagNil);
     } else if (v >= 0) {
       if (v <= 127) {
         _d.setUint8(_offset++, v);
       } else if (v <= 0xFF) {
-        _d.setUint8(_offset++, 0xcc);
+        _d.setUint8(_offset++, kTagUint8);
         _d.setUint8(_offset++, v);
       } else if (v <= 0xFFFF) {
-        _d.setUint8(_offset++, 0xcd);
+        _d.setUint8(_offset++, kTagUint16);
         _d.setUint16(_offset, v);
         _offset += 2;
       } else if (v <= 0xFFFFFFFF) {
-        _d.setUint8(_offset++, 0xce);
+        _d.setUint8(_offset++, kTagUint32);
         _d.setUint32(_offset, v);
         _offset += 4;
       } else {
-        _d.setUint8(_offset++, 0xcf);
+        _d.setUint8(_offset++, kTagUint64);
         _setUint64(_d, _offset, v);
         _offset += 8;
       }
     } else if (v >= -32) {
       _d.setInt8(_offset++, v);
     } else if (v >= -128) {
-      _d.setUint8(_offset++, 0xd0);
+      _d.setUint8(_offset++, kTagInt8);
       _d.setInt8(_offset++, v);
     } else if (v >= -32768) {
-      _d.setUint8(_offset++, 0xd1);
+      _d.setUint8(_offset++, kTagInt16);
       _d.setInt16(_offset, v);
       _offset += 2;
     } else if (v >= -2147483648) {
-      _d.setUint8(_offset++, 0xd2);
+      _d.setUint8(_offset++, kTagInt32);
       _d.setInt32(_offset, v);
       _offset += 4;
     } else {
-      _d.setUint8(_offset++, 0xd3);
+      _d.setUint8(_offset++, kTagInt64);
       _setInt64(_d, _offset, v);
       _offset += 8;
     }
@@ -146,10 +149,10 @@ class Packer {
     // 8 byte double + 1 control byte
     if (_buf.length - _offset < 9) _nextBuf();
     if (v == null) {
-      _d.setUint8(_offset++, 0xc0);
+      _d.setUint8(_offset++, kTagNil);
       return;
     }
-    _d.setUint8(_offset++, 0xcb);
+    _d.setUint8(_offset++, kTagFloat64);
     _d.setFloat64(_offset, v);
     _offset += 8;
   }
@@ -169,7 +172,7 @@ class Packer {
     // max 4 byte str header + 1 control byte
     if (_buf.length - _offset < 5) _nextBuf();
     if (v == null) {
-      _d.setUint8(_offset++, 0xc0);
+      _d.setUint8(_offset++, kTagNil);
       return;
     }
     final encoded = _strCodec.encode(v);
@@ -177,14 +180,14 @@ class Packer {
     if (length <= 31) {
       _d.setUint8(_offset++, 0xA0 | length);
     } else if (length <= 0xFF) {
-      _d.setUint8(_offset++, 0xd9);
+      _d.setUint8(_offset++, kTagStr8);
       _d.setUint8(_offset++, length);
     } else if (length <= 0xFFFF) {
-      _d.setUint8(_offset++, 0xda);
+      _d.setUint8(_offset++, kTagStr16);
       _d.setUint16(_offset, length);
       _offset += 2;
     } else if (length <= 0xFFFFFFFF) {
-      _d.setUint8(_offset++, 0xdb);
+      _d.setUint8(_offset++, kTagStr32);
       _d.setUint32(_offset, length);
       _offset += 4;
     } else {
@@ -210,19 +213,19 @@ class Packer {
     // max 4 byte binary header + 1 control byte
     if (_buf.length - _offset < 5) _nextBuf();
     if (buffer == null) {
-      _d.setUint8(_offset++, 0xc0);
+      _d.setUint8(_offset++, kTagNil);
       return;
     }
     final length = buffer.length;
     if (length <= 0xFF) {
-      _d.setUint8(_offset++, 0xc4);
+      _d.setUint8(_offset++, kTagBin8);
       _d.setUint8(_offset++, length);
     } else if (length <= 0xFFFF) {
-      _d.setUint8(_offset++, 0xc5);
+      _d.setUint8(_offset++, kTagBin16);
       _d.setUint16(_offset, length);
       _offset += 2;
     } else if (length <= 0xFFFFFFFF) {
-      _d.setUint8(_offset++, 0xc6);
+      _d.setUint8(_offset++, kTagBin32);
       _d.setUint32(_offset, length);
       _offset += 4;
     } else {
@@ -236,15 +239,15 @@ class Packer {
     // max 4 length header + 1 control byte
     if (_buf.length - _offset < 5) _nextBuf();
     if (length == null) {
-      _d.setUint8(_offset++, 0xc0);
+      _d.setUint8(_offset++, kTagNil);
     } else if (length <= 0xF) {
       _d.setUint8(_offset++, 0x90 | length);
     } else if (length <= 0xFFFF) {
-      _d.setUint8(_offset++, 0xdc);
+      _d.setUint8(_offset++, kTagArray16);
       _d.setUint16(_offset, length);
       _offset += 2;
     } else if (length <= 0xFFFFFFFF) {
-      _d.setUint8(_offset++, 0xdd);
+      _d.setUint8(_offset++, kTagArray32);
       _d.setUint32(_offset, length);
       _offset += 4;
     } else {
@@ -257,20 +260,24 @@ class Packer {
     // max 4 byte header + 1 control byte
     if (_buf.length - _offset < 5) _nextBuf();
     if (length == null) {
-      _d.setUint8(_offset++, 0xc0);
+      _d.setUint8(_offset++, kTagNil);
     } else if (length <= 0xF) {
       _d.setUint8(_offset++, 0x80 | length);
     } else if (length <= 0xFFFF) {
-      _d.setUint8(_offset++, 0xde);
+      _d.setUint8(_offset++, kTagMap16);
       _d.setUint16(_offset, length);
       _offset += 2;
     } else if (length <= 0xFFFFFFFF) {
-      _d.setUint8(_offset++, 0xdf);
+      _d.setUint8(_offset++, kTagMap32);
       _d.setUint32(_offset, length);
       _offset += 4;
     } else {
       throw ArgumentError('Max map length is 0xFFFFFFFF');
     }
+  }
+
+  void pack(Packet packet) {
+    packet.pack(this);
   }
 
   /// Get bytes representation of this packer.

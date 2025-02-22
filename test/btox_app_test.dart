@@ -1,9 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:btox/btox_app.dart';
 import 'package:btox/db/database.dart';
 import 'package:btox/models/crypto.dart';
-import 'package:btox/models/identicon.dart';
 import 'package:btox/models/profile_settings.dart';
 import 'package:btox/providers/bootstrap_nodes.dart';
 import 'package:btox/providers/database.dart';
@@ -18,7 +15,6 @@ import 'mocks/fake_bootstrap_nodes.dart';
 import 'mocks/fake_sodium.dart';
 import 'mocks/fake_tox_constants.dart';
 import 'mocks/fake_toxcore.dart';
-import 'mocks/image_data.dart';
 
 // The database can't be constructed/torn down in the Flutter test framework
 // setUp and tearDown functions as that leads to leaks being reported due to
@@ -59,9 +55,6 @@ void main() {
           sodiumProvider.overrideWith((ref) => FakeSodium()),
           toxConstantsProvider.overrideWith((ref) => fakeToxcoreConstants),
           toxProvider(mySecretKey, myToxId.nospam).overrideWith((ref) => tox),
-          identiconProvider(friendToxId.publicKey).overrideWith(
-            (ref) => MemoryImage(Uint8List.fromList(kBlueSquarePng)),
-          ),
         ],
         child: const BtoxApp(),
       ),

@@ -17,7 +17,8 @@ final class CircleIdenticon extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(identiconProvider(publicKey)).when(
-          data: (image) => CircleAvatar(backgroundImage: image),
+          data: (identicon) =>
+              CircleAvatar(backgroundImage: IdenticonImageProvider(identicon)),
           loading: () => const CircularProgressIndicator(),
           error: (error, _) {
             _logger.e('Failed to load identicon: $error');

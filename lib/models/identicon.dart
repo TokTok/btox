@@ -3,7 +3,7 @@
 // Copyright © 2024-2025 The TokTok team.
 import 'dart:math';
 import 'dart:typed_data';
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:btox/logger.dart';
 import 'package:btox/models/crypto.dart';
@@ -33,8 +33,8 @@ const _kIdenticonRows = 5;
 const _logger = Logger(['Identicon']);
 
 @riverpod
-Future<ImageProvider> identicon(Ref ref, PublicKey publicKey) async {
-  return Identicon.fromBytes(publicKey.bytes).toImage();
+Future<Identicon> identicon(Ref ref, PublicKey publicKey) async {
+  return Identicon.fromBytes(publicKey.bytes);
 }
 
 double _bytesToColor(Uint8List bytes) {
@@ -129,7 +129,7 @@ final class Identicon {
     return Identicon(identiconColors, colors);
   }
 
-  Future<MemoryImage> toImage() async {
+  Future<ui.Image> toImage() async {
     _logger.v('Generating identicon image');
     final matrix = toMatrix();
 
@@ -152,22 +152,17 @@ final class Identicon {
     const int scale = 10;
     final rgba = _upscale(scale, Uint8List.fromList(pixels));
 
-    final buffer = await ImmutableBuffer.fromUint8List(rgba);
-    final ImageDescriptor descriptor = ImageDescriptor.raw(
+    final buffer = await ui.ImmutableBuffer.fromUint8List(rgba);
+    final descriptor = ui.ImageDescriptor.raw(
       buffer,
       width: _kIdenticonRows * scale,
       height: _kIdenticonRows * scale,
-      pixelFormat: PixelFormat.rgba8888,
+      pixelFormat: ui.PixelFormat.rgba8888,
     );
 
     final codec = await descriptor.instantiateCodec();
     final frame = await codec.getNextFrame();
-    final png = await frame.image.toByteData(format: ImageByteFormat.png);
-    if (png == null) {
-      throw Exception('Could not convert image to PNG');
-    }
-    _logger.d('Generated identicon image: ${png.lengthInBytes} bytes');
-    return MemoryImage(Uint8List.view(png.buffer));
+    return frame.image;
   }
 
   List<List<int>> toMatrix() {
@@ -183,5 +178,23 @@ final class Identicon {
       }
     }
     return matrix;
+  }
+}
+
+final class IdenticonImageProvider extends ImageProvider<Identicon> {
+  final Identicon identicon;
+
+  const IdenticonImageProvider(this.identicon);
+
+  @override
+  Future<Identicon> obtainKey(ImageConfiguration configuration) async {
+    return identicon;
+  }
+
+  @override
+  ImageStreamCompleter loadImage(Identicon key, ImageDecoderCallback decode) {
+    return OneFrameImageStreamCompleter(
+      key.toImage().then((image) => ImageInfo(image: image)),
+    );
   }
 }

@@ -36,8 +36,8 @@ void main() {
 
     final image = await identicon.toImage();
 
-    // A PNG comes out. 50 is somewhat arbitrary, but it should be a valid PNG.
-    expect(image.bytes.length, greaterThan(50));
+    expect(image.height, greaterThan(5));
+    expect(image.height, image.width);
   }, tags: ['identicon']);
 }
 

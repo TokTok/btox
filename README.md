@@ -2,6 +2,8 @@
 
 A work-in-progress cross-platform Tox client.
 
+![Nightly screenshot](https://github.com/TokTok/bTox/releases/download/nightly/btox-linux.png)
+
 ## Setting up Flutter
 
 Follow the instructions on https://docs.flutter.dev/get-started/

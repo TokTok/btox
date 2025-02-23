@@ -12,7 +12,7 @@ void main() {
 
     final identicon = Identicon.fromBytes(data);
 
-    expect(identicon.toMatrix(), [
+    expect(Identicon.toMatrix(identicon.identiconColors), [
       [0, 0, 0, 0, 0],
       [1, 1, 0, 1, 1],
       [0, 0, 0, 0, 0],
@@ -34,7 +34,7 @@ void main() {
 
     final identicon = Identicon.fromBytes(data);
 
-    final image = await identicon.toImage();
+    final image = await identicon.image;
 
     expect(image.height, greaterThan(5));
     expect(image.height, image.width);

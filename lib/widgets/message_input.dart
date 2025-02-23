@@ -102,6 +102,7 @@ final class MessageInput extends HookWidget {
                     : const Icon(Icons.add_circle),
                 onPressed: () {
                   if (sendMode.value) {
+                    sendMode.value = false;
                     _onSend(
                       messageInputController,
                       messageInputFocus,

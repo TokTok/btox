@@ -6,10 +6,16 @@
 
 #include "generated_plugin_registrant.h"
 
+#include <file_selector_windows/file_selector_windows.h>
+#include <geolocator_windows/geolocator_windows.h>
 #include <sodium_libs/sodium_libs_plugin_c_api.h>
 #include <sqlcipher_flutter_libs/sqlite3_flutter_libs_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
+  FileSelectorWindowsRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("FileSelectorWindows"));
+  GeolocatorWindowsRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("GeolocatorWindows"));
   SodiumLibsPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("SodiumLibsPluginCApi"));
   Sqlite3FlutterLibsPluginRegisterWithRegistrar(

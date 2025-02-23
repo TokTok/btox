@@ -9,6 +9,10 @@ import 'package:btox/logger.dart';
 import 'package:btox/models/crypto.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'identicon.g.dart';
 
 /// Width from the center to the outside, for 5 columns it's 3, 6 -> 3, 7 -> 4.
 const _kActiveCols = (_kIdenticonRows + 1) ~/ 2;
@@ -27,6 +31,12 @@ const _kIdenticonColorBytes = 6;
 const _kIdenticonRows = 5;
 
 const _logger = Logger(['Identicon']);
+
+@Riverpod(keepAlive: true)
+IdenticonImageProvider identicon(Ref ref, PublicKey publicKey) {
+  _logger.v('Creating identicon for public key: $publicKey');
+  return IdenticonImageProvider(Identicon.fromPublicKey(publicKey));
+}
 
 double _bytesToColor(Uint8List bytes) {
   assert(bytes.length == _kIdenticonColorBytes, 'bytes: $bytes');
@@ -81,8 +91,9 @@ Uint8List _upscale(int factor, Uint8List pixels) {
 final class Identicon {
   final List<List<int>> identiconColors;
   final List<Color> colors;
+  final Future<ui.Image> image;
 
-  const Identicon(this.identiconColors, this.colors);
+  const Identicon(this.identiconColors, this.colors, this.image);
 
   factory Identicon.fromBytes(Uint8List data) {
     _logger.v('Generating identicon from data: $data');
@@ -117,16 +128,17 @@ final class Identicon {
         identiconColors[row][col] = colorIndex;
       }
     }
-    return Identicon(identiconColors, colors);
+    return Identicon(identiconColors, colors, toImage(identiconColors, colors));
   }
 
   factory Identicon.fromPublicKey(PublicKey publicKey) {
     return Identicon.fromBytes(publicKey.bytes);
   }
 
-  Future<ui.Image> toImage() async {
+  static Future<ui.Image> toImage(
+      List<List<int>> identiconColors, List<Color> colors) async {
     _logger.v('Generating identicon image');
-    final matrix = toMatrix();
+    final matrix = toMatrix(identiconColors);
 
     final pixels = <int>[];
 
@@ -160,7 +172,7 @@ final class Identicon {
     return frame.image;
   }
 
-  List<List<int>> toMatrix() {
+  static List<List<int>> toMatrix(List<List<int>> identiconColors) {
     final matrix = List.generate(_kIdenticonRows, (row) {
       return List<int>.filled(_kIdenticonRows, 0);
     });
@@ -184,7 +196,7 @@ final class IdenticonImageProvider extends ImageProvider<Identicon> {
   @override
   ImageStreamCompleter loadImage(Identicon key, ImageDecoderCallback decode) {
     return OneFrameImageStreamCompleter(
-      key.toImage().then((image) => ImageInfo(image: image)),
+      key.image.then((image) => ImageInfo(image: image)),
     );
   }
 

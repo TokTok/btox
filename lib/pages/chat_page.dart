@@ -93,8 +93,9 @@ final class ChatPage extends HookWidget {
                   ),
                   if (selectingAttachment.value)
                     AttachmentSelector(
-                      onAdd: () {
+                      onAdd: (message) {
                         selectingAttachment.value = false;
+                        onSendMessage?.call(messages.lastOrNull, message);
                       },
                     ),
                 ],

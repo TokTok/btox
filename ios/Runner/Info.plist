@@ -45,5 +45,13 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Used to take and send photos in chats</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Used to capture audio to send audio messages</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Used to select images to send in chats</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Used to send your location to friends</string>
 </dict>
 </plist>

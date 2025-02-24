@@ -1,12 +1,16 @@
+import 'dart:io';
+
 import 'package:btox/logger.dart';
+import 'package:btox/providers/geolocation.dart';
 import 'package:btox/widgets/attachment_button.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 const _logger = Logger(['AttachmentSelector']);
 
 final class AttachmentSelector extends StatelessWidget {
-  final void Function() onAdd;
+  final void Function(String) onAdd;
 
   const AttachmentSelector({
     super.key,
@@ -21,37 +25,30 @@ final class AttachmentSelector extends StatelessWidget {
         children: [
           TableRow(
             children: [
-              AttachmentButton(
-                icon: Icons.camera_alt,
-                text: 'Camera',
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Camera not implemented'),
-                    ),
-                  );
-                },
-              ),
+              if (Platform.isAndroid || Platform.isIOS)
+                AttachmentButton(
+                  icon: Icons.camera_alt,
+                  text: 'Camera',
+                  onPressed: () async {
+                    final image = await ImagePicker().pickImage(
+                      source: ImageSource.camera,
+                    );
+                    if (image != null) {
+                      onAdd('Image selected: ${image.path}');
+                    }
+                  },
+                ),
               AttachmentButton(
                 icon: Icons.photo,
                 text: 'Gallery',
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Gallery not implemented'),
-                    ),
+                onPressed: () async {
+                  final result = await FilePicker.platform.pickFiles(
+                    allowMultiple: true,
+                    type: FileType.image,
                   );
-                },
-              ),
-              AttachmentButton(
-                icon: Icons.mic,
-                text: 'Audio',
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Audio not implemented'),
-                    ),
-                  );
+                  if (result != null) {
+                    onAdd('Files selected: ${result.files}');
+                  }
                 },
               ),
               AttachmentButton(
@@ -62,19 +59,20 @@ final class AttachmentSelector extends StatelessWidget {
                     allowMultiple: true,
                   );
                   if (result != null) {
-                    _logger.d('Files selected: ${result.files}');
+                    onAdd('Files selected: ${result.files}');
                   }
                 },
               ),
               AttachmentButton(
                 icon: Icons.location_on,
                 text: 'Location',
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Location not implemented'),
-                    ),
-                  );
+                onPressed: () async {
+                  try {
+                    final location = await geolocation();
+                    onAdd(location.toString());
+                  } catch (e) {
+                    _logger.e('Error adding location: $e');
+                  }
                 },
               ),
             ],

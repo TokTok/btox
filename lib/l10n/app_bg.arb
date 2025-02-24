@@ -25,15 +25,15 @@
   "@message": {
     "description": "The text for the message field"
   },
-  "messageInput": "Въведете съобщение",
+  "messageInput": "Съобщение в Tox",
   "@messageInput": {
     "description": "The placeholder text for the message input field"
   },
-  "toxId": "Идентификатор на Tox",
+  "toxId": "Tox ID",
   "@toxId": {
     "description": "The text for the Tox ID field"
   },
-  "defaultAddContactMessage": "Здравей, аз съм {nick}, ела да си поговориш с мен в bTox!",
+  "defaultAddContactMessage": "Здравейте, аз съм {nick}, елате да си поговорим в bTox!",
   "@defaultAddContactMessage": {
     "description": "The default message to send when adding a contact",
     "placeholders": {
@@ -154,6 +154,16 @@
       "name": {
         "type": "String",
         "example": "Alice"
+      }
+    }
+  },
+  "re": "Отн: {message}",
+  "@re": {
+    "description": "The prefix for a reply message",
+    "placeholders": {
+      "message": {
+        "type": "String",
+        "example": "Hello"
       }
     }
   }

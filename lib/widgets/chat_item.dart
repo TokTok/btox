@@ -1,9 +1,10 @@
 import 'dart:math';
 
 import 'package:btox/db/database.dart';
-import 'package:btox/widgets/bubble.dart';
+import 'package:btox/widgets/chat_text_item.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 /// When the bubble is dragged past this fraction of the max bubble drag, the
@@ -14,15 +15,15 @@ const _kBubbleDragActivation = 0.8;
 const _kMaxBubbleDrag = 48.0;
 
 Color _bubbleColor(bool isSender, ThemeData theme) {
-  return isSender ? Colors.blue : theme.splashColor;
+  return isSender ? Colors.blue[900]! : theme.splashColor;
 }
 
-final class ChatBubble extends HookWidget {
+final class ChatItem extends HookWidget {
   final Message message;
   final bool isSender;
   final void Function()? onReply;
 
-  const ChatBubble({
+  const ChatItem({
     super.key,
     required this.message,
     required this.isSender,
@@ -73,19 +74,27 @@ final class ChatBubble extends HookWidget {
                 bubbleDrag.value = 0;
               },
               onTap: () => showTime.value = !showTime.value,
+              onLongPress: () {
+                Clipboard.setData(ClipboardData(text: message.content));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Copied to clipboard'),
+                  ),
+                );
+              },
               child: Padding(
                 padding: isSender
                     ? EdgeInsets.only(right: dragValue)
                     : EdgeInsets.only(left: dragValue),
-                child: Bubble(
+                child: ChatTextItem(
                   text: message.content,
                   extraWidth: _kMaxBubbleDrag,
                   color: _bubbleColor(isSender, Theme.of(context)),
                   direction: isSender
-                      ? BubbleDirection.sent
-                      : BubbleDirection.received,
-                  state: isSender ? BubbleState.seen : BubbleState.none,
-                  textStyle: Theme.of(context).textTheme.bodyLarge,
+                      ? ChatItemDirection.sent
+                      : ChatItemDirection.received,
+                  state: isSender ? ChatItemState.seen : ChatItemState.none,
+                  textStyle: Theme.of(context).textTheme.bodyLarge!,
                 ),
               ),
             ),

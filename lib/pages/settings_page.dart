@@ -1,3 +1,4 @@
+import 'package:btox/background_service.dart';
 import 'package:btox/db/database.dart';
 import 'package:btox/l10n/generated/app_localizations.dart';
 import 'package:btox/logger.dart';
@@ -65,6 +66,18 @@ final class SettingsPage extends StatelessWidget {
                   ],
                 ),
               );
+            },
+          ),
+          ListTile(
+            title: Text('Start background service'),
+            onTap: () {
+              startBackgroundService();
+            },
+          ),
+          ListTile(
+            title: Text('Stop background service'),
+            onTap: () {
+              stopBackgroundService();
             },
           ),
         ],

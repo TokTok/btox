@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-final class ChatMessageEmoji extends StatelessWidget {
+final class ChatTextEmoji extends StatelessWidget {
   final Positioned? stateIcon;
   final String emoji;
   final TextStyle textStyle;
 
-  const ChatMessageEmoji({
+  const ChatTextEmoji({
     super.key,
     required this.stateIcon,
     required this.emoji,

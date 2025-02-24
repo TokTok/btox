@@ -1,18 +1,55 @@
-import 'package:btox/widgets/chat_message_bubble.dart';
-import 'package:btox/widgets/chat_message_emoji.dart';
+import 'package:btox/widgets/chat_text_bubble.dart';
+import 'package:btox/widgets/chat_text_emoji.dart';
 import 'package:flutter/material.dart';
+import 'package:unicode/unicode.dart' as unicode;
 
 const double kStateIconBottom = 4;
 const double kStateIconRight = 6;
 const double kStateIconSize = 18;
-final RegExp kRegexEmoji = RegExp(
-    r'^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])$');
+
+/// An emoji is one symbol followed by zero or more modifier symbols.
+///
+/// Multiple emojis are not an emoji, so we show them as a bubble. This is an
+/// overestimate, because it includes things like ℉, but it's good enough for
+/// now. Really deciding on whether something is an emoji is complicated:
+/// https://tc39.es/proposal-regexp-unicode-sequence-properties/.
+bool _isEmoji(String s) {
+  final chars = _utf16To32(s.codeUnits);
+  if (chars.isEmpty) {
+    return false;
+  }
+
+  if (unicode.getUnicodeCategory(chars.first) !=
+      unicode.UnicodeCategory.otherSymbol) {
+    return false;
+  }
+  for (final char in chars.skip(1)) {
+    final category = unicode.getUnicodeCategory(char);
+    if (category != unicode.UnicodeCategory.modifierSymbol) {
+      return false;
+    }
+  }
+  return true;
+}
+
+List<int> _utf16To32(List<int> utf16) {
+  final List<int> utf32 = [];
+  for (int i = 0; i < utf16.length; i++) {
+    if (utf16[i] & 0xF800 == 0xD800) {
+      utf32.add(((utf16[i] & 0x3FF) << 10) + (utf16[i + 1] & 0x3FF) + 0x10000);
+      i++;
+    } else {
+      utf32.add(utf16[i]);
+    }
+  }
+  return utf32;
+}
 
 enum ChatItemDirection { sent, received }
 
 enum ChatItemState { none, sent, delivered, seen }
 
-final class ChatTextItem extends StatelessWidget {
+final class ChatText extends StatelessWidget {
   final String text;
   final Color color;
   final TextStyle textStyle;
@@ -22,7 +59,7 @@ final class ChatTextItem extends StatelessWidget {
   final EdgeInsets padding;
   final double extraWidth;
 
-  const ChatTextItem({
+  const ChatText({
     super.key,
     required this.text,
     required this.color,
@@ -85,14 +122,14 @@ final class ChatTextItem extends StatelessWidget {
   }
 
   Widget _bubble(Positioned? stateIcon) {
-    if (kRegexEmoji.hasMatch(text)) {
-      return ChatMessageEmoji(
+    if (_isEmoji(text)) {
+      return ChatTextEmoji(
         stateIcon: stateIcon,
         emoji: text,
         textStyle: textStyle,
       );
     }
-    return ChatMessageBubble(
+    return ChatTextBubble(
       radius: bubbleRadius,
       color: color,
       stateIcon: stateIcon,

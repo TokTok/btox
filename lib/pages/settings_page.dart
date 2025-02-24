@@ -1,7 +1,7 @@
+import 'package:btox/background_service.dart';
 import 'package:btox/db/database.dart';
 import 'package:btox/l10n/generated/app_localizations.dart';
 import 'package:btox/logger.dart';
-import 'package:btox/service.dart';
 import 'package:flutter/material.dart';
 
 const _logger = Logger(['SettingsPage']);

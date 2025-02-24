@@ -1,5 +1,6 @@
 import 'package:btox/l10n/generated/app_localizations.dart';
 import 'package:btox/widgets/attachment_selector.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -8,10 +9,17 @@ enum _SendMode {
   attachment,
 }
 
+enum _EditMode {
+  text,
+  attachment,
+  emoji,
+}
+
 final class MessageInput extends HookWidget {
   final String hintText;
   final String replyingTo;
   final Color buttonColor;
+  final bool recentEmojis;
   final void Function(String) onSend;
   final void Function() onTapCloseReply;
 
@@ -20,6 +28,7 @@ final class MessageInput extends HookWidget {
     required this.hintText,
     this.replyingTo = '',
     this.buttonColor = Colors.blue,
+    required this.recentEmojis,
     required this.onSend,
     required this.onTapCloseReply,
   });
@@ -29,7 +38,28 @@ final class MessageInput extends HookWidget {
     final messageInputController = useTextEditingController();
     final messageInputFocus = useFocusNode();
     final sendMode = useState(_SendMode.attachment);
-    final selectingAttachment = useState(false);
+    final editMode = useState(_EditMode.text);
+
+    useEffect(() {
+      void updateSendMode() {
+        sendMode.value = messageInputController.text.isEmpty
+            ? _SendMode.attachment
+            : _SendMode.text;
+      }
+
+      messageInputController.addListener(updateSendMode);
+      return () => messageInputController.removeListener(updateSendMode);
+    }, []);
+
+    void send([String? message]) {
+      message ??= messageInputController.text;
+      if (message.isNotEmpty) {
+        onSend(message);
+        messageInputController.text = '';
+        messageInputFocus.requestFocus();
+        editMode.value = _EditMode.text;
+      }
+    }
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -69,49 +99,73 @@ final class MessageInput extends HookWidget {
             child: Divider(height: 1),
           ),
         ],
+        if (editMode.value == _EditMode.emoji)
+          EmojiPicker(
+            key: const Key('emojiPicker'),
+            textEditingController: messageInputController,
+            config: Config(
+              categoryViewConfig: CategoryViewConfig(
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                recentTabBehavior: recentEmojis
+                    ? RecentTabBehavior.RECENT
+                    : RecentTabBehavior.NONE,
+              ),
+              emojiViewConfig: EmojiViewConfig(
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              ),
+              bottomActionBarConfig: BottomActionBarConfig(
+                backgroundColor: Theme.of(context).splashColor,
+              ),
+            ),
+          ),
         Row(
           children: [
             Expanded(
-              child: Focus(
-                onFocusChange: (hasFocus) {
-                  if (hasFocus) {
-                    selectingAttachment.value = false;
-                  }
-                },
-                child: TextField(
-                  key: const Key('messageField'),
-                  controller: messageInputController,
-                  focusNode: messageInputFocus,
-                  autofocus: true,
-                  keyboardType: TextInputType.multiline,
-                  textCapitalization: TextCapitalization.sentences,
-                  minLines: 1,
-                  maxLines: 3,
-                  onChanged: (value) {
-                    sendMode.value = value.isNotEmpty
-                        ? _SendMode.text
-                        : _SendMode.attachment;
-                  },
-                  onSubmitted: (_) => _onSend(
-                    messageInputController,
-                    messageInputFocus,
-                  ),
-                  decoration: InputDecoration(
-                    isDense: true,
-                    hintText: hintText,
-                    hintMaxLines: 1,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 8,
-                    ),
-                    fillColor: Theme.of(context).splashColor,
-                    filled: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide.none,
+              child: Stack(
+                children: [
+                  TextField(
+                    key: const Key('messageField'),
+                    controller: messageInputController,
+                    focusNode: messageInputFocus,
+                    autofocus: true,
+                    keyboardType: TextInputType.multiline,
+                    textCapitalization: TextCapitalization.sentences,
+                    minLines: 1,
+                    maxLines: 3,
+                    onTap: () => editMode.value = _EditMode.text,
+                    onSubmitted: (_) => send(),
+                    decoration: InputDecoration(
+                      isDense: true,
+                      hintText: hintText,
+                      hintMaxLines: 1,
+                      contentPadding: const EdgeInsets.only(
+                        left: 36,
+                        right: 24,
+                        top: 8,
+                        bottom: 8,
+                      ),
+                      fillColor: Theme.of(context).splashColor,
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                   ),
-                ),
+                  IconButton(
+                    icon: const Icon(Icons.emoji_emotions_outlined),
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    iconSize: 24,
+                    onPressed: () {
+                      if (editMode.value == _EditMode.emoji) {
+                        editMode.value = _EditMode.text;
+                      } else {
+                        editMode.value = _EditMode.emoji;
+                      }
+                    },
+                  ),
+                ],
               ),
             ),
             IconButton(
@@ -125,50 +179,26 @@ final class MessageInput extends HookWidget {
               onPressed: () {
                 switch (sendMode.value) {
                   case _SendMode.text:
-                    sendMode.value = _SendMode.attachment;
-                    _onSend(
-                      messageInputController,
-                      messageInputFocus,
-                    );
+                    send();
                     break;
                   case _SendMode.attachment:
-                    selectingAttachment.value = !selectingAttachment.value;
-                    if (selectingAttachment.value) {
-                      messageInputFocus.unfocus();
-                    } else {
-                      messageInputFocus.requestFocus();
-                    }
+                    editMode.value = switch (editMode.value) {
+                      _EditMode.attachment => _EditMode.text,
+                      _ => _EditMode.attachment,
+                    };
                     break;
                 }
               },
             ),
           ],
         ),
-        if (selectingAttachment.value)
+        if (editMode.value == _EditMode.attachment)
           AttachmentSelector(
             onSelected: (message) {
-              selectingAttachment.value = false;
-              _onSend(
-                messageInputController,
-                messageInputFocus,
-                message.toString(),
-              );
+              send(message.toString());
             },
           ),
       ],
     );
-  }
-
-  void _onSend(
-    TextEditingController messageInputController,
-    FocusNode messageInputFocus, [
-    String? message,
-  ]) {
-    message ??= messageInputController.text;
-    if (message.isNotEmpty) {
-      onSend(message);
-      messageInputController.text = '';
-      messageInputFocus.requestFocus();
-    }
   }
 }

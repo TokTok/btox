@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:btox/db/database.dart';
-import 'package:btox/widgets/chat_text_item.dart';
+import 'package:btox/widgets/chat_text.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -86,7 +86,7 @@ final class ChatItem extends HookWidget {
                 padding: isSender
                     ? EdgeInsets.only(right: dragValue)
                     : EdgeInsets.only(left: dragValue),
-                child: ChatTextItem(
+                child: ChatText(
                   text: message.content,
                   extraWidth: _kMaxBubbleDrag,
                   color: _bubbleColor(isSender, Theme.of(context)),

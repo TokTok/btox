@@ -13,6 +13,7 @@ final class ChatPage extends HookConsumerWidget {
   final Stream<Contact> contact;
   final Stream<List<Message>> messages;
   final void Function(Message? parent, String message)? onSendMessage;
+  final bool recentEmojis;
 
   const ChatPage({
     super.key,
@@ -20,6 +21,7 @@ final class ChatPage extends HookConsumerWidget {
     required this.contact,
     required this.messages,
     this.onSendMessage,
+    this.recentEmojis = true,
   });
 
   @override
@@ -75,16 +77,17 @@ final class ChatPage extends HookConsumerWidget {
                   Padding(
                     padding: EdgeInsets.only(
                       left: 16,
-                      top: 0,
+                      top: 4,
                       right: 8,
                       bottom: ref.watch(keyboardHeightProvider).when(
-                          data: (height) => height == 0 ? 24 : 0,
-                          error: (_, __) => 8,
-                          loading: () => 8),
+                          data: (height) => height == 0 ? 24 : 4,
+                          error: (_, __) => 12,
+                          loading: () => 12),
                     ),
                     child: MessageInput(
                       hintText: AppLocalizations.of(context)!.messageInput,
                       replyingTo: replyingTo.value?.content ?? '',
+                      recentEmojis: recentEmojis,
                       onSend: (message) {
                         onSendMessage?.call(messages.lastOrNull, message);
                         replyingTo.value = null;

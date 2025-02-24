@@ -171,6 +171,105 @@ void main() {
     await expectLater(find.byType(ChatPage),
         matchesGoldenFile('goldens/chat_page/messages_time.png'));
   });
+
+  testWidgets('Tapping smiley shows emoji picker', (WidgetTester tester) async {
+    final messages = <Message>[];
+
+    await tester.pumpWidget(
+      ProviderScope(
+          child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: ChatPage(
+          profile: profile,
+          contact: Stream.value(contact),
+          messages: Stream.value(messages),
+          recentEmojis: false,
+        ),
+      )),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Tap the smiley.
+    await tester.tap(find.byIcon(Icons.emoji_emotions_outlined));
+    await tester.pumpAndSettle();
+
+    await expectLater(find.byType(ChatPage),
+        matchesGoldenFile('goldens/chat_page/emoji_picker.png'));
+
+    // Tap the smiley again to close the emoji picker.
+    await tester.tap(find.byIcon(Icons.emoji_emotions_outlined));
+    await tester.pumpAndSettle();
+
+    await expectLater(find.byType(ChatPage),
+        matchesGoldenFile('goldens/chat_page/emoji_picker_closed.png'));
+  });
+
+  testWidgets('Tapping an emoji in the emoji picker puts an emoji in the input',
+      (WidgetTester tester) async {
+    final messages = <Message>[];
+
+    await tester.pumpWidget(
+      ProviderScope(
+          child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: ChatPage(
+          profile: profile,
+          contact: Stream.value(contact),
+          messages: Stream.value(messages),
+          recentEmojis: false,
+        ),
+      )),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Tap the smiley.
+    await tester.tap(find.byIcon(Icons.emoji_emotions_outlined));
+    await tester.pumpAndSettle();
+
+    // Tap the emoji.
+    await tester.tap(find.text('😀'));
+    await tester.pumpAndSettle();
+
+    await expectLater(find.byType(ChatPage),
+        matchesGoldenFile('goldens/chat_page/emoji_picker_tapped.png'));
+  });
+
+  testWidgets('Sending a single emoji shows a big emoji',
+      (WidgetTester tester) async {
+    final messages = <Message>[
+      _fakeInsertMessage(
+        Id(0),
+        newMessage(
+          contactId: contact.id,
+          parent: null,
+          merged: null,
+          author: profile.publicKey,
+          timestamp: DateTime(2025, 1, 1, 0, 1, 12),
+          content: '😀',
+        ),
+      ),
+    ];
+
+    await tester.pumpWidget(
+      ProviderScope(
+          child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: ChatPage(
+          profile: profile,
+          contact: Stream.value(contact),
+          messages: Stream.value(messages),
+          recentEmojis: false,
+        ),
+      )),
+    );
+
+    await tester.pumpAndSettle();
+
+    await expectLater(find.byType(ChatPage),
+        matchesGoldenFile('goldens/chat_page/emoji_sent.png'));
+  });
 }
 
 Message _fakeInsertMessage(Id<Messages> id, MessagesCompanion message) {

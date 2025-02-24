@@ -6,9 +6,14 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:btox/logger.dart';
+import 'package:btox/models/bytes.dart';
 import 'package:btox/models/crypto.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'identicon.g.dart';
 
 /// Width from the center to the outside, for 5 columns it's 3, 6 -> 3, 7 -> 4.
 const _kActiveCols = (_kIdenticonRows + 1) ~/ 2;
@@ -27,6 +32,12 @@ const _kIdenticonColorBytes = 6;
 const _kIdenticonRows = 5;
 
 const _logger = Logger(['Identicon']);
+
+@Riverpod(keepAlive: true)
+Identicon identicon(Ref ref, PublicKey publicKey) {
+  _logger.d('Creating identicon for public key: $publicKey');
+  return Identicon.fromPublicKey(publicKey);
+}
 
 double _bytesToColor(Uint8List bytes) {
   assert(bytes.length == _kIdenticonColorBytes, 'bytes: $bytes');
@@ -78,11 +89,20 @@ Uint8List _upscale(int factor, Uint8List pixels) {
   return scaled;
 }
 
-final class Identicon {
+final class Identicon extends ImageProvider<ui.Image> {
   final List<List<int>> identiconColors;
   final List<Color> colors;
+  final int scale;
+  final Uint8List rgba;
+  final Future<ui.Image> image;
 
-  const Identicon(this.identiconColors, this.colors);
+  const Identicon(
+    this.identiconColors,
+    this.colors,
+    this.scale,
+    this.rgba,
+    this.image,
+  );
 
   factory Identicon.fromBytes(Uint8List data) {
     _logger.v('Generating identicon from data: $data');
@@ -117,17 +137,8 @@ final class Identicon {
         identiconColors[row][col] = colorIndex;
       }
     }
-    return Identicon(identiconColors, colors);
-  }
 
-  factory Identicon.fromPublicKey(PublicKey publicKey) {
-    return Identicon.fromBytes(publicKey.bytes);
-  }
-
-  Future<ui.Image> toImage() async {
-    _logger.v('Generating identicon image');
-    final matrix = toMatrix();
-
+    final matrix = toMatrix(identiconColors);
     final pixels = <int>[];
 
     for (int row = 0; row < _kIdenticonRows; ++row) {
@@ -147,6 +158,44 @@ final class Identicon {
     const int scale = 10;
     final rgba = _upscale(scale, Uint8List.fromList(pixels));
 
+    return Identicon(
+      identiconColors,
+      colors,
+      scale,
+      rgba,
+      toImage(rgba, scale),
+    );
+  }
+
+  factory Identicon.fromPublicKey(PublicKey publicKey) {
+    return Identicon.fromBytes(publicKey.bytes);
+  }
+
+  @override
+  int get hashCode => memHash(rgba);
+
+  @override
+  bool operator ==(Object other) {
+    return other is Identicon && memEquals(rgba, other.rgba);
+  }
+
+  @override
+  ImageStreamCompleter loadImage(ui.Image key, ImageDecoderCallback decode) {
+    return ImmediateImageStreamCompleter(
+      ImageInfo(
+        image: key.clone(),
+        debugLabel: 'Identicon',
+      ),
+    );
+  }
+
+  @override
+  Future<ui.Image> obtainKey(ImageConfiguration configuration) async {
+    return image;
+  }
+
+  static Future<ui.Image> toImage(Uint8List rgba, int scale) async {
+    _logger.v('Generating identicon image');
     final buffer = await ui.ImmutableBuffer.fromUint8List(rgba);
     final descriptor = ui.ImageDescriptor.raw(
       buffer,
@@ -160,7 +209,7 @@ final class Identicon {
     return frame.image;
   }
 
-  List<List<int>> toMatrix() {
+  static List<List<int>> toMatrix(List<List<int>> identiconColors) {
     final matrix = List.generate(_kIdenticonRows, (row) {
       return List<int>.filled(_kIdenticonRows, 0);
     });
@@ -176,20 +225,8 @@ final class Identicon {
   }
 }
 
-final class IdenticonImageProvider extends ImageProvider<Identicon> {
-  final Identicon identicon;
-
-  const IdenticonImageProvider(this.identicon);
-
-  @override
-  ImageStreamCompleter loadImage(Identicon key, ImageDecoderCallback decode) {
-    return OneFrameImageStreamCompleter(
-      key.toImage().then((image) => ImageInfo(image: image)),
-    );
-  }
-
-  @override
-  Future<Identicon> obtainKey(ImageConfiguration configuration) async {
-    return identicon;
+final class ImmediateImageStreamCompleter extends ImageStreamCompleter {
+  ImmediateImageStreamCompleter(ImageInfo info) {
+    setImage(info);
   }
 }

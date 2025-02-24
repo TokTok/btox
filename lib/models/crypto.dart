@@ -165,28 +165,35 @@ final class ToxAddressNospam extends _CryptoNumber {
 }
 
 sealed class _CryptoBytes {
-  final Uint8List bytes;
+  Uint8List _bytes;
 
-  _CryptoBytes(Uint8List bytes) : bytes = bytes.asUnmodifiableView() {
-    if (bytes.length != length) {
-      throw ArgumentError('Invalid $runtimeType length: ${bytes.length}');
+  _CryptoBytes(Uint8List bytes) : _bytes = bytes.asUnmodifiableView() {
+    if (_bytes.length != length) {
+      throw ArgumentError('Invalid $runtimeType length: ${_bytes.length}');
     }
   }
 
+  Uint8List get bytes => _bytes;
+
   @override
-  int get hashCode => memHash(bytes);
+  int get hashCode => memHash(_bytes);
 
   int get length;
 
   @override
   bool operator ==(Object other) {
-    return other is _CryptoBytes &&
+    if (other is _CryptoBytes &&
         other.runtimeType == runtimeType &&
-        memEquals(bytes, other.bytes);
+        memEquals(_bytes, other._bytes)) {
+      // Speed up future comparisons by making equality a pointer comparison.
+      _bytes = other._bytes;
+      return true;
+    }
+    return false;
   }
 
   String toJson() {
-    return hex.encode(bytes).toUpperCase();
+    return hex.encode(_bytes).toUpperCase();
   }
 
   @override

@@ -7,6 +7,7 @@ import 'package:btox/models/persistence.dart';
 import 'package:btox/models/profile_settings.dart';
 import 'package:btox/pages/chat_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -35,14 +36,15 @@ void main() {
     final messages = <Message>[];
 
     await tester.pumpWidget(
-      MaterialApp(
+      ProviderScope(
+          child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: ChatPage(
           profile: profile,
           contact: Stream.value(contact),
           messages: Stream.value(messages),
         ),
-      ),
+      )),
     );
 
     await tester.pumpAndSettle();
@@ -78,14 +80,15 @@ void main() {
     ));
 
     await tester.pumpWidget(
-      MaterialApp(
+      ProviderScope(
+          child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: ChatPage(
           profile: profile,
           contact: Stream.value(contact),
           messages: Stream.value(messages),
         ),
-      ),
+      )),
     );
 
     await tester.pumpAndSettle();
@@ -111,14 +114,15 @@ void main() {
     ));
 
     await tester.pumpWidget(
-      MaterialApp(
+      ProviderScope(
+          child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: ChatPage(
           profile: profile,
           contact: Stream.value(contact),
           messages: Stream.value(messages),
         ),
-      ),
+      )),
     );
 
     await tester.pumpAndSettle();
@@ -143,14 +147,15 @@ void main() {
     ));
 
     await tester.pumpWidget(
-      MaterialApp(
+      ProviderScope(
+          child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: ChatPage(
           profile: profile,
           contact: Stream.value(contact),
           messages: Stream.value(messages),
         ),
-      ),
+      )),
     );
 
     await tester.pumpAndSettle();

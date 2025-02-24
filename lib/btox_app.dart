@@ -36,51 +36,55 @@ final class BtoxApp extends ConsumerWidget {
         brightness: Brightness.dark,
         primarySwatch: Colors.blue,
       ),
-      home: ref.watch(appInitProvider).when(
-            loading: () => const Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
-            error: (error, _) => Scaffold(
-              body: Center(
-                child: Text('Error: $error'),
-              ),
-            ),
-            data: (init) {
-              final (database, sodium, constants) = init;
-              return StreamBuilder<List<Profile>>(
-                stream: database.watchProfiles(),
-                builder: (context, snapshot) {
-                  final profiles = snapshot.data ?? const [];
-                  if (profiles.isEmpty) {
-                    return CreateProfilePage(
-                      constants: constants,
-                      sodium: sodium,
-                      database: database,
-                    );
-                  }
-
-                  final activeProfiles =
-                      profiles.where((profile) => profile.active);
-                  if (activeProfiles.isEmpty) {
-                    return SelectProfilePage(
-                      constants: constants,
-                      sodium: sodium,
-                      database: database,
-                      profiles: profiles,
-                    );
-                  }
-
-                  return ContactListPage(
-                    constants: constants,
-                    database: database,
-                    profile: activeProfiles.first,
-                  );
-                },
-              );
-            },
-          ),
+      home: _appContent(ref),
     );
+  }
+
+  Widget _appContent(WidgetRef ref) {
+    return ref.watch(appInitProvider).when(
+          loading: () => const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (error, _) => Scaffold(
+            body: Center(
+              child: Text('Error: $error'),
+            ),
+          ),
+          data: (init) {
+            final (database, sodium, constants) = init;
+            return StreamBuilder<List<Profile>>(
+              stream: database.watchProfiles(),
+              builder: (context, snapshot) {
+                final profiles = snapshot.data ?? const [];
+                if (profiles.isEmpty) {
+                  return CreateProfilePage(
+                    constants: constants,
+                    sodium: sodium,
+                    database: database,
+                  );
+                }
+
+                final activeProfiles =
+                    profiles.where((profile) => profile.active);
+                if (activeProfiles.isEmpty) {
+                  return SelectProfilePage(
+                    constants: constants,
+                    sodium: sodium,
+                    database: database,
+                    profiles: profiles,
+                  );
+                }
+
+                return ContactListPage(
+                  constants: constants,
+                  database: database,
+                  profile: activeProfiles.first,
+                );
+              },
+            );
+          },
+        );
   }
 }

@@ -1,16 +1,21 @@
+import 'dart:io';
+
 import 'package:btox/logger.dart';
+import 'package:btox/models/attachment.dart';
+import 'package:btox/providers/geolocation.dart';
 import 'package:btox/widgets/attachment_button.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 const _logger = Logger(['AttachmentSelector']);
 
 final class AttachmentSelector extends StatelessWidget {
-  final void Function() onAdd;
+  final void Function(List<Attachment>) onSelected;
 
   const AttachmentSelector({
     super.key,
-    required this.onAdd,
+    required this.onSelected,
   });
 
   @override
@@ -21,37 +26,31 @@ final class AttachmentSelector extends StatelessWidget {
         children: [
           TableRow(
             children: [
-              AttachmentButton(
-                icon: Icons.camera_alt,
-                text: 'Camera',
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Camera not implemented'),
-                    ),
-                  );
-                },
-              ),
+              if (Platform.isAndroid || Platform.isIOS)
+                AttachmentButton(
+                  icon: Icons.camera_alt,
+                  text: 'Camera',
+                  onPressed: () async {
+                    final image = await ImagePicker().pickImage(
+                      source: ImageSource.camera,
+                    );
+                    if (image != null) {
+                      onSelected([await _loadFile(image)]);
+                    }
+                  },
+                ),
               AttachmentButton(
                 icon: Icons.photo,
                 text: 'Gallery',
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Gallery not implemented'),
-                    ),
+                onPressed: () async {
+                  final result = await FilePicker.platform.pickFiles(
+                    allowMultiple: true,
+                    type: FileType.image,
                   );
-                },
-              ),
-              AttachmentButton(
-                icon: Icons.mic,
-                text: 'Audio',
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Audio not implemented'),
-                    ),
-                  );
+                  if (result != null) {
+                    onSelected(await Future.wait(
+                        result.files.map((file) => _loadFile(file.xFile))));
+                  }
                 },
               ),
               AttachmentButton(
@@ -62,19 +61,26 @@ final class AttachmentSelector extends StatelessWidget {
                     allowMultiple: true,
                   );
                   if (result != null) {
-                    _logger.d('Files selected: ${result.files}');
+                    onSelected(await Future.wait(
+                        result.files.map((file) => _loadFile(file.xFile))));
                   }
                 },
               ),
               AttachmentButton(
                 icon: Icons.location_on,
                 text: 'Location',
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Location not implemented'),
-                    ),
-                  );
+                onPressed: () async {
+                  try {
+                    final location = await geolocation();
+                    onSelected([
+                      LocationAttachment(
+                        latitude: location.latitude,
+                        longitude: location.longitude,
+                      ),
+                    ]);
+                  } catch (e) {
+                    _logger.e('Error adding location: $e');
+                  }
                 },
               ),
             ],
@@ -83,4 +89,11 @@ final class AttachmentSelector extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<Attachment> _loadFile(XFile file) async {
+  return FileAttachment(
+    name: file.name,
+    bytes: await file.readAsBytes(),
+  );
 }

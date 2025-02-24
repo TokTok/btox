@@ -1,12 +1,17 @@
 import 'package:btox/l10n/generated/app_localizations.dart';
+import 'package:btox/widgets/attachment_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+
+enum _SendMode {
+  text,
+  attachment,
+}
 
 final class MessageInput extends HookWidget {
   final String hintText;
   final String replyingTo;
   final Color buttonColor;
-  final void Function() onAdd;
   final void Function(String) onSend;
   final void Function() onTapCloseReply;
 
@@ -15,7 +20,6 @@ final class MessageInput extends HookWidget {
     required this.hintText,
     this.replyingTo = '',
     this.buttonColor = Colors.blue,
-    required this.onAdd,
     required this.onSend,
     required this.onTapCloseReply,
   });
@@ -24,12 +28,13 @@ final class MessageInput extends HookWidget {
   Widget build(BuildContext context) {
     final messageInputController = useTextEditingController();
     final messageInputFocus = useFocusNode();
-    final sendMode = useState(false);
+    final sendMode = useState(_SendMode.attachment);
+    final selectingAttachment = useState(false);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        if (replyingTo.isNotEmpty)
+        if (replyingTo.isNotEmpty) ...[
           Container(
             color: Theme.of(context).primaryColor,
             padding: const EdgeInsets.symmetric(
@@ -59,12 +64,20 @@ final class MessageInput extends HookWidget {
               ],
             ),
           ),
-        if (replyingTo.isNotEmpty) const Divider(height: 1),
-        Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: Row(
-            children: [
-              Expanded(
+          const Padding(
+            padding: EdgeInsets.only(bottom: 8),
+            child: Divider(height: 1),
+          ),
+        ],
+        Row(
+          children: [
+            Expanded(
+              child: Focus(
+                onFocusChange: (hasFocus) {
+                  if (hasFocus) {
+                    selectingAttachment.value = false;
+                  }
+                },
                 child: TextField(
                   key: const Key('messageField'),
                   controller: messageInputController,
@@ -74,12 +87,17 @@ final class MessageInput extends HookWidget {
                   textCapitalization: TextCapitalization.sentences,
                   minLines: 1,
                   maxLines: 3,
-                  onChanged: (value) => sendMode.value = value.isNotEmpty,
+                  onChanged: (value) {
+                    sendMode.value = value.isNotEmpty
+                        ? _SendMode.text
+                        : _SendMode.attachment;
+                  },
                   onSubmitted: (_) => _onSend(
                     messageInputController,
                     messageInputFocus,
                   ),
                   decoration: InputDecoration(
+                    isDense: true,
                     hintText: hintText,
                     hintMaxLines: 1,
                     contentPadding: const EdgeInsets.symmetric(
@@ -89,41 +107,64 @@ final class MessageInput extends HookWidget {
                     fillColor: Theme.of(context).splashColor,
                     filled: true,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24.0),
+                      borderRadius: BorderRadius.circular(20),
                       borderSide: BorderSide.none,
                     ),
                   ),
                 ),
               ),
-              IconButton(
-                color: buttonColor,
-                icon: sendMode.value
-                    ? const Icon(Icons.send)
-                    : const Icon(Icons.add_circle),
-                onPressed: () {
-                  if (sendMode.value) {
-                    sendMode.value = false;
+            ),
+            IconButton(
+              color: buttonColor,
+              icon: switch (sendMode.value) {
+                _SendMode.text => const Icon(Icons.send),
+                _SendMode.attachment => const Icon(Icons.add_circle),
+              },
+              iconSize: 42,
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                switch (sendMode.value) {
+                  case _SendMode.text:
+                    sendMode.value = _SendMode.attachment;
                     _onSend(
                       messageInputController,
                       messageInputFocus,
                     );
-                  } else {
-                    onAdd();
-                  }
-                },
-              ),
-            ],
-          ),
+                    break;
+                  case _SendMode.attachment:
+                    selectingAttachment.value = !selectingAttachment.value;
+                    if (selectingAttachment.value) {
+                      messageInputFocus.unfocus();
+                    } else {
+                      messageInputFocus.requestFocus();
+                    }
+                    break;
+                }
+              },
+            ),
+          ],
         ),
+        if (selectingAttachment.value)
+          AttachmentSelector(
+            onSelected: (message) {
+              selectingAttachment.value = false;
+              _onSend(
+                messageInputController,
+                messageInputFocus,
+                message.toString(),
+              );
+            },
+          ),
       ],
     );
   }
 
   void _onSend(
     TextEditingController messageInputController,
-    FocusNode messageInputFocus,
-  ) {
-    final message = messageInputController.text;
+    FocusNode messageInputFocus, [
+    String? message,
+  ]) {
+    message ??= messageInputController.text;
     if (message.isNotEmpty) {
       onSend(message);
       messageInputController.text = '';

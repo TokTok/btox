@@ -1,13 +1,14 @@
 import 'package:btox/db/database.dart';
 import 'package:btox/l10n/generated/app_localizations.dart';
-import 'package:btox/widgets/attachment_selector.dart';
-import 'package:btox/widgets/chat_bubble.dart';
+import 'package:btox/providers/keyboard_height.dart';
+import 'package:btox/widgets/chat_item.dart';
 import 'package:btox/widgets/circle_identicon.dart';
 import 'package:btox/widgets/message_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final class ChatPage extends HookWidget {
+final class ChatPage extends HookConsumerWidget {
   final Profile profile;
   final Stream<Contact> contact;
   final Stream<List<Message>> messages;
@@ -22,9 +23,8 @@ final class ChatPage extends HookWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final replyingTo = useState<Message?>(null);
-    final selectingAttachment = useState(false);
 
     return StreamBuilder<Contact>(
       stream: contact,
@@ -64,24 +64,27 @@ final class ChatPage extends HookWidget {
                       itemBuilder: (context, index) {
                         final reversedIndex = messages.length - index - 1;
                         final message = messages[reversedIndex];
-                        return ChatBubble(
+                        return ChatItem(
                           message: message,
                           isSender: message.author == profile.publicKey,
-                          onReply: () {
-                            replyingTo.value = message;
-                          },
+                          onReply: () => replyingTo.value = message,
                         );
                       },
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.only(
+                      left: 16,
+                      top: 0,
+                      right: 8,
+                      bottom: ref.watch(keyboardHeightProvider).when(
+                          data: (height) => height == 0 ? 24 : 0,
+                          error: (_, __) => 8,
+                          loading: () => 8),
+                    ),
                     child: MessageInput(
                       hintText: AppLocalizations.of(context)!.messageInput,
                       replyingTo: replyingTo.value?.content ?? '',
-                      onAdd: () {
-                        selectingAttachment.value = !selectingAttachment.value;
-                      },
                       onSend: (message) {
                         onSendMessage?.call(messages.lastOrNull, message);
                         replyingTo.value = null;
@@ -91,13 +94,6 @@ final class ChatPage extends HookWidget {
                       },
                     ),
                   ),
-                  if (selectingAttachment.value)
-                    AttachmentSelector(
-                      onAdd: (message) {
-                        selectingAttachment.value = false;
-                        onSendMessage?.call(messages.lastOrNull, message);
-                      },
-                    ),
                 ],
               );
             }),

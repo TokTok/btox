@@ -1,27 +1,35 @@
+import 'package:btox/widgets/chat_message_bubble.dart';
+import 'package:btox/widgets/chat_message_emoji.dart';
 import 'package:flutter/material.dart';
 
 const double kStateIconBottom = 4;
 const double kStateIconRight = 6;
 const double kStateIconSize = 18;
+final RegExp kRegexEmoji = RegExp(
+    r'^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])$');
 
-final class Bubble extends StatelessWidget {
+enum ChatItemDirection { sent, received }
+
+enum ChatItemState { none, sent, delivered, seen }
+
+final class ChatTextItem extends StatelessWidget {
   final String text;
   final Color color;
+  final TextStyle textStyle;
   final double bubbleRadius;
-  final BubbleDirection direction;
-  final BubbleState state;
-  final TextStyle? textStyle;
+  final ChatItemDirection direction;
+  final ChatItemState state;
   final EdgeInsets padding;
   final double extraWidth;
 
-  const Bubble({
+  const ChatTextItem({
     super.key,
     required this.text,
     required this.color,
-    this.bubbleRadius = 16,
-    this.direction = BubbleDirection.sent,
-    this.state = BubbleState.none,
-    this.textStyle,
+    required this.textStyle,
+    this.bubbleRadius = 20,
+    this.direction = ChatItemDirection.sent,
+    this.state = ChatItemState.none,
     this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
     this.extraWidth = 48,
   });
@@ -29,8 +37,8 @@ final class Bubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Positioned? stateIcon = switch (state) {
-      BubbleState.none => null,
-      BubbleState.sent => const Positioned(
+      ChatItemState.none => null,
+      ChatItemState.sent => const Positioned(
           bottom: kStateIconBottom,
           right: kStateIconRight,
           child: Icon(
@@ -39,7 +47,7 @@ final class Bubble extends StatelessWidget {
             color: Color(0xFF97AD8E),
           ),
         ),
-      BubbleState.delivered => const Positioned(
+      ChatItemState.delivered => const Positioned(
           bottom: kStateIconBottom,
           right: kStateIconRight,
           child: Icon(
@@ -48,7 +56,7 @@ final class Bubble extends StatelessWidget {
             color: Color(0xFF97AD8E),
           ),
         ),
-      BubbleState.seen => const Positioned(
+      ChatItemState.seen => const Positioned(
           bottom: kStateIconBottom,
           right: kStateIconRight,
           child: Icon(
@@ -61,8 +69,8 @@ final class Bubble extends StatelessWidget {
 
     return Row(
       mainAxisAlignment: switch (direction) {
-        BubbleDirection.sent => MainAxisAlignment.end,
-        BubbleDirection.received => MainAxisAlignment.start,
+        ChatItemDirection.sent => MainAxisAlignment.end,
+        ChatItemDirection.received => MainAxisAlignment.start,
       },
       children: [
         Container(
@@ -70,29 +78,28 @@ final class Bubble extends StatelessWidget {
             maxWidth: MediaQuery.of(context).size.width - extraWidth,
           ),
           padding: padding,
-          child: Container(
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.all(Radius.circular(bubbleRadius)),
-            ),
-            child: Stack(
-              children: [
-                Padding(
-                  padding: stateIcon != null
-                      ? EdgeInsets.fromLTRB(12, 6, 28, 6)
-                      : EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                  child: Text(text, style: textStyle),
-                ),
-                if (stateIcon != null) stateIcon,
-              ],
-            ),
-          ),
+          child: _bubble(stateIcon),
         ),
       ],
     );
   }
+
+  Widget _bubble(Positioned? stateIcon) {
+    if (kRegexEmoji.hasMatch(text)) {
+      return ChatMessageEmoji(
+        stateIcon: stateIcon,
+        emoji: text,
+        textStyle: textStyle,
+      );
+    }
+    return ChatMessageBubble(
+      radius: bubbleRadius,
+      color: color,
+      stateIcon: stateIcon,
+      child: Text(
+        text,
+        style: textStyle,
+      ),
+    );
+  }
 }
-
-enum BubbleDirection { sent, received }
-
-enum BubbleState { none, sent, delivered, seen }

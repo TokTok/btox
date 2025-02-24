@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:btox/logger.dart';
+import 'package:btox/models/attachment.dart';
 import 'package:btox/providers/geolocation.dart';
 import 'package:btox/widgets/attachment_button.dart';
 import 'package:file_picker/file_picker.dart';
@@ -10,11 +11,11 @@ import 'package:image_picker/image_picker.dart';
 const _logger = Logger(['AttachmentSelector']);
 
 final class AttachmentSelector extends StatelessWidget {
-  final void Function(String) onAdd;
+  final void Function(List<Attachment>) onSelected;
 
   const AttachmentSelector({
     super.key,
-    required this.onAdd,
+    required this.onSelected,
   });
 
   @override
@@ -34,7 +35,7 @@ final class AttachmentSelector extends StatelessWidget {
                       source: ImageSource.camera,
                     );
                     if (image != null) {
-                      onAdd('Image selected: ${image.path}');
+                      onSelected([await _loadFile(image)]);
                     }
                   },
                 ),
@@ -47,7 +48,8 @@ final class AttachmentSelector extends StatelessWidget {
                     type: FileType.image,
                   );
                   if (result != null) {
-                    onAdd('Files selected: ${result.files}');
+                    onSelected(await Future.wait(
+                        result.files.map((file) => _loadFile(file.xFile))));
                   }
                 },
               ),
@@ -59,7 +61,8 @@ final class AttachmentSelector extends StatelessWidget {
                     allowMultiple: true,
                   );
                   if (result != null) {
-                    onAdd('Files selected: ${result.files}');
+                    onSelected(await Future.wait(
+                        result.files.map((file) => _loadFile(file.xFile))));
                   }
                 },
               ),
@@ -69,7 +72,12 @@ final class AttachmentSelector extends StatelessWidget {
                 onPressed: () async {
                   try {
                     final location = await geolocation();
-                    onAdd(location.toString());
+                    onSelected([
+                      LocationAttachment(
+                        latitude: location.latitude,
+                        longitude: location.longitude,
+                      ),
+                    ]);
                   } catch (e) {
                     _logger.e('Error adding location: $e');
                   }
@@ -81,4 +89,11 @@ final class AttachmentSelector extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<Attachment> _loadFile(XFile file) async {
+  return FileAttachment(
+    name: file.name,
+    bytes: await file.readAsBytes(),
+  );
 }

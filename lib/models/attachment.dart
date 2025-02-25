@@ -5,16 +5,19 @@ sealed class Attachment {
 }
 
 final class FileAttachment extends Attachment {
+  final String path;
   final String name;
   final Uint8List bytes;
 
   const FileAttachment({
+    required this.path,
     required this.name,
     required this.bytes,
   });
 
   @override
-  String toString() => 'FileAttachment(name: $name, bytes: ${bytes.length})';
+  String toString() =>
+      'FileAttachment(path: $path, name: $name, bytes: ${bytes.length})';
 }
 
 final class LocationAttachment extends Attachment {

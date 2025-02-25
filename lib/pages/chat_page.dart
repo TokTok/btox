@@ -44,12 +44,15 @@ final class ChatPage extends HookConsumerWidget {
           appBar: AppBar(
             title: Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: CircleIdenticon(publicKey: contact.publicKey),
+                if (MediaQuery.of(context).size.width > 150)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: CircleIdenticon(publicKey: contact.publicKey),
+                  ),
+                Expanded(
+                  child: Text(contact.name ??
+                      AppLocalizations.of(context)!.defaultContactName),
                 ),
-                Text(contact.name ??
-                    AppLocalizations.of(context)!.defaultContactName)
               ],
             ),
           ),

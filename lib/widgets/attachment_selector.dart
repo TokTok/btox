@@ -92,6 +92,7 @@ final class AttachmentSelector extends StatelessWidget {
 
 Future<Attachment> _loadFile(XFile file) async {
   return FileAttachment(
+    path: file.path,
     name: file.name,
     bytes: await file.readAsBytes(),
   );

@@ -6,6 +6,7 @@ import 'package:btox/models/messaging.dart';
 import 'package:btox/models/persistence.dart';
 import 'package:btox/models/profile_settings.dart';
 import 'package:btox/pages/chat_page.dart';
+import 'package:btox/widgets/chat_text_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -269,6 +270,46 @@ void main() {
 
     await expectLater(find.byType(ChatPage),
         matchesGoldenFile('goldens/chat_page/emoji_sent.png'));
+  });
+
+  testWidgets('Long-pressing a message shows a context menu',
+      (WidgetTester tester) async {
+    final messages = <Message>[];
+
+    messages.add(_fakeInsertMessage(
+      Id(0),
+      newMessage(
+        contactId: contact.id,
+        parent: null,
+        merged: null,
+        author: contact.publicKey,
+        timestamp: DateTime(2025, 1, 1, 0, 1, 12),
+        content: 'Happy New Year!',
+      ),
+    ));
+
+    await tester.pumpWidget(
+      ProviderScope(
+          child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: ChatPage(
+          profile: profile,
+          contact: Stream.value(contact),
+          messages: Stream.value(messages),
+        ),
+      )),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Long-press the message.
+    await tester.longPress(find.byType(ChatTextBubble));
+    await tester.pumpAndSettle();
+
+    // MaterialApp instead of ChatPage because the context menu is a separate
+    // route and is displayed on top of the ChatPage, not inside it.
+    await expectLater(find.byType(MaterialApp),
+        matchesGoldenFile('goldens/chat_page/message_context_menu.png'));
   });
 }
 

@@ -1,8 +1,11 @@
 import 'package:btox/l10n/generated/app_localizations.dart';
+import 'package:btox/logger.dart';
 import 'package:btox/widgets/attachment_selector.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+
+const _logger = Logger(['MessageInput']);
 
 enum _SendMode {
   text,
@@ -112,9 +115,15 @@ final class MessageInput extends HookWidget {
               ),
               emojiViewConfig: EmojiViewConfig(
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                emojiSizeMax: 24,
               ),
               bottomActionBarConfig: BottomActionBarConfig(
-                backgroundColor: Theme.of(context).splashColor,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                buttonIconColor: Theme.of(context).iconTheme.color!,
+              ),
+              searchViewConfig: SearchViewConfig(
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                buttonIconColor: Theme.of(context).iconTheme.color!,
               ),
             ),
           ),
@@ -134,6 +143,13 @@ final class MessageInput extends HookWidget {
                     maxLines: 3,
                     onTap: () => editMode.value = _EditMode.text,
                     onSubmitted: (_) => send(),
+                    contentInsertionConfiguration:
+                        ContentInsertionConfiguration(
+                      onContentInserted: (content) {
+                        _logger.d('Content inserted: ${content.mimeType}, '
+                            '${content.uri}, ${content.data?.length} bytes');
+                      },
+                    ),
                     decoration: InputDecoration(
                       isDense: true,
                       hintText: hintText,

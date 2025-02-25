@@ -14,7 +14,7 @@ const double kStateIconSize = 18;
 /// now. Really deciding on whether something is an emoji is complicated:
 /// https://tc39.es/proposal-regexp-unicode-sequence-properties/.
 bool _isEmoji(String s) {
-  final chars = _utf16To32(s.codeUnits);
+  final chars = _utf32(s);
   if (chars.isEmpty) {
     return false;
   }
@@ -32,7 +32,8 @@ bool _isEmoji(String s) {
   return true;
 }
 
-List<int> _utf16To32(List<int> utf16) {
+List<int> _utf32(String s) {
+  final utf16 = s.codeUnits;
   final List<int> utf32 = [];
   for (int i = 0; i < utf16.length; i++) {
     if (utf16[i] & 0xF800 == 0xD800) {

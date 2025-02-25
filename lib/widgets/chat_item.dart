@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:btox/db/database.dart';
+import 'package:btox/widgets/chat_context_menu.dart';
 import 'package:btox/widgets/chat_text.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -74,12 +75,20 @@ final class ChatItem extends HookWidget {
                 bubbleDrag.value = 0;
               },
               onTap: () => showTime.value = !showTime.value,
-              onLongPress: () {
-                Clipboard.setData(ClipboardData(text: message.content));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Copied to clipboard'),
-                  ),
+              onLongPressStart: (details) async {
+                await ChatContextMenu.show(
+                  context,
+                  details.globalPosition,
+                  onReply: () {
+                    onReply?.call();
+                  },
+                  onForward: () {},
+                  onCopy: () {
+                    Clipboard.setData(ClipboardData(text: message.content));
+                  },
+                  onSelect: () {},
+                  onInfo: () {},
+                  onDelete: () {},
                 );
               },
               child: Padding(

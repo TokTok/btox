@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:btox/platform/any_platform.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keyboard_height_plugin/keyboard_height_plugin.dart';
@@ -9,7 +8,7 @@ part 'keyboard_height.g.dart';
 
 @riverpod
 Stream<double> keyboardHeight(Ref ref) {
-  if (!Platform.isAndroid && !Platform.isIOS) {
+  if (!AnyPlatform.instance.isMobile) {
     return Stream.empty();
   }
   final _ = KeyboardHeightPlugin();

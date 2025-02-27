@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:btox/logger.dart';
 import 'package:btox/models/attachment.dart';
+import 'package:btox/platform/any_platform.dart';
 import 'package:btox/providers/geolocation.dart';
 import 'package:btox/widgets/attachment_button.dart';
 import 'package:file_picker/file_picker.dart';
@@ -26,7 +25,7 @@ final class AttachmentSelector extends StatelessWidget {
         children: [
           TableRow(
             children: [
-              if (Platform.isAndroid || Platform.isIOS)
+              if (AnyPlatform.instance.isMobile)
                 AttachmentButton(
                   icon: Icons.camera_alt,
                   text: 'Camera',

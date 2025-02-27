@@ -1,7 +1,7 @@
 import 'dart:ffi';
-import 'dart:io';
 
 import 'package:btox/ffi/generated/toxcore.ffi.dart';
+import 'package:btox/platform/any_platform.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -16,7 +16,7 @@ part 'tox_library.ffi.g.dart';
 Future<ToxLibrary> toxFfi(Ref ref) async {
   return ToxLibrary(
     malloc,
-    ToxFfi(Platform.isAndroid
+    ToxFfi(AnyPlatform.instance.isAndroid
         ? DynamicLibrary.open('libtoxcore.so')
         : DynamicLibrary.process()),
   );

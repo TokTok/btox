@@ -1,15 +1,15 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:btox/logger.dart';
+import 'package:btox/platform/any_platform.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 
 const _logger = Logger(['Service']);
 
 Future<void> initializeService() async {
-  if (!Platform.isAndroid && !Platform.isIOS) {
+  if (!AnyPlatform.instance.isMobile) {
     return;
   }
 
@@ -32,7 +32,7 @@ Future<void> initializeService() async {
 }
 
 void startBackgroundService() {
-  if (!Platform.isAndroid && !Platform.isIOS) {
+  if (!AnyPlatform.instance.isMobile) {
     return;
   }
 
@@ -41,7 +41,7 @@ void startBackgroundService() {
 }
 
 void stopBackgroundService() {
-  if (!Platform.isAndroid && !Platform.isIOS) {
+  if (!AnyPlatform.instance.isMobile) {
     return;
   }
 

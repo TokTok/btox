@@ -1,10 +1,14 @@
+import 'package:btox/logger.dart';
 import 'package:btox/models/content.dart';
+import 'package:btox/widgets/chat_location_bubble.dart';
 import 'package:btox/widgets/chat_text.dart';
 import 'package:flutter/material.dart';
 
-const double kStateIconBottom = 4;
-const double kStateIconRight = 6;
-const double kStateIconSize = 18;
+const double _kStateIconBottom = 4;
+const double _kStateIconRight = 6;
+const double _kStateIconSize = 18;
+
+const _logger = Logger(['ChatContent']);
 
 final class ChatContent extends StatelessWidget {
   final Content content;
@@ -15,6 +19,7 @@ final class ChatContent extends StatelessWidget {
   final ChatContentState state;
   final EdgeInsets padding;
   final double extraWidth;
+  final void Function()? onTap;
 
   const ChatContent({
     super.key,
@@ -26,6 +31,7 @@ final class ChatContent extends StatelessWidget {
     this.state = ChatContentState.none,
     this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
     this.extraWidth = 48,
+    this.onTap,
   });
 
   @override
@@ -33,29 +39,29 @@ final class ChatContent extends StatelessWidget {
     final Positioned? stateIcon = switch (state) {
       ChatContentState.none => null,
       ChatContentState.sent => const Positioned(
-          bottom: kStateIconBottom,
-          right: kStateIconRight,
+          bottom: _kStateIconBottom,
+          right: _kStateIconRight,
           child: Icon(
             Icons.done,
-            size: kStateIconSize,
+            size: _kStateIconSize,
             color: Color(0xFF97AD8E),
           ),
         ),
       ChatContentState.delivered => const Positioned(
-          bottom: kStateIconBottom,
-          right: kStateIconRight,
+          bottom: _kStateIconBottom,
+          right: _kStateIconRight,
           child: Icon(
             Icons.done_all,
-            size: kStateIconSize,
+            size: _kStateIconSize,
             color: Color(0xFF97AD8E),
           ),
         ),
       ChatContentState.seen => const Positioned(
-          bottom: kStateIconBottom,
-          right: kStateIconRight,
+          bottom: _kStateIconBottom,
+          right: _kStateIconRight,
           child: Icon(
             Icons.done_all,
-            size: kStateIconSize,
+            size: _kStateIconSize,
             color: Color(0xFF92DEDA),
           ),
         ),
@@ -80,13 +86,28 @@ final class ChatContent extends StatelessWidget {
 
   Widget _bubble(Positioned? stateIcon) {
     switch (content) {
-      case TextContent(text: var text):
+      case TextContent(text: final text):
         return ChatText(
           stateIcon: stateIcon,
           text: text,
           color: color,
           textStyle: textStyle,
           bubbleRadius: bubbleRadius,
+        );
+      case LocationContent(
+          latitude: final latitude,
+          longitude: final longitude
+        ):
+        return ChatLocationBubble(
+          stateIcon: stateIcon,
+          latitude: latitude,
+          longitude: longitude,
+          color: color,
+          radius: bubbleRadius,
+          onTap: (tapPosition, point) {
+            _logger.d('Tapped on location bubble: $point');
+            onTap?.call();
+          },
         );
       default:
         return ChatText(
